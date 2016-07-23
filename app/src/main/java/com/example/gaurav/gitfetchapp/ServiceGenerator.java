@@ -1,0 +1,87 @@
+package com.example.gaurav.gitfetchapp;
+
+import android.util.Base64;
+
+import java.io.IOException;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+/**
+ * Created by GAURAV on 22-07-2016.
+ */
+public class ServiceGenerator {
+    public static final String WEB_BASE_URL = "https://github.com/"; //"http://api.github.com/";
+
+    // Add the interceptor to OkHttpClient
+    private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    //builder.interceptors().add(interceptor);
+    //OkHttpClient client = builder.build();
+
+    private static Retrofit.Builder builder = new Retrofit.Builder()
+            .baseUrl(WEB_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create());
+
+    public static <S> S createService(Class<S> serviceClass) {
+        return createService(serviceClass, null);
+    }
+
+    public static <S> S createService(Class<S> serviceClass, String username, String password) {
+        if (username != null && password != null) {
+            String credentials = username + ":" + password;
+            final String basic =
+                    "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+
+            httpClient.addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Interceptor.Chain chain) throws IOException {
+                    Request original = chain.request();
+
+                    Request.Builder requestBuilder = original.newBuilder()
+                            .header("Authorization", basic)
+                            .header("Accept", "application/json")
+                            .method(original.method(), original.body());
+
+                    Request request = requestBuilder.build();
+                    return chain.proceed(request);
+                }
+            });
+        }
+
+        OkHttpClient client = httpClient.build();
+        Retrofit retrofit = builder.client(client).build();
+        return retrofit.create(serviceClass);
+    }
+
+    public static <S> S createService(Class<S> serviceClass, AccessToken token) {
+        if (token != null) {
+            final AccessToken newToken = token;
+            httpClient.addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Interceptor.Chain chain) throws IOException {
+                    Request original = chain.request();
+
+                    Request.Builder requestBuilder = original.newBuilder()
+                            .header("Accept", "application/json")
+                            .header("Authorization",
+                                    newToken.getTokenType() + " " + newToken.getAccessToken())
+                            .method(original.method(), original.body());
+
+                    Request request = requestBuilder.build();
+                    return chain.proceed(request);
+                }
+            });
+        }
+
+        OkHttpClient client = httpClient.build();
+        Retrofit retrofit = builder.client(client).build();
+        return retrofit.create(serviceClass);
+    }
+
+
+
+}
