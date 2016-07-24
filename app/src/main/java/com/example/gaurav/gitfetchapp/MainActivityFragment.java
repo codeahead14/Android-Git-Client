@@ -31,8 +31,8 @@ public class MainActivityFragment extends Fragment {
     private EditText userName;
     private EditText password;
 
-    private final String clientId = "158a0d1c5f2352735a22";
-    private final String clientSecret = "";
+    private final String clientId = "Enter your Client Id";
+    private final String clientSecret = "Enter Your secret Id";
     private final String redirectUri = "welcome://com.project.github";
 
     public MainActivityFragment() {
