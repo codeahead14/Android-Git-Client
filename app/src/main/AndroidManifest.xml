@@ -24,7 +24,7 @@
                 <data
                     android:scheme="welcome"
                     android:host="com.project.github"
-                    android:pathPrefix="/"/>
+                    android:pathPattern=".*"/>
             </intent-filter>
         </activity>
     </application>

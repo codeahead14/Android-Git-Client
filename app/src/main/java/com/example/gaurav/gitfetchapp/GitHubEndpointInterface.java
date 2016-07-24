@@ -20,7 +20,9 @@ public interface GitHubEndpointInterface {
     // Callback for the parsed response is the last parameter
 
     @GET("login/oauth/authorize")
-    Call<AccessToken> getToken(@Query("client_id") String id);
+    Call<AccessToken> getLoginCode(//@Query("login_field") String userName,
+                               //@Query("password") String password,
+                               @Query("client_id") String id);
 
     @FormUrlEncoded
     @POST("login/oauth/access_token")
