@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.gaurav.gitfetchapp">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -21,12 +21,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:scheme="welcome"
                     android:host="com.project.github"
-                    android:pathPattern=".*"/>
+                    android:pathPattern=".*"
+                    android:scheme="welcome" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".PostLoginActivity"
+            android:label="@string/title_activity_post_login"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -19,10 +19,8 @@ public interface GitHubEndpointInterface {
     // Request method and URL specified in the annotation
     // Callback for the parsed response is the last parameter
 
-    @GET("login/oauth/authorize")
-    Call<AccessToken> getLoginCode(//@Query("login_field") String userName,
-                               //@Query("password") String password,
-                               @Query("client_id") String id);
+    @POST("/authorizations")
+    Call<LoginJson> getLoginCode(@Body LoginPost post);
 
     @FormUrlEncoded
     @POST("login/oauth/access_token")

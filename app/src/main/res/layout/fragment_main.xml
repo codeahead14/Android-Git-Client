@@ -10,7 +10,7 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
-        android:id="@+id/responseText"
+        android:id="@+id/usernameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="UserName" />
@@ -43,5 +43,11 @@
         android:layout_below="@+id/password"
         android:gravity="center_vertical|center_horizontal"
         />
+
+    <TextView
+        android:id="@+id/response"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loginbutton"/>
 
 </RelativeLayout>

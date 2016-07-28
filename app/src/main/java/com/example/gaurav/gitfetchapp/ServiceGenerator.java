@@ -1,6 +1,8 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.app.Service;
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -8,6 +10,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -16,6 +19,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServiceGenerator {
     public static final String WEB_BASE_URL = "https://github.com/"; //"http://api.github.com/";
+    public static final String API_BASE_URL = "https://api.github.com";
+    private static final String TAG = ServiceGenerator.class.getName();
 
     // Add the interceptor to OkHttpClient
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -23,7 +28,7 @@ public class ServiceGenerator {
     //OkHttpClient client = builder.build();
 
     private static Retrofit.Builder builder = new Retrofit.Builder()
-            .baseUrl(WEB_BASE_URL)
+            .baseUrl(API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create());
 
     public static <S> S createService(Class<S> serviceClass) {
@@ -36,6 +41,7 @@ public class ServiceGenerator {
             final String basic =
                     "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
 
+            Log.v(TAG,basic);
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -47,12 +53,14 @@ public class ServiceGenerator {
                             .method(original.method(), original.body());
 
                     Request request = requestBuilder.build();
+                    Log.v(TAG,request.header("Authorization"));
                     return chain.proceed(request);
                 }
             });
         }
-
-        OkHttpClient client = httpClient.build();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = httpClient.addInterceptor(interceptor).build();
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);
     }
