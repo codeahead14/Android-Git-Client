@@ -1,14 +1,15 @@
 package com.example.gaurav.gitfetchapp;
 
+import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -21,6 +22,9 @@ public interface GitHubEndpointInterface {
 
     @POST("/authorizations")
     Call<LoginJson> getLoginCode(@Body LoginPost post);
+
+    @GET("/user/repos")
+    Call<ArrayList<UserRepoJson>> getUserRepositories();
 
     @FormUrlEncoded
     @POST("login/oauth/access_token")

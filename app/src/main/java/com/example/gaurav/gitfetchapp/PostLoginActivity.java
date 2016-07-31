@@ -44,15 +44,6 @@ public class PostLoginActivity extends AppCompatActivity
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        /*fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -119,19 +110,19 @@ public class PostLoginActivity extends AppCompatActivity
                 fragmentClass = RepositoryFragment.class;
                 break;
             case R.id.nav_gallery:
-                //fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoryFragment.class;
                 break;
             case R.id.nav_slideshow:
-                //fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoryFragment.class;
                 break;
             case R.id.nav_manage:
-                //fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoryFragment.class;
                 break;
             case R.id.nav_share:
-                //fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoryFragment.class;
                 break;
             case R.id.nav_send:
-                //fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoryFragment.class;
                 break;
             default:
                 fragmentClass = RepositoryFragment.class;
@@ -143,8 +134,8 @@ public class PostLoginActivity extends AppCompatActivity
         }
 
         // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.container_repo, fragment).commit();
+        //FragmentManager fragmentManager = getSupportFragmentManager();
+        //fragmentManager.beginTransaction().replace(R.id.container_repo, fragment).commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

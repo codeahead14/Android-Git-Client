@@ -34,17 +34,16 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static CatLoadingView catView;
 
-    @BindView(R.id.usernameText) TextView usernameText;
-    @BindView(R.id.userName) EditText userName;
-    @BindView(R.id.passwordText) TextView passwordText;
-    @BindView(R.id.password) EditText password;
-    @BindView(R.id.response) TextView responseBody;
+    @BindView(R.id.email) EditText userEmail;
+    @BindView(R.id.pass) EditText userPassword;
 
     private Unbinder unbinder;
-
     private final String clientId = "158a0d1c5f2352735a22";
     private final String clientSecret = "add98d28020b075d669e76a799deb67b110dbc96";
     private final String redirectUri = "welcome://com.project.github";
+
+    public static String userNameField = null;
+    public static String passwordField = null;
 
     public MainActivityFragment() {
     }
@@ -64,8 +63,10 @@ public class MainActivityFragment extends Fragment {
 
     @OnClick(R.id.loginbutton) void submit(){
         catView.show(getFragmentManager(),TAG);
-        String userNameField = userName.getText().toString();
-        String passwordField = password.getText().toString();
+//        userNameField = userName.getText().toString();
+//        passwordField = password.getText().toString();
+        userNameField = userEmail.getText().toString();
+        passwordField = userPassword.getText().toString();
         if(userNameField.matches("") || passwordField.matches("")){
             Toast.makeText(getActivity(), "Cannot Leave UserName/Password Blank",
                     Toast.LENGTH_SHORT).show();
@@ -84,9 +85,11 @@ public class MainActivityFragment extends Fragment {
                 @Override
                 public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
                     LoginJson item = response.body();
-                    responseBody.setText(item.getToken());
+                    if (item.getToken()!=null)
+                        AccessToken.getInstance().setAccessToken(item.getToken());
                     catView.dismiss();
                     Intent intent = new Intent(getActivity(),PostLoginActivity.class);
+                    intent.putExtra(Intent.EXTRA_TEXT,item.getToken());
                     startActivity(intent);
                 }
 

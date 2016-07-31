@@ -41,7 +41,7 @@ public class ServiceGenerator {
             final String basic =
                     "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
 
-            Log.v(TAG,basic);
+            //Log.v(TAG,basic);
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -53,7 +53,7 @@ public class ServiceGenerator {
                             .method(original.method(), original.body());
 
                     Request request = requestBuilder.build();
-                    Log.v(TAG,request.header("Authorization"));
+                    //Log.v(TAG,request.header("Authorization"));
                     return chain.proceed(request);
                 }
             });
@@ -71,21 +71,25 @@ public class ServiceGenerator {
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Interceptor.Chain chain) throws IOException {
+                    Log.v(TAG,"In Access service");
                     Request original = chain.request();
 
                     Request.Builder requestBuilder = original.newBuilder()
                             .header("Accept", "application/json")
                             .header("Authorization",
-                                    newToken.getTokenType() + " " + newToken.getAccessToken())
+                                    " token " + newToken.getAccessToken())
                             .method(original.method(), original.body());
 
                     Request request = requestBuilder.build();
+                    Log.v(TAG,request.header("Authorization"));
                     return chain.proceed(request);
                 }
             });
         }
 
-        OkHttpClient client = httpClient.build();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = httpClient.addInterceptor(interceptor).build();
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);
     }

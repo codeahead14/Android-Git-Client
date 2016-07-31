@@ -5,8 +5,18 @@ package com.example.gaurav.gitfetchapp;
  */
 public class AccessToken {
 
+    private static AccessToken tokenObj = new AccessToken();
+
     private String accessToken;
     private String tokenType;
+
+    public static AccessToken getInstance(){
+        return tokenObj;
+    }
+
+    public void setAccessToken(String token){
+        this.accessToken = token;
+    }
 
     public String getAccessToken() {
         return accessToken;
