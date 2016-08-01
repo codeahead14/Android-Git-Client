@@ -10,8 +10,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.R;
+import com.example.gaurav.gitfetchapp.Utility;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,11 +28,16 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
     private ArrayList<UserRepoJson> mUserRepo = new ArrayList<>();
 
     public class RepositoryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        private TextView updated_on_textview;
         private TextView repo_name_textview;
+        private TextView stargazer_textview;
+
         public RepositoryViewHolder(View view){
             super(view);
             repo_name_textview = (TextView) view.findViewById(R.id.repo_name_text);
-            repo_name_textview.setOnClickListener(this);
+            updated_on_textview = (TextView) view.findViewById(R.id.updatedText);
+            stargazer_textview = (TextView) view.findViewById(R.id.stargazerText);
+            //repo_name_textview.setOnClickListener(this);
         }
 
         @Override
@@ -56,7 +65,22 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
     public void onBindViewHolder(RepositoryAdapter.RepositoryViewHolder holder, int position) {
         Log.v("Adapter","position: "+position);
         String repoName = mUserRepo.get(position).getName();
+        String updatedOn = mUserRepo.get(position).getUpdatedAt();
         holder.repo_name_textview.setText(repoName);
+        //holder.updated_on_textview.setText(updatedOn);
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            Date d = date.parse(updatedOn);
+            String friendlyDay = Utility.getFriendlyDayString(mContext, d.getTime());
+            Log.v("RepositoryAdapter","formatted date: "+d.getTime());
+            holder.updated_on_textview.setText(friendlyDay);
+        }catch(ParseException p){
+            Log.v("RepositoryAdapter","Caught Exception: "+p.getMessage());
+        }
+    }
+
+    public void clear(){
+        mUserRepo.clear();
     }
 
     @Override

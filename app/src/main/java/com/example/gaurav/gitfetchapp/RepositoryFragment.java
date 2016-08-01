@@ -63,6 +63,7 @@ public class RepositoryFragment extends Fragment {
 //                mRepositoryAdapter = new RepositoryAdapter(getContext(), R.layout.repository_cardview,
 //                        userRepoList);
                 //mRepositoryAdapter.setData(item);
+                mRepositoryAdapter.clear();
                 for (UserRepoJson elem : item)
                     mRepositoryAdapter.addItem(elem);
                 mRepositoryAdapter.notifyDataSetChanged();
@@ -90,9 +91,12 @@ public class RepositoryFragment extends Fragment {
         //mRepositoryAdapter = new RepositoryAdapter(getContext(), R.layout.repository_cardview,
           //      userRepoList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             //layoutManager.scrollToPosition(0);
         repoRecyclerView.setLayoutManager(layoutManager);
+        RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
+        repoRecyclerView.addItemDecoration(itemDecoration);
         repoRecyclerView.setAdapter(mRepositoryAdapter);
         //}
         return rootView;
