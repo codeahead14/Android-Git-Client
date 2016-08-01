@@ -42,8 +42,8 @@ public class MainActivityFragment extends Fragment {
 
     private Unbinder unbinder;
 
-    private final String clientId = "158a0d1c5f2352735a22";
-    private final String clientSecret = "add98d28020b075d669e76a799deb67b110dbc96";
+    private final String clientId = "";
+    private final String clientSecret = "";
     private final String redirectUri = "welcome://com.project.github";
 
     public MainActivityFragment() {
