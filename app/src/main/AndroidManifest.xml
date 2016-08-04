@@ -31,6 +31,10 @@
         <activity
             android:name=".PostLoginActivity"
             android:label="@string/title_activity_post_login"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Repositories.RepositoryDetailActivity"
+            android:label="@string/title_activity_repository_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

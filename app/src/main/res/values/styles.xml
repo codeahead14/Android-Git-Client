@@ -6,10 +6,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlNormal">@color/grey300</item>
-        <item name="colorControlActivated">@color/colorAccent</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
-        <item name="android:textColorHint">@color/grey300</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorControlNormal">@color/grey500</item>
+        <item name="colorControlActivated">@color/teal500</item>
+        <item name="colorControlHighlight">@color/teal500</item>
+        <item name="android:textColorHint">@color/grey500</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -23,7 +24,7 @@
 
     <!-- TextInputLayout Style -  Login Screen -->
     <style name="TextAppearence.App.TextInputLayout" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/teal500</item>
     </style>
 
 </resources>

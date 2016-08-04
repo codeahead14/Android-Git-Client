@@ -1,9 +1,12 @@
 package com.example.gaurav.gitfetchapp.Repositories;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserRepoJson {
+public class UserRepoJson implements Parcelable {
 
     @SerializedName("id")
     @Expose
@@ -1455,4 +1458,242 @@ public class UserRepoJson {
         this.permissions = permissions;
     }
 
+
+    protected UserRepoJson(Parcel in) {
+        id = in.readByte() == 0x00 ? null : in.readInt();
+        name = in.readString();
+        fullName = in.readString();
+        owner = (Owner) in.readValue(Owner.class.getClassLoader());
+        byte _privateVal = in.readByte();
+        _private = _privateVal == 0x02 ? null : _privateVal != 0x00;
+        htmlUrl = in.readString();
+        description = in.readString();
+        byte forkVal = in.readByte();
+        fork = forkVal == 0x02 ? null : forkVal != 0x00;
+        url = in.readString();
+        forksUrl = in.readString();
+        keysUrl = in.readString();
+        collaboratorsUrl = in.readString();
+        teamsUrl = in.readString();
+        hooksUrl = in.readString();
+        issueEventsUrl = in.readString();
+        eventsUrl = in.readString();
+        assigneesUrl = in.readString();
+        branchesUrl = in.readString();
+        tagsUrl = in.readString();
+        blobsUrl = in.readString();
+        gitTagsUrl = in.readString();
+        gitRefsUrl = in.readString();
+        treesUrl = in.readString();
+        statusesUrl = in.readString();
+        languagesUrl = in.readString();
+        stargazersUrl = in.readString();
+        contributorsUrl = in.readString();
+        subscribersUrl = in.readString();
+        subscriptionUrl = in.readString();
+        commitsUrl = in.readString();
+        gitCommitsUrl = in.readString();
+        commentsUrl = in.readString();
+        issueCommentUrl = in.readString();
+        contentsUrl = in.readString();
+        compareUrl = in.readString();
+        mergesUrl = in.readString();
+        archiveUrl = in.readString();
+        downloadsUrl = in.readString();
+        issuesUrl = in.readString();
+        pullsUrl = in.readString();
+        milestonesUrl = in.readString();
+        notificationsUrl = in.readString();
+        labelsUrl = in.readString();
+        releasesUrl = in.readString();
+        deploymentsUrl = in.readString();
+        createdAt = in.readString();
+        updatedAt = in.readString();
+        pushedAt = in.readString();
+        gitUrl = in.readString();
+        sshUrl = in.readString();
+        cloneUrl = in.readString();
+        svnUrl = in.readString();
+        homepage = (Object) in.readValue(Object.class.getClassLoader());
+        size = in.readByte() == 0x00 ? null : in.readInt();
+        stargazersCount = in.readByte() == 0x00 ? null : in.readInt();
+        watchersCount = in.readByte() == 0x00 ? null : in.readInt();
+        language = in.readString();
+        byte hasIssuesVal = in.readByte();
+        hasIssues = hasIssuesVal == 0x02 ? null : hasIssuesVal != 0x00;
+        byte hasDownloadsVal = in.readByte();
+        hasDownloads = hasDownloadsVal == 0x02 ? null : hasDownloadsVal != 0x00;
+        byte hasWikiVal = in.readByte();
+        hasWiki = hasWikiVal == 0x02 ? null : hasWikiVal != 0x00;
+        byte hasPagesVal = in.readByte();
+        hasPages = hasPagesVal == 0x02 ? null : hasPagesVal != 0x00;
+        forksCount = in.readByte() == 0x00 ? null : in.readInt();
+        mirrorUrl = (Object) in.readValue(Object.class.getClassLoader());
+        openIssuesCount = in.readByte() == 0x00 ? null : in.readInt();
+        forks = in.readByte() == 0x00 ? null : in.readInt();
+        openIssues = in.readByte() == 0x00 ? null : in.readInt();
+        watchers = in.readByte() == 0x00 ? null : in.readInt();
+        defaultBranch = in.readString();
+        permissions = (Permissions) in.readValue(Permissions.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
+        dest.writeString(name);
+        dest.writeString(fullName);
+        dest.writeValue(owner);
+        if (_private == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (_private ? 0x01 : 0x00));
+        }
+        dest.writeString(htmlUrl);
+        dest.writeString(description);
+        if (fork == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (fork ? 0x01 : 0x00));
+        }
+        dest.writeString(url);
+        dest.writeString(forksUrl);
+        dest.writeString(keysUrl);
+        dest.writeString(collaboratorsUrl);
+        dest.writeString(teamsUrl);
+        dest.writeString(hooksUrl);
+        dest.writeString(issueEventsUrl);
+        dest.writeString(eventsUrl);
+        dest.writeString(assigneesUrl);
+        dest.writeString(branchesUrl);
+        dest.writeString(tagsUrl);
+        dest.writeString(blobsUrl);
+        dest.writeString(gitTagsUrl);
+        dest.writeString(gitRefsUrl);
+        dest.writeString(treesUrl);
+        dest.writeString(statusesUrl);
+        dest.writeString(languagesUrl);
+        dest.writeString(stargazersUrl);
+        dest.writeString(contributorsUrl);
+        dest.writeString(subscribersUrl);
+        dest.writeString(subscriptionUrl);
+        dest.writeString(commitsUrl);
+        dest.writeString(gitCommitsUrl);
+        dest.writeString(commentsUrl);
+        dest.writeString(issueCommentUrl);
+        dest.writeString(contentsUrl);
+        dest.writeString(compareUrl);
+        dest.writeString(mergesUrl);
+        dest.writeString(archiveUrl);
+        dest.writeString(downloadsUrl);
+        dest.writeString(issuesUrl);
+        dest.writeString(pullsUrl);
+        dest.writeString(milestonesUrl);
+        dest.writeString(notificationsUrl);
+        dest.writeString(labelsUrl);
+        dest.writeString(releasesUrl);
+        dest.writeString(deploymentsUrl);
+        dest.writeString(createdAt);
+        dest.writeString(updatedAt);
+        dest.writeString(pushedAt);
+        dest.writeString(gitUrl);
+        dest.writeString(sshUrl);
+        dest.writeString(cloneUrl);
+        dest.writeString(svnUrl);
+        dest.writeValue(homepage);
+        if (size == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(size);
+        }
+        if (stargazersCount == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(stargazersCount);
+        }
+        if (watchersCount == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(watchersCount);
+        }
+        dest.writeString(language);
+        if (hasIssues == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (hasIssues ? 0x01 : 0x00));
+        }
+        if (hasDownloads == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (hasDownloads ? 0x01 : 0x00));
+        }
+        if (hasWiki == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (hasWiki ? 0x01 : 0x00));
+        }
+        if (hasPages == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (hasPages ? 0x01 : 0x00));
+        }
+        if (forksCount == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(forksCount);
+        }
+        dest.writeValue(mirrorUrl);
+        if (openIssuesCount == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(openIssuesCount);
+        }
+        if (forks == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(forks);
+        }
+        if (openIssues == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(openIssues);
+        }
+        if (watchers == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(watchers);
+        }
+        dest.writeString(defaultBranch);
+        dest.writeValue(permissions);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<UserRepoJson> CREATOR = new Parcelable.Creator<UserRepoJson>() {
+        @Override
+        public UserRepoJson createFromParcel(Parcel in) {
+            return new UserRepoJson(in);
+        }
+
+        @Override
+        public UserRepoJson[] newArray(int size) {
+            return new UserRepoJson[size];
+        }
+    };
 }
