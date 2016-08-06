@@ -38,6 +38,8 @@ public class MainActivityFragment extends Fragment {
     @BindView(R.id.pass) EditText userPassword;
 
     private Unbinder unbinder;
+    private final String clientId = "";
+    private final String clientSecret = "";
     private final String redirectUri = "welcome://com.project.github";
 
     public static String userNameField = null;
