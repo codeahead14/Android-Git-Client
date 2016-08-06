@@ -38,8 +38,6 @@ public class MainActivityFragment extends Fragment {
     @BindView(R.id.pass) EditText userPassword;
 
     private Unbinder unbinder;
-    private final String clientId = "ENTER YOUR CLIENT ID";
-    private final String clientSecret = "ENTER YOUR CLIENT SECRET";
     private final String redirectUri = "welcome://com.project.github";
 
     public static String userNameField = null;
@@ -63,8 +61,6 @@ public class MainActivityFragment extends Fragment {
 
     @OnClick(R.id.loginbutton) void submit(){
         catView.show(getFragmentManager(),TAG);
-//        userNameField = userName.getText().toString();
-//        passwordField = password.getText().toString();
         userNameField = userEmail.getText().toString();
         passwordField = userPassword.getText().toString();
         if(userNameField.matches("") || passwordField.matches("")){

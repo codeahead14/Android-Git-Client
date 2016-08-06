@@ -9,13 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryAdapter;
 import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,8 +24,8 @@ import retrofit2.Response;
 /**
  * Created by GAURAV on 28-07-2016.
  */
-public class RepositoryFragment extends Fragment {
-    private static final String TAG = RepositoryFragment.class.getName();
+public class RepositoriesFragment extends Fragment {
+    private static final String TAG = RepositoriesFragment.class.getName();
     private View rootView;
     private AccessToken mAccessToken;
     private Intent intent;
@@ -37,7 +35,7 @@ public class RepositoryFragment extends Fragment {
 
     @BindView(R.id.repository_recycler) RecyclerView repoRecyclerView;
 
-    public RepositoryFragment() {
+    public RepositoriesFragment() {
         mAccessToken = AccessToken.getInstance();
     }
 
@@ -73,8 +71,6 @@ public class RepositoryFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ArrayList<UserRepoJson>> call, Throwable t) {
-                //t.printStackTrace();
-                //Log.v(TAG,"failed ");
                 Log.v(TAG,"Stack trace"+t.getMessage());
             }
         });

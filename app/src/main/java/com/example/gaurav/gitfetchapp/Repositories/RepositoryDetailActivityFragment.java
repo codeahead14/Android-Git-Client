@@ -3,8 +3,10 @@ package com.example.gaurav.gitfetchapp.Repositories;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.example.gaurav.gitfetchapp.CircleTransform;
 import com.example.gaurav.gitfetchapp.R;
+import com.example.gaurav.gitfetchapp.RepositoryPagerAdapter;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -38,10 +41,19 @@ public class RepositoryDetailActivityFragment extends Fragment {
     @BindView(R.id.watch_Img) ImageView watch_count_imageview;
 
     private static final String TAG = RepositoryDetailActivityFragment.class.getName();
+    public static final String ARG_PAGE = "ARG_PAGE";
     private View rootView;
     private UserRepoJson item;
 
     public RepositoryDetailActivityFragment() {
+    }
+
+    public static RepositoryDetailActivityFragment newInstance(int page) {
+        Bundle args = new Bundle();
+        args.putInt(ARG_PAGE, page);
+        RepositoryDetailActivityFragment fragment = new RepositoryDetailActivityFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -54,22 +66,43 @@ public class RepositoryDetailActivityFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
+        viewPager.setAdapter(new RepositoryPagerAdapter(getChildFragmentManager(),
+                getActivity()));
+
+        // Give the TabLayout the ViewPager
+        TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_repository_detail, container, false);
         ButterKnife.bind(this,rootView);
+
+        /*ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
+        viewPager.setAdapter(new RepositoryPagerAdapter(getActivity().getSupportFragmentManager(),
+                getActivity()));
+
+        // Give the TabLayout the ViewPager
+        TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);*/
+
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.pink600));
+        toolbar.setBackgroundColor(getResources().getColor(R.color.green_5));
 
         //toolbar.setTitleTextColor(getResources().getColor(R.color.indigo700));
 
         Window window = getActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(getResources().getColor(R.color.pink900));
+        window.setStatusBarColor(getResources().getColor(R.color.green_6));
 
         final Drawable upArrow = getResources().getDrawable(R.drawable.abc_ic_ab_back_material);
         upArrow.setColorFilter(getResources().getColor(R.color.grey50), PorterDuff.Mode.SRC_ATOP);

@@ -1,14 +1,9 @@
 package com.example.gaurav.gitfetchapp;
 
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -51,7 +46,7 @@ public class PostLoginActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment fragment = new RepositoryFragment();
+        Fragment fragment = new RepositoriesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container_repo,fragment,null);
         fragmentTransaction.commit();
@@ -107,25 +102,25 @@ public class PostLoginActivity extends AppCompatActivity
 
         switch(id) {
             case R.id.nav_camera:
-                fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoriesFragment.class;
                 break;
             case R.id.nav_gallery:
-                fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoriesFragment.class;
                 break;
             case R.id.nav_slideshow:
-                fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoriesFragment.class;
                 break;
             case R.id.nav_manage:
-                fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoriesFragment.class;
                 break;
             case R.id.nav_share:
-                fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoriesFragment.class;
                 break;
             case R.id.nav_send:
-                fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoriesFragment.class;
                 break;
             default:
-                fragmentClass = RepositoryFragment.class;
+                fragmentClass = RepositoriesFragment.class;
         }
         try {
             fragment = (Fragment) fragmentClass.newInstance();
