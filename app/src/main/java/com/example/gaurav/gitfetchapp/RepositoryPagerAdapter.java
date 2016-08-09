@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryDetailActivityFragment;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryPagerFragment;
+import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
 
 /**
  * Created by GAURAV on 06-08-2016.
@@ -15,10 +16,12 @@ public class RepositoryPagerAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 3;
     private String tabTitles[] = new String[] { "BRANCHES", "FILES", "COMMITS" };
     private Context context;
+    private UserRepoJson userRepoJson;
 
-    public RepositoryPagerAdapter(FragmentManager fm, Context context) {
+    public RepositoryPagerAdapter(FragmentManager fm, Context context, UserRepoJson item) {
         super(fm);
         this.context = context;
+        this.userRepoJson = item;
     }
 
     @Override
@@ -28,7 +31,7 @@ public class RepositoryPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return RepositoryPagerFragment.newInstance(position + 1);
+        return RepositoryPagerFragment.newInstance(position + 1, userRepoJson);
     }
 
     @Override

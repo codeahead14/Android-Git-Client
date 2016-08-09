@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +17,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.gaurav.gitfetchapp.CircleTransform;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.RepositoryPagerAdapter;
-import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,7 +65,7 @@ public class RepositoryDetailActivityFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         viewPager.setAdapter(new RepositoryPagerAdapter(getChildFragmentManager(),
-                getActivity()));
+                getActivity(),item));
 
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.sliding_tabs);
@@ -95,14 +90,14 @@ public class RepositoryDetailActivityFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.green_5));
+        toolbar.setBackgroundColor(getResources().getColor(R.color.teal500));
 
         //toolbar.setTitleTextColor(getResources().getColor(R.color.indigo700));
 
         Window window = getActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(getResources().getColor(R.color.green_6));
+        window.setStatusBarColor(getResources().getColor(R.color.teal700));
 
         final Drawable upArrow = getResources().getDrawable(R.drawable.abc_ic_ab_back_material);
         upArrow.setColorFilter(getResources().getColor(R.color.grey50), PorterDuff.Mode.SRC_ATOP);

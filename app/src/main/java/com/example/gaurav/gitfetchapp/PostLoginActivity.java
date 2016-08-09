@@ -1,9 +1,12 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,7 +24,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class PostLoginActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        GistsFragment.OnFragmentInteractionListener {
 
     private Unbinder unbinder;
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -96,6 +101,7 @@ public class PostLoginActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Log.v("PostLoginActivity","id: "+id);
 
         Fragment fragment = null;
         Class fragmentClass;
@@ -105,10 +111,10 @@ public class PostLoginActivity extends AppCompatActivity
                 fragmentClass = RepositoriesFragment.class;
                 break;
             case R.id.nav_gallery:
-                fragmentClass = RepositoriesFragment.class;
+                fragmentClass = FeedsFragment.class;
                 break;
             case R.id.nav_slideshow:
-                fragmentClass = RepositoriesFragment.class;
+                fragmentClass = GistsFragment.class;
                 break;
             case R.id.nav_manage:
                 fragmentClass = RepositoriesFragment.class;
@@ -129,11 +135,17 @@ public class PostLoginActivity extends AppCompatActivity
         }
 
         // Insert the fragment by replacing any existing fragment
-        //FragmentManager fragmentManager = getSupportFragmentManager();
-        //fragmentManager.beginTransaction().replace(R.id.container_repo, fragment).commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack();
+        fragmentManager.beginTransaction().replace(R.id.container_repo,fragment,null).commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Toast.makeText(PostLoginActivity.this, "GistsFragment Callback", Toast.LENGTH_SHORT).show();
     }
 }

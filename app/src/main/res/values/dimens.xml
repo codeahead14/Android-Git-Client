@@ -6,6 +6,8 @@
     <dimen name="item_verticl_margin_normal">8dp</dimen>
     <dimen name="item_horizontal_margin_small">4dp</dimen>
     <dimen name="item_verticl_margin_small">4dp</dimen>
+    <dimen name="item_horizontal_margin_xlarge">24dp</dimen>
+    <dimen name="item_vertical_margin_xlarge">24dp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->

@@ -35,6 +35,10 @@
         <activity
             android:name=".Repositories.RepositoryDetailActivity"
             android:label="@string/title_activity_repository_detail"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Repositories.FileViewActivity"
+            android:label="@string/title_activity_file_view"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

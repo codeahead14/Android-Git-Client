@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingRight="@dimen/item_horizontal_margin_small"
+    android:paddingEnd="@dimen/item_horizontal_margin_small"
+    android:paddingLeft="@dimen/item_horizontal_margin_small"
+    android:paddingStart="@dimen/item_horizontal_margin_small"
+    android:baselineAligned="true">
+
+    <ImageView
+        android:id="@+id/file_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/item_horizontal_margin_normal"/>
+
+    <TextView
+        android:id="@+id/file_name_text"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:padding="@dimen/item_horizontal_margin_normal"/>
+
+</LinearLayout>

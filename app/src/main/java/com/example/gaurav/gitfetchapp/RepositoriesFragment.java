@@ -37,6 +37,7 @@ public class RepositoriesFragment extends Fragment {
 
     public RepositoriesFragment() {
         mAccessToken = AccessToken.getInstance();
+        Log.v(TAG,"access token: "+mAccessToken.getAccessToken());
     }
 
     @Override
@@ -51,7 +52,6 @@ public class RepositoriesFragment extends Fragment {
         mRepositoryAdapter = new RepositoryAdapter(getContext(), R.layout.repository_cardview,
                 userRepoList);
 
-        Log.v(TAG,"in OnCreate");
         call.enqueue(new Callback<ArrayList<UserRepoJson>>() {
             @Override
             public void onResponse(Call<ArrayList<UserRepoJson>> call, Response<ArrayList<UserRepoJson>> response) {
@@ -82,13 +82,8 @@ public class RepositoriesFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_repositories, containter, false);
         ButterKnife.bind(this,rootView);
 
-        //if(hasRepositoryData) {
-        Log.v(TAG, "has data");
-        //mRepositoryAdapter = new RepositoryAdapter(getContext(), R.layout.repository_cardview,
-          //      userRepoList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            //layoutManager.scrollToPosition(0);
         repoRecyclerView.setLayoutManager(layoutManager);
         RecyclerView.ItemDecoration itemDecoration = new
                 DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
