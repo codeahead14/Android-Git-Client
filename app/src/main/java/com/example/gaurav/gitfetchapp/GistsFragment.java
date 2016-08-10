@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 import com.example.gaurav.gitfetchapp.Gists.GistsJson;
 
+import java.util.ArrayList;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,17 +71,17 @@ public class GistsFragment extends Fragment {
 
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
-        Call<GistsJson> call = gitHubEndpointInterface.getPrivateGists(MainActivityFragment.userNameField);
-        call.enqueue(new Callback<GistsJson>() {
+        Call<ArrayList<GistsJson>> call = gitHubEndpointInterface.getPrivateGists(MainActivityFragment.userNameField);
+        call.enqueue(new Callback<ArrayList<GistsJson>>() {
             @Override
-            public void onResponse(Call<GistsJson> call, Response<GistsJson> response) {
-                GistsJson gists = response.body();
-                Log.v(TAG,"gists: "+gists.getUrl());
+            public void onResponse(Call<ArrayList<GistsJson>> call, Response<ArrayList<GistsJson>> response) {
+                ArrayList<GistsJson> gists = response.body();
+                Log.v(TAG,"gists: "+gists.get(0).getUrl());
             }
 
             @Override
-            public void onFailure(Call<GistsJson> call, Throwable t) {
-                Log.v(TAG,"Failed Miserably in Gists");
+            public void onFailure(Call<ArrayList<GistsJson>> call, Throwable t) {
+                Log.v(TAG,"Failed Miserably in Gists"+t.getMessage());
             }
         });
     }

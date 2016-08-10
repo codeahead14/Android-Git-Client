@@ -73,7 +73,7 @@ public interface GitHubEndpointInterface {
 
     // For accessing Gists
     @GET("/users/{username}/gists")
-    Call<GistsJson> getPrivateGists(@Path("username") String username);
+    Call<ArrayList<GistsJson>> getPrivateGists(@Path("username") String username);
 
     @FormUrlEncoded
     @POST("login/oauth/access_token")
