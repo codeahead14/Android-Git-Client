@@ -39,6 +39,10 @@
         <activity
             android:name=".Repositories.FileViewActivity"
             android:label="@string/title_activity_file_view"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Gists.GistsFileSourceActivity"
+            android:label="@string/title_activity_gists_file_source"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

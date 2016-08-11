@@ -2,12 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/grey300"
     tools:context="com.example.gaurav.gitfetchapp.GistsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/gists_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:scrollbars="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true"/>
 
 </FrameLayout>

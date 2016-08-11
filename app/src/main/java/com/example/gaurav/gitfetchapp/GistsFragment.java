@@ -4,15 +4,20 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.gaurav.gitfetchapp.Gists.GistsJson;
+import com.example.gaurav.gitfetchapp.Gists.GistsRecyclerAdapter;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,6 +43,9 @@ public class GistsFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private GistsRecyclerAdapter gistsRecyclerAdapter;
+
+    @BindView(R.id.gists_recycler_view) RecyclerView recyclerView;
 
     public GistsFragment() {
         // Required empty public constructor
@@ -69,14 +77,21 @@ public class GistsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        gistsRecyclerAdapter = new GistsRecyclerAdapter(getContext(), new ArrayList<GistsJson>());
+
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
-        Call<ArrayList<GistsJson>> call = gitHubEndpointInterface.getPrivateGists(MainActivityFragment.userNameField);
+        Call<ArrayList<GistsJson>> call = gitHubEndpointInterface.getPrivateGists(//"hemanth");
+                MainActivityFragment.userNameField);
         call.enqueue(new Callback<ArrayList<GistsJson>>() {
             @Override
             public void onResponse(Call<ArrayList<GistsJson>> call, Response<ArrayList<GistsJson>> response) {
                 ArrayList<GistsJson> gists = response.body();
-                Log.v(TAG,"gists: "+gists.get(0).getUrl());
+                gistsRecyclerAdapter.clear();
+                for(GistsJson elem: gists)
+                    gistsRecyclerAdapter.addItem(elem);
+                gistsRecyclerAdapter.notifyDataSetChanged();
+                Log.v(TAG,"gists: "+gists.get(0).getFiles().size());
             }
 
             @Override
@@ -89,8 +104,17 @@ public class GistsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gists, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_gists, container, false);
+        ButterKnife.bind(this,rootView);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        /*RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
+        recyclerView.addItemDecoration(itemDecoration);*/
+        recyclerView.setAdapter(gistsRecyclerAdapter);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -3,6 +3,8 @@ package com.example.gaurav.gitfetchapp.Gists;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Map;
+
 public class GistsJson {
 
     @SerializedName("url")
@@ -26,9 +28,17 @@ public class GistsJson {
     @SerializedName("html_url")
     @Expose
     private String htmlUrl;
+
+    /**
+     * Changing the conventional serializable names to
+     * using Map<> for Dynamic JSON parsing using Retrofit
+     * **/
     @SerializedName("files")
     @Expose
-    private Files files;
+    //private Files files;
+    private Map<String,Filename> files;
+
+
     @SerializedName("public")
     @Expose
     private Boolean _public;
@@ -188,7 +198,8 @@ public class GistsJson {
      * @return
      * The files
      */
-    public Files getFiles() {
+    //public File getFiles() {
+    public Map<String, Filename> getFiles() {
         return files;
     }
 
@@ -197,7 +208,8 @@ public class GistsJson {
      * @param files
      * The files
      */
-    public void setFiles(Files files) {
+    //public void setFiles(File files) {
+    public void setFiles(Map<String, Filename> files) {
         this.files = files;
     }
 

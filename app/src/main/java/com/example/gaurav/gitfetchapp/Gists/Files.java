@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Files {
 
-    @SerializedName("filename")
+    @SerializedName("*")
     @Expose
     private List<Filename> filename;
 
