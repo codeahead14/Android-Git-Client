@@ -48,7 +48,6 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
             Intent intent = new Intent(mContext,RepositoryDetailActivity.class);
             intent.putExtra(Intent.EXTRA_TEXT, mUserRepo.get(getLayoutPosition()));
             mContext.startActivity(intent);
-            Toast.makeText(mContext,"OnClick "+getLayoutPosition(),Toast.LENGTH_SHORT).show();
         }
     }
 

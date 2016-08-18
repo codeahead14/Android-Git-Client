@@ -18,21 +18,31 @@
         android:layout_height="wrap_content"
         android:background="@color/teal500"
         android:theme="@style/AppTheme.AppBarOverlay"
-        android:visibility="visible"
-        >
+        android:visibility="visible">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="@color/teal500"
             app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <ImageButton
+                android:id="@+id/filter_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_filter_list_black_24dp"
+                android:padding="@dimen/activity_horizontal_margin"
+                android:layout_gravity="end"
+                android:contentDescription="Filter Menu Button" />
+
         </android.support.v7.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/teal500"
+            android:background="@color/deepPurple500"
             android:orientation="vertical">
 
             <TextView
@@ -43,7 +53,7 @@
                 android:fontFamily="sans-serif"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:textColor="@color/grey100"
-                android:textSize="30sp"
+                android:textSize="28sp"
                 android:textStyle="normal" />
 
             <TextView
@@ -147,7 +157,7 @@
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:layout_gravity="bottom"
-            android:background="@color/teal600"
+            android:background="@color/deepPurple300"
             app:tabMode="scrollable"/>
 
     </android.support.design.widget.AppBarLayout>
@@ -164,11 +174,12 @@
         android:src="@drawable/git_branch_30x48dp"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:background="@color/yellow400"
+        app:backgroundTint="@color/red300"
         app:layout_anchorGravity="end|right"
         android:layout_margin="@dimen/activity_horizontal_margin"
         app:layout_anchor="@id/viewpager"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

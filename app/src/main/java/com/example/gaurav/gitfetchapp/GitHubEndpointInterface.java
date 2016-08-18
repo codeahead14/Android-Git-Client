@@ -5,13 +5,14 @@ import com.example.gaurav.gitfetchapp.Feeds.TimelineJson.Feed;
 import com.example.gaurav.gitfetchapp.Gists.GistsJson;
 import com.example.gaurav.gitfetchapp.Repositories.BranchDetails.BranchDetailJson;
 import com.example.gaurav.gitfetchapp.Repositories.BranchesJson;
-import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.FileContentJson;
+import com.example.gaurav.gitfetchapp.Events.EventsJson;
+import com.example.gaurav.gitfetchapp.Repositories.CollaboratorsJson;
+import com.example.gaurav.gitfetchapp.Repositories.Commits.CommitsRepoJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.RepoContentsJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.TreeDetailsJson;
 import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -19,7 +20,6 @@ import retrofit2.http.Body;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -42,6 +42,14 @@ public interface GitHubEndpointInterface {
     Call<ArrayList<BranchesJson>> getUserBranches(@Path("owner") String owner,
                                                   @Path("repo") String repo);
 
+    @GET("/repos/{owner}/{repo}/commits")
+    Call<ArrayList<CommitsRepoJson>> getRepoCommits(@Path("owner") String owner,
+                                         @Path("repo") String repo);
+
+    @GET("/repos/{owner}/{repo}/collaborators")
+    Call<ArrayList<CollaboratorsJson>> getRepoCollaborators(@Path("owner") String owner,
+                                                            @Path("repo") String repo);
+
     @GET("/repos/{owner}/{repo}/branches/{branch}")
     Call<BranchDetailJson> getBranchDetails(@Path("owner") String owner,
                                             @Path("repo") String repo,
@@ -58,6 +66,13 @@ public interface GitHubEndpointInterface {
                                                       @Path("repo") String repo,
                                                       @Path("path") String path,
                                                       @Query("ref") String branch);
+
+    @GET("/repos/{owner}/{repo}/events")
+    Call<ArrayList<EventsJson>> getRepoEvents(@Path("owner") String owner,
+                                              @Path("repo") String repo);
+
+    @GET("/events")
+    Call<ArrayList<EventsJson>> getPublicEvents();
 
     // For downloading file contents from the server
     @GET

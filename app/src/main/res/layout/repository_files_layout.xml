@@ -6,7 +6,8 @@
     android:paddingEnd="@dimen/item_horizontal_margin_small"
     android:paddingLeft="@dimen/item_horizontal_margin_small"
     android:paddingStart="@dimen/item_horizontal_margin_small"
-    android:baselineAligned="true">
+    android:baselineAligned="true"
+    android:background="?android:attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/file_img"

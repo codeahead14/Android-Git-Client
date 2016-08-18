@@ -43,7 +43,11 @@
         <activity
             android:name=".Gists.GistsFileSourceActivity"
             android:label="@string/title_activity_gists_file_source"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Repositories.BranchDialogActivity"
+            android:label="@string/title_activity_branch_dialog"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"/>
     </application>
 
 </manifest>

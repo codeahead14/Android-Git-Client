@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
-            android:textColor="@color/red300"
+            android:textColor="@color/red500"
             android:textSize="18sp"
             android:textAppearance="?android:textAppearanceMedium"/>
 
@@ -52,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
+            android:textColor="@color/bluegrey600"
             android:paddingRight="@dimen/item_horizontal_margin_normal"
             android:paddingEnd="@dimen/item_horizontal_margin_normal"
             android:paddingLeft="@dimen/item_horizontal_margin_small"
@@ -71,12 +72,14 @@
             android:paddingRight="@dimen/item_horizontal_margin_normal"
             android:paddingEnd="@dimen/item_horizontal_margin_normal"
             android:paddingLeft="2dp"
-            android:paddingStart="2dp"/>
+            android:paddingStart="2dp"
+            android:textColor="@color/bluegrey600"/>
 
         <TextView
             android:id="@+id/pushedText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/bluegrey600"/>
 
     </LinearLayout>
 </LinearLayout>

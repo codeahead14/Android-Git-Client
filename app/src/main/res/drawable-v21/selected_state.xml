@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/blue100">
+    <item>
+        <selector >
+            <!-- Color when the row is selected -->
+            <item android:state_selected="true">
+                <color android:color="@color/teal100"/>
+            </item>
+            <item android:state_activated="true">
+                <color android:color="@color/teal100"/>
+            </item>
+            <item android:state_pressed="true">
+                <color android:color="@color/red100"/>
+            </item>
+        </selector>
+    </item>
+</ripple>

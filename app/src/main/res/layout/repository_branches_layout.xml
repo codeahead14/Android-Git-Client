@@ -2,27 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:baselineAligned="true"
-    android:layout_marginBottom="@dimen/item_horizontal_margin_normal"
-    android:layout_marginTop="@dimen/item_horizontal_margin_normal"
-    android:paddingRight="@dimen/item_horizontal_margin_normal"
-    android:paddingEnd="@dimen/item_horizontal_margin_normal"
-    android:paddingLeft="@dimen/item_horizontal_margin_normal"
-    android:paddingStart="@dimen/item_horizontal_margin_normal">
+    android:baselineAligned="true">
 
     <TextView
         android:id="@+id/branch_name_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="20sp"/>
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/item_horizontal_margin_normal"
+        android:paddingBottom="@dimen/item_horizontal_margin_normal"
+        android:background="@drawable/selected_state"/>
 
     <ImageButton
         android:id="@+id/branch_expand_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_expand_more_black_24dp"/>
+        android:src="@drawable/ic_expand_more_black_24dp"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/branch_details_text"

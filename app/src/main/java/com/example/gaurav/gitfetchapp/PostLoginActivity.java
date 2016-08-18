@@ -25,7 +25,7 @@ import butterknife.Unbinder;
 
 public class PostLoginActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        GistsFragment.OnFragmentInteractionListener {
+        GistsFragment.OnFragmentInteractionListener, PublicEventsFragment.OnPublicEventsFragmentInteractionListener {
 
     private Unbinder unbinder;
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -117,7 +117,7 @@ public class PostLoginActivity extends AppCompatActivity
                 fragmentClass = GistsFragment.class;
                 break;
             case R.id.nav_manage:
-                fragmentClass = RepositoriesFragment.class;
+                fragmentClass = PublicEventsFragment.class;
                 break;
             case R.id.nav_share:
                 fragmentClass = RepositoriesFragment.class;
@@ -147,5 +147,10 @@ public class PostLoginActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         Toast.makeText(PostLoginActivity.this, "GistsFragment Callback", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void OnPublicEventsFragmentInteractionListener(Uri uri){
+
     }
 }

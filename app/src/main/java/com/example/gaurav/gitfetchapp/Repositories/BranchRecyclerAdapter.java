@@ -1,6 +1,7 @@
 package com.example.gaurav.gitfetchapp.Repositories;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.gaurav.gitfetchapp.DataBus.BusProvider;
+import com.example.gaurav.gitfetchapp.DataBus.UserInteractionEvent;
 import com.example.gaurav.gitfetchapp.R;
 
 import java.util.ArrayList;
@@ -21,10 +25,12 @@ public class BranchRecyclerAdapter extends RecyclerView.Adapter<
     private static final String TAG = BranchRecyclerAdapter.class.getName();
     private Context mContext;
     private ArrayList<BranchesJson> branches = new ArrayList<>();
+    private String selected_branch;
 
-    public BranchRecyclerAdapter(Context context, ArrayList<BranchesJson> item){
+    public BranchRecyclerAdapter(Context context, ArrayList<BranchesJson> item, String default_branch){
         this.mContext = context;
         branches = item;
+        this.selected_branch = default_branch;
     }
 
     @Override
@@ -38,6 +44,7 @@ public class BranchRecyclerAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(BranchViewHolder holder, int position) {
+        holder.branch_name_textview.setSelected(selected_branch.compareTo(branches.get(position).getName()) == 0);
         holder.branch_name_textview.setText(branches.get(position).getName());
     }
 
@@ -63,13 +70,18 @@ public class BranchRecyclerAdapter extends RecyclerView.Adapter<
 
         BranchViewHolder(View view){
             super(view);
+            Typeface tf_2 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/Roboto-Light.ttf");
             branch_name_textview = (TextView) view.findViewById(R.id.branch_name_text);
+            branch_name_textview.setTypeface(tf_2);
             branch_details_button = (ImageButton) view.findViewById(R.id.branch_expand_button);
+            view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-
+            int clickPos = getAdapterPosition();
+            selected_branch = branches.get(clickPos).getName();
+            BusProvider.getInstance().post(new UserInteractionEvent(true, selected_branch));
         }
     }
 }

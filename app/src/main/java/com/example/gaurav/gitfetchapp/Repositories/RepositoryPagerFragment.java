@@ -8,12 +8,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.example.gaurav.gitfetchapp.AccessToken;
 import com.example.gaurav.gitfetchapp.DividerItemDecoration;
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
+import com.example.gaurav.gitfetchapp.Events.EventsJson;
 import com.example.gaurav.gitfetchapp.Repositories.BranchDetails.BranchDetailJson;
+import com.example.gaurav.gitfetchapp.Repositories.Commits.CommitsRepoJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.*;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
 
@@ -36,7 +38,10 @@ public class RepositoryPagerFragment extends Fragment {
     private UserRepoJson userRepoJson;
     private BranchRecyclerAdapter branchRecyclerAdapter;
     private FilesRecyclerAdapter filesRecyclerAdapter;
+    private EventsRecyclerAdapter eventsRecyclerAdapter;
+    private CommitsRecyclerAdapter commitsRecyclerAdapter;
     private String default_branch;
+    private String repo_branch;
 
     private GitHubEndpointInterface gitHubEndpointInterface;
 
@@ -77,17 +82,25 @@ public class RepositoryPagerFragment extends Fragment {
         mPage = getArguments().getInt(ARG_PAGE);
         userRepoJson = getArguments().getParcelable(USER_REPO);
         default_branch = userRepoJson.getDefaultBranch();
+        repo_branch = RepositoryDetailActivityFragment.repoBranch;
         gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
+        fetchPagerData();
+    }
 
+    private void fetchPagerData(){
+        repo_branch = RepositoryDetailActivityFragment.repoBranch;
+        Log.v(TAG,"repo branch in Pager: "+repo_branch);
         if(mPage==1) {
-            branchRecyclerAdapter = new BranchRecyclerAdapter(getContext(), new ArrayList<BranchesJson>());
+            /*branchRecyclerAdapter = new BranchRecyclerAdapter(getContext(), new ArrayList<BranchesJson>(),
+                    default_branch);
             Call<ArrayList<BranchesJson>> call = gitHubEndpointInterface.getUserBranches(
                     userRepoJson.getOwner().getLogin(), userRepoJson.getName());
             call.enqueue(new Callback<ArrayList<BranchesJson>>() {
                 @Override
                 public void onResponse(Call<ArrayList<BranchesJson>> call, Response<ArrayList<BranchesJson>> response) {
                     ArrayList<BranchesJson> item = response.body();
+                    branchRecyclerAdapter.clear();
                     for (BranchesJson elem : item) {
                         branchRecyclerAdapter.addItem(elem);
                     }
@@ -99,12 +112,13 @@ public class RepositoryPagerFragment extends Fragment {
                 public void onFailure(Call<ArrayList<BranchesJson>> call, Throwable t) {
 
                 }
-            });
+            });*/
+
         } else if(mPage == 2) {
             //filesRecyclerAdapter = new FilesRecyclerAdapter(getContext(), new TreeDetailsJson(),
-              //      userRepoJson.getOwner().getLogin(), userRepoJson.getName());
+            //      userRepoJson.getOwner().getLogin(), userRepoJson.getName());
             //Call<BranchDetailJson> call = gitHubEndpointInterface.getBranchDetails(
-              //      userRepoJson.getOwner().getLogin(), userRepoJson.getName(),default_branch);
+            //      userRepoJson.getOwner().getLogin(), userRepoJson.getName(),default_branch);
             /*call.enqueue(new Callback<BranchDetailJson>() {
                 @Override
                 public void onResponse(Call<BranchDetailJson> call, Response<BranchDetailJson> response) {
@@ -120,17 +134,19 @@ public class RepositoryPagerFragment extends Fragment {
                 }
             });*/
             filesRecyclerAdapter = new FilesRecyclerAdapter(getContext(), new ArrayList<RepoContentsJson>(),
-                          userRepoJson.getOwner().getLogin(), userRepoJson.getName(),default_branch);
+                    userRepoJson.getOwner().getLogin(), userRepoJson.getName(),repo_branch);
             Call<ArrayList<RepoContentsJson>> call = gitHubEndpointInterface.getRepoContents(
-                    userRepoJson.getOwner().getLogin(), userRepoJson.getName(),"",default_branch);
+                    userRepoJson.getOwner().getLogin(), userRepoJson.getName(),"",repo_branch);
             call.enqueue(new Callback<ArrayList<RepoContentsJson>>() {
                 @Override
                 public void onResponse(Call<ArrayList<RepoContentsJson>> call, Response<ArrayList<RepoContentsJson>> response) {
-                    ArrayList<RepoContentsJson> item = response.body();
-                    for( RepoContentsJson elem : item)
-                        filesRecyclerAdapter.addItem(elem);
-                    filesRecyclerAdapter.notifyDataSetChanged();
-                    Log.v(TAG,"size: "+item.size());
+                    if(response.isSuccessful()) {
+                        ArrayList<RepoContentsJson> item = response.body();
+                        for (RepoContentsJson elem : item)
+                            filesRecyclerAdapter.addItem(elem);
+                        filesRecyclerAdapter.notifyDataSetChanged();
+                        Log.v(TAG, "size: " + item.size());
+                    }
                 }
 
                 @Override
@@ -138,7 +154,49 @@ public class RepositoryPagerFragment extends Fragment {
 
                 }
             });
+        } else if(mPage == 3){
+            GitHubEndpointInterface endpointInterface = ServiceGenerator.createService(
+                    GitHubEndpointInterface.class, AccessToken.getInstance());
+            commitsRecyclerAdapter = new CommitsRecyclerAdapter(getContext(), new ArrayList<CommitsRepoJson>());
+            Call<ArrayList<CommitsRepoJson>> call = endpointInterface.getRepoCommits(
+                    userRepoJson.getOwner().getLogin(),userRepoJson.getName());
+            call.enqueue(new Callback<ArrayList<CommitsRepoJson>>() {
+                @Override
+                public void onResponse(Call<ArrayList<CommitsRepoJson>> call, Response<ArrayList<CommitsRepoJson>> response) {
+                    if(response.isSuccessful()) {
+                        ArrayList<CommitsRepoJson> list = response.body();
+                        Log.v(TAG,"commits size: "+list.size());
+                        //commitsRecyclerAdapter.clear();
+                        for (CommitsRepoJson elem : list)
+                            commitsRecyclerAdapter.addItem(elem);
+                        commitsRecyclerAdapter.notifyDataSetChanged();
+                    }
+                }
 
+                @Override
+                public void onFailure(Call<ArrayList<CommitsRepoJson>> call, Throwable t) {
+
+                }
+            });
+
+            /*eventsRecyclerAdapter = new EventsRecyclerAdapter(getContext(),new ArrayList<EventsJson>());
+            Call<ArrayList<EventsJson>> call = gitHubEndpointInterface.getRepoEvents(
+                    userRepoJson.getOwner().getLogin(), userRepoJson.getName());
+            call.enqueue(new Callback<ArrayList<EventsJson>>() {
+                @Override
+                public void onResponse(Call<ArrayList<EventsJson>> call, Response<ArrayList<EventsJson>> response) {
+                    ArrayList<EventsJson> item = response.body();
+                    for( EventsJson elem: item){
+                        eventsRecyclerAdapter.addItem(elem);
+                    }
+                    eventsRecyclerAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<EventsJson>> call, Throwable t) {
+
+                }
+            });*/
 
         }
     }
@@ -147,20 +205,25 @@ public class RepositoryPagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_repository_content, container, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        branchesRecyclerView.setLayoutManager(layoutManager);
-        RecyclerView.ItemDecoration itemDecoration = new
-                DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
-        branchesRecyclerView.addItemDecoration(itemDecoration);
+        //if(mPage == 1){
+        //} else {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            branchesRecyclerView.setLayoutManager(layoutManager);
+            RecyclerView.ItemDecoration itemDecoration = new
+                    DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
+            branchesRecyclerView.addItemDecoration(itemDecoration);
 
-        if(mPage == 1)
-            branchesRecyclerView.setAdapter(branchRecyclerAdapter);
-        else if(mPage == 2)
-            branchesRecyclerView.setAdapter(filesRecyclerAdapter);
-
+            //if(mPage == 1)
+            //  branchesRecyclerView.setAdapter(branchRecyclerAdapter);
+            if (mPage == 2)
+                branchesRecyclerView.setAdapter(filesRecyclerAdapter);
+            else if (mPage == 3)
+                //branchesRecyclerView.setAdapter(eventsRecyclerAdapter);
+                branchesRecyclerView.setAdapter(commitsRecyclerAdapter);
+        //}
         return view;
     }
 }

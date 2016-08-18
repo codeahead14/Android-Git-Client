@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey100"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/activity_horizontal_margin">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/commits_title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_horizontal_margin_small"
+            android:text="@string/commit_title"
+            android:textColor="@color/teal900"
+            android:textSize="22sp"
+            android:textStyle="normal"
+            android:fontFamily="sans-serif-condensed" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            card_view:cardCornerRadius="2dp"
+            card_view:cardElevation="2dp"
+            card_view:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bluegrey50"
+                    android:padding="@dimen/item_horizontal_margin_normal">
+
+                    <TextView
+                        android:id="@+id/branch_detail_commit_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/deepPurple900"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/branch_detail_name_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/branch_detail_commit_text"
+                        android:drawableLeft="@drawable/git_branch_10x16dp"
+                        android:drawablePadding="@dimen/item_horizontal_margin_normal"
+                        android:drawableStart="@drawable/git_branch_10x16dp"
+                        android:paddingTop="@dimen/item_horizontal_margin_small"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="true"
+                    android:orientation="horizontal"
+                    android:paddingBottom="@dimen/item_horizontal_margin_normal"
+                    android:paddingEnd="@dimen/item_horizontal_margin_normal"
+                    android:paddingLeft="@dimen/item_horizontal_margin_normal"
+                    android:paddingRight="@dimen/item_horizontal_margin_normal"
+                    android:paddingStart="@dimen/item_horizontal_margin_normal"
+                    android:paddingTop="@dimen/activity_horizontal_margin">
+
+                    <ImageView
+                        android:id="@+id/branch_committer_img"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/border_image_view"
+                        android:contentDescription="@string/branch_committer_img_desc" />
+
+                    <TextView
+                        android:id="@+id/branch_detail_committer_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="fill"
+                        android:layout_weight="1"
+                        android:paddingEnd="@dimen/item_horizontal_margin_small"
+                        android:paddingLeft="@dimen/item_horizontal_margin_small"
+                        android:paddingRight="@dimen/item_horizontal_margin_small"
+                        android:paddingStart="@dimen/item_horizontal_margin_small"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:textColor="@color/black"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/collaborators_title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_horizontal_margin_small"
+            android:text="@string/collaborators_title"
+            android:textColor="@color/teal900"
+            android:textSize="22sp"
+            android:textStyle="normal"
+            android:fontFamily="sans-serif-condensed"/>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            card_view:cardCornerRadius="2dp"
+            card_view:cardElevation="2dp"
+            card_view:cardUseCompatPadding="true">
+
+            <ListView
+                android:id="@+id/collaborators_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

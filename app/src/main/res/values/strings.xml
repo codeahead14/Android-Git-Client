@@ -1,13 +1,19 @@
 <resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">GitFetchApp</string>
     <string name="action_settings">Settings</string>
+    <string name="action_branch">Branch</string>
+    <string name="action_filter">Filter</string>
     <string name="prompt_email">Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in_short">Sign In</string>
     <string name="title_activity_post_login">Repositories</string>
+    <string name="branch_cancel">Cancel</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="commit_title">Commits</string>
+    <string name="collaborators_title">Collaborators</string>
 
     <!-- Language-specific constants -->
     <string name="today">Today</string>
@@ -23,4 +29,65 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_gists_file_source">GistsFileSourceActivity</string>
+
+    <!-- Formatting for User Event Actions -->
+
+    <!-- Fork Event -->
+    <string name="fork_event">forked <b>%1$s</b> </string>
+
+    <!-- Create Event -->>
+    <string name="create_event">created <b>%1$s</b></string>
+
+    <!-- Delete Event -->
+    <string name="delete_event">deleted <b>%1$s</b> at <b>%2$s</b></string>
+
+    <!-- Deployment Event -->
+    <string name="deployment_event">Deployment PlaceHolder Text</string>
+
+    <!-- Gollum Event -->
+    <string name="gollum_event"><b>%1$s</b> <b>%2$s</b> page at <b>%3$s</b></string>
+
+    <!-- Issue Comment Event -->
+    <string name="issue_comment_event"><b>%1$s</b> comment on issue
+        <b>%2$s</b> at <b>%3$s</b></string>
+
+    <!-- Issue Event -->
+    <string name="issue_event"><b>%1$s</b> issue <b>%2$s</b> at <b>%3$s</b></string>
+
+    <!-- Pull Request Event -->
+    <string name="pull_request_event"><b>%1$s</b> pull request <b>%2$s</b> at
+        <b>%3$s</b></string>
+
+    <!-- Push Event -->
+    <string name="push_event"><b>%1$s</b> pushed to <b>%2$s</b></string>
+
+    <!-- Watch Event -->
+    <string name="watch_event"><b>%1$s</b> watching <b>%2$s</b></string>
+    <string name="title_activity_branch_dialog">Branches</string>
+
+    <!-- Committed Action -->
+    <string name="branch_commit"><b>%1$s</b> committed on <b>%2$s</b></string>
+
+    <!-- Gists Formatted Strings  -->
+    <!-- login/filename -->
+    <string name="login_filename">%1$s\/%2$s</string>
+
+    <!-- created gist on -->
+    <string name="created_gist">created on %1$s</string>
+
+    <!-- number of files -->
+    <string name="num_files">%1$s files</string>
+
+    <!-- number of forks -->
+    <string name="num_forks">%1$s forks</string>
+
+    <!-- number of comments -->
+    <string name="num_comments">%1$s comments</string>
+
+    <!-- number of forks -->
+    <string name="num_stars">%1$s stars</string>
+
+    <!-- Add all Content Descriptions below this line -->
+    <string name="branch_committer_img_desc">This is the committer\'s avatar</string>
+
 </resources>

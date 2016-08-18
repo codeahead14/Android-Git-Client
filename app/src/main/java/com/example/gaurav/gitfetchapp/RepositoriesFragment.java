@@ -1,14 +1,19 @@
 package com.example.gaurav.gitfetchapp;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryAdapter;
 import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
@@ -91,6 +96,19 @@ public class RepositoriesFragment extends Fragment {
         repoRecyclerView.setAdapter(mRepositoryAdapter);
         //}
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
+                new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Repositories");
+
+        Window window = getActivity().getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
     }
 
 }

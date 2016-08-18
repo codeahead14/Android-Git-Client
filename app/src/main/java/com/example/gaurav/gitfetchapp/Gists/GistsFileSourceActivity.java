@@ -1,13 +1,17 @@
 package com.example.gaurav.gitfetchapp.Gists;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
@@ -44,8 +48,6 @@ public class GistsFileSourceActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String url = intent.getExtras().getString(Intent.EXTRA_TEXT);
-        //file_source_textview.setText(url);
-
         /* Downloading File Contents - GISTS */
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
