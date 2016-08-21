@@ -47,6 +47,18 @@
         <activity
             android:name=".Repositories.BranchDialogActivity"
             android:label="@string/title_activity_branch_dialog"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".UserInfoActivity"
+            android:label="@string/title_activity_user_info"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SearchGitActivity"
+            android:label="@string/title_activity_search_git"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".UserInfo.PublicUserRepoActivity"
+            android:label="@string/respositories"
             android:theme="@style/Theme.AppCompat.Light.Dialog"/>
     </application>
 

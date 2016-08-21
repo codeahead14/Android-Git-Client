@@ -87,7 +87,7 @@ public class MainActivityFragment extends Fragment {
                         AccessToken.getInstance().setAccessToken(item.getToken());
                     catView.dismiss();
                     Intent intent = new Intent(getActivity(),PostLoginActivity.class);
-                    intent.putExtra(Intent.EXTRA_TEXT,item.getToken());
+                    intent.putExtra(Intent.EXTRA_TEXT,new String[]{userNameField, item.getToken()});
                     startActivity(intent);
                 }
 

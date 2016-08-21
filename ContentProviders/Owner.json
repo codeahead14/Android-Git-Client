@@ -1,0 +1,96 @@
+{
+    "documentation": "Repository Owner Details",
+    "fields": [
+		{
+            "documentation": "Owner login",
+            "name": "login",
+            "type": "String",
+        },
+        {
+            "documentation": "Owner id",
+            "name": "id",
+            "type": "Integer",
+        },
+        {
+            "documentation": "Owner Avatar Url",
+            "name": "avatar_url",
+            "type": "String",
+        },	
+		{
+            "documentation": "Owner Gravatar Id",
+            "name": "gravatar_id",
+            "type": "String",
+        },
+        {
+            "documentation": "Owner Url",
+            "name": "url",
+            "type": "String",
+        },		
+        {
+            "documentation": "Owner Html Url",
+            "name": "html_url",
+            "type": "String",
+        },	
+        {
+            "documentation": "Owner Followers Url",
+            "name": "followers_url",
+            "type": "String",
+        },
+        {
+            "documentation": "Owner Following Url",
+            "name": "following_url",
+            "type": "String",
+        },
+        {
+            "documentation": "Owner Gists Url",
+            "name": "gists_url",
+            "type": "String",
+        },
+        {
+            "documentation": "Owner Starred Url",
+            "name": "starred_url",
+            "type": "String",
+        },		
+		{
+            "documentation": "Owner Subscription Url",
+            "name": "subscriptions_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Owner Organizations Url",
+            "name": "organizations_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Owner Repos Url",
+            "name": "repos_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Owner Events Url",
+            "name": "events_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Owner Received Events Url",
+            "name": "received_events_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Owner Type",
+            "name": "type",
+            "type": "String",
+        },
+        {
+            "name": "siteAdmin",
+            "type": "Boolean",
+        }
+	],
+
+    "constraints": [
+        {
+            "name": "unique_name",
+            "definition": "UNIQUE (login) ON CONFLICT REPLACE"
+        }
+    ]
+}

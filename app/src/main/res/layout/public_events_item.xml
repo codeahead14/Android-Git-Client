@@ -11,16 +11,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/white">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:paddingTop="@dimen/item_verticl_margin_normal"
-            android:baselineAligned="true"
-            android:background="@color/white">
+            android:baselineAligned="true">
 
             <ImageView
                 android:id="@+id/git_avatar_img"
@@ -41,8 +39,9 @@
                 android:paddingLeft="@dimen/item_horizontal_margin_small"
                 android:paddingEnd="@dimen/item_horizontal_margin_small"
                 android:paddingRight="@dimen/item_horizontal_margin_small"
-                android:textSize="16sp"
-                android:textColor="@color/teal700"/>
+                android:textSize="18sp"
+                android:textColor="@color/teal700"
+                android:background="?android:attr/selectableItemBackground"/>
 
         </LinearLayout>
 

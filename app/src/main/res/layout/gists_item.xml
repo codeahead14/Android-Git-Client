@@ -12,101 +12,138 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/login_filename_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="@color/deepPurple800" />
+            android:orientation="horizontal"
+            android:baselineAligned="true"
+            android:paddingStart="@dimen/item_horizontal_margin_normal"
+            android:paddingLeft="@dimen/item_horizontal_margin_normal"
+            android:paddingRight="@dimen/item_horizontal_margin_normal"
+            android:paddingEnd="@dimen/item_horizontal_margin_normal"
+            android:paddingTop="@dimen/item_horizontal_margin_small"
+            android:paddingBottom="4dp">
 
             <ImageView
                 android:id="@+id/login_avatar_img"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/border_image_view"/>
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:background="@drawable/border_image_view"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:id="@+id/login_filename_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/item_horizontal_margin_small"
+                android:paddingLeft="@dimen/item_horizontal_margin_small"
+                android:paddingRight="@dimen/item_horizontal_margin_small"
+                android:paddingEnd="@dimen/item_horizontal_margin_small"
+                android:textSize="20sp"
+                android:textColor="@color/deepPurple900"
+                android:gravity="fill"
+                android:layout_gravity="center"
+                android:background="?android:attr/selectableItemBackground"/>
+
         </LinearLayout>
 
         <TextView
             android:id="@+id/gist_created_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"/>
+            android:textSize="14sp"
+            android:textColor="@color/bluegrey900"
+            android:paddingStart="@dimen/item_horizontal_margin_normal"
+            android:paddingLeft="@dimen/item_horizontal_margin_normal"
+            android:paddingRight="@dimen/item_horizontal_margin_normal"
+            android:paddingEnd="@dimen/item_horizontal_margin_normal"
+            android:paddingBottom="@dimen/item_horizontal_margin_small"/>
 
         <TextView
             android:id="@+id/gist_description_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/teal500"/>
+            android:textSize="16sp"
+            android:textColor="@color/teal700"
+            android:paddingStart="@dimen/item_horizontal_margin_normal"
+            android:paddingLeft="@dimen/item_horizontal_margin_normal"
+            android:paddingRight="@dimen/item_horizontal_margin_normal"
+            android:paddingEnd="@dimen/item_horizontal_margin_normal"
+            android:paddingTop="@dimen/item_horizontal_margin_small"
+            android:paddingBottom="@dimen/item_horizontal_margin_normal"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="@dimen/item_horizontal_margin_normal"
+            android:background="@color/grey100">
 
             <TextView
                 android:id="@+id/gist_files_text"
-                android:layout_weight="1"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:drawableStart="@drawable/file_code_12x16"
                 android:drawableLeft="@drawable/file_code_12x16"
-                android:drawablePadding="@dimen/item_horizontal_margin_small"/>
+                android:drawablePadding="@dimen/item_horizontal_margin_small"
+                android:textColor="@color/black"
+                android:background="@android:color/transparent"
+                android:paddingRight="@dimen/item_horizontal_margin_normal"
+                android:paddingEnd="@dimen/item_horizontal_margin_normal"
+                android:paddingTop="@dimen/item_horizontal_margin_small"
+                android:paddingBottom="@dimen/item_horizontal_margin_small"/>
 
             <TextView
                 android:id="@+id/gist_forks_text"
-                android:layout_weight="1"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:drawableStart="@drawable/repo_forked_18x24"
-                android:drawableLeft="@drawable/repo_forked_18x24"
-                android:drawablePadding="@dimen/item_horizontal_margin_small"/>
+                android:drawableStart="@drawable/repo_forked_10x16"
+                android:drawableLeft="@drawable/repo_forked_10x16"
+                android:drawablePadding="@dimen/item_horizontal_margin_small"
+                android:textColor="@color/black"
+                android:padding="@dimen/item_horizontal_margin_normal"/>
 
             <TextView
                 android:id="@+id/gist_stars_text"
-                android:layout_weight="1"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:drawableStart="@drawable/star_black_12x14"
-                android:drawableLeft="@drawable/star_black_12x14"
-                android:drawablePadding="@dimen/item_horizontal_margin_small"/>
+                android:drawableStart="@drawable/star_14x16"
+                android:drawableLeft="@drawable/star_14x16"
+                android:drawablePadding="@dimen/item_horizontal_margin_small"
+                android:textColor="@color/black"
+                android:padding="@dimen/item_horizontal_margin_normal"/>
 
             <TextView
                 android:id="@+id/gist_comments_text"
-                android:layout_weight="1"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:drawableStart="@drawable/comment_black_12x12"
-                android:drawableLeft="@drawable/comment_black_12x12"
-                android:drawablePadding="@dimen/item_horizontal_margin_small"/>
+                android:drawableStart="@drawable/comment_14x14"
+                android:drawableLeft="@drawable/comment_14x14"
+                android:drawablePadding="@dimen/item_horizontal_margin_small"
+                android:textColor="@color/black"
+                android:padding="@dimen/item_horizontal_margin_normal"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/gists_file_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/gists_file_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone"/>
-
-    </LinearLayout>
-
 </android.support.v7.widget.CardView>

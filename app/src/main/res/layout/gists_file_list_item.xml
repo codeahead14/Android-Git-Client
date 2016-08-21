@@ -13,6 +13,11 @@
         android:id="@+id/gist_filename_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:fontFamily="sans-serif"/>
+        android:textSize="16sp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/black"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableLeft="@drawable/file_code_12x16"
+        android:drawableStart="@drawable/file_code_12x16"
+        android:drawablePadding="@dimen/item_horizontal_margin_normal"/>
 </LinearLayout>

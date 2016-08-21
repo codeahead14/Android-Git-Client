@@ -1,29 +1,39 @@
 package com.example.gaurav.gitfetchapp.Gists;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.gaurav.gitfetchapp.DividerItemDecoration;
-import com.example.gaurav.gitfetchapp.Feeds.TimelineJson.Content;
+import com.example.gaurav.gitfetchapp.CircleTransform;
+import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
+import com.example.gaurav.gitfetchapp.Repositories.FileViewActivity;
+import com.example.gaurav.gitfetchapp.Repositories.RepositoryDetailActivity;
+import com.example.gaurav.gitfetchapp.ServiceGenerator;
+import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import butterknife.BindView;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by GAURAV on 10-08-2016.
@@ -34,11 +44,16 @@ public class GistsRecyclerAdapter extends
     private ArrayList<GistsJson> gistsJsons;
     private GistsFileRecyclerAdapter gistsFileAdapter;
     private Context mContext;
+    private String firstFileUrl;
+    private GitHubEndpointInterface gitHubEndpointInterface;
+    private Filename objects[];
+    private boolean fileListExpanded;
+    private Typeface tf_1, tf_2;
 
     public GistsRecyclerAdapter(Context context, ArrayList<GistsJson> gistsJson){
         this.mContext = context;
         this.gistsJsons = gistsJson;
-        Log.v(TAG,"Constructor call");
+        this.fileListExpanded = false;
     }
 
     public void addItem(GistsJson item){
@@ -63,28 +78,42 @@ public class GistsRecyclerAdapter extends
         Map<String, Filename> filenameMap = gistsJsons.get(position).getFiles();
         Iterator it = filenameMap.entrySet().iterator();
         String[] fileNames = new String[filenameMap.size()];
+        objects = new Filename[filenameMap.size()];
         int count=0;
         gistsFileAdapter = new GistsFileRecyclerAdapter(mContext,new ArrayList<Filename>());
-        //holder.gist_file_recyclerview.setAdapter(gistsFileAdapter);
+        holder.gist_file_recyclerview.setAdapter(gistsFileAdapter);
         while(it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             fileNames[count] = (String)pair.getKey();
             //gistsFileAdapter.addItem((String)pair.getKey());
-            Filename obj = (Filename)pair.getValue();
-            gistsFileAdapter.addItem(obj);
-            Log.v(TAG,"filename: = "+ obj.getFilename());
+            objects[count] = (Filename)pair.getValue();
+            gistsFileAdapter.addItem(objects[count]);
+            Log.v(TAG,"filename: = "+ objects[count].getFilename());
+            count++;
         }
+        firstFileUrl = objects[0].getRawUrl();
+        Log.v(TAG,gistsJsons.get(position).getOwner().getAvatarUrl());
 
-        holder.login_filename_textView.setText(String.format(mContext.getResources().getString(
+        Picasso.with(mContext)
+                .load(gistsJsons.get(position).getOwner().getAvatarUrl())
+                .transform(new CircleTransform())
+                .into(holder.login_avatar_imageView);
+
+        holder.login_filename_button.setText(String.format(mContext.getResources().getString(
                 R.string.login_filename),gistsJsons.get(position).getOwner().getLogin(),
                 fileNames[0]));
-        holder.gist_created_textView.setText(String.format(mContext.getString(R.string.created_gist),
-                gistsJsons.get(position).getCreatedAt()));
+        holder.login_filename_button.setTypeface(tf_1);
+        Spanned text = Html.fromHtml("created on "+"<b>"+gistsJsons.get(position).getCreatedAt()+"</b>");
+        holder.gist_created_textView.setText(text);
         holder.gist_description_text_view.setText(gistsJsons.get(position).getDescription());
         holder.gist_file_textView.setText(String.format(mContext.getResources().getString(
                 R.string.num_files),fileNames.length));
         holder.gist_comments_textView.setText(String.format(mContext.getResources().
                 getString(R.string.num_comments),gistsJsons.get(position).getComments()));
+        holder.gist_forks_textView.setText(String.format(mContext.getResources().getString(R.string.num_forks),
+                0));
+        holder.gist_stars_textView.setText(String.format(mContext.getResources().getString(R.string.num_stars),
+                0));
     }
 
     @Override
@@ -95,25 +124,77 @@ public class GistsRecyclerAdapter extends
         return 0;
     }
 
+    private void fetchFileContents(String download_url){
+        gitHubEndpointInterface = ServiceGenerator.createService(GitHubEndpointInterface.class);
+        Call<ResponseBody> call = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "server contacted and has file");
+                    BufferedReader reader = null;
+                    StringBuilder sb = new StringBuilder();
+                    try{
+                        reader = new BufferedReader(new InputStreamReader(
+                                response.body().byteStream()));
+                        String line;
+                        try{
+                            while ((line=reader.readLine())!=null) {
+                                sb.append(line);
+                                sb.append("\n");
+                            }
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        };
+                    }finally {
+
+                    }
+                    Log.v(TAG,sb.toString());
+                    //file_name_textview.setText(sb.toString());
+                    Intent intent = new Intent(mContext,FileViewActivity.class);
+                    intent.putExtra(Intent.EXTRA_TEXT,sb.toString());
+                    mContext.startActivity(intent);
+                    //boolean writtenToDisk = writeResponseBodyToDisk(response.body());
+                    //Log.d(TAG, "file download was a success? " + writtenToDisk);
+                } else {
+                    Log.d(TAG, "server contact failed");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(TAG, "error");
+            }
+        });
+    }
+
     public class GistsRecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         //@BindView(R.id.gist_description_text) TextView gist_description_text_view;
 
         private TextView gist_description_text_view;
-        private TextView login_filename_textView;
+        private TextView login_filename_button;
         private TextView gist_created_textView;
         private TextView gist_file_textView;
         private TextView gist_forks_textView;
         private TextView gist_comments_textView;
         private TextView gist_stars_textView;
+        private ImageView login_avatar_imageView;
         private RecyclerView gist_file_recyclerview;
 
         public GistsRecyclerViewHolder(View view){
             super(view);
-            Typeface tf_1 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/RobotoCondensed-Regular.ttf");
-            Typeface tf_2 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/Roboto-Light.ttf");
+            tf_1 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/RobotoCondensed-Regular.ttf");
+            tf_2 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/Roboto-Light.ttf");
 
-            login_filename_textView = (TextView) view.findViewById(R.id.login_filename_text);
-            login_filename_textView.setTypeface(tf_1);
+            login_filename_button = (TextView) view.findViewById(R.id.login_filename_button);
+            //login_filename_button.setTypeface(tf_1);
+            login_filename_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.v(TAG,"button click");
+                    fetchFileContents(firstFileUrl);
+                }
+            });
             gist_created_textView =  (TextView) view.findViewById(R.id.gist_created_text);
             gist_created_textView.setTypeface(tf_2);
             gist_file_textView =  (TextView) view.findViewById(R.id.gist_files_text);
@@ -122,6 +203,7 @@ public class GistsRecyclerAdapter extends
             gist_stars_textView = (TextView) view.findViewById(R.id.gist_stars_text);
             gist_description_text_view = (TextView) view.findViewById(R.id.gist_description_text);
             gist_description_text_view.setTypeface(tf_2);
+            login_avatar_imageView = (ImageView) view.findViewById(R.id.login_avatar_img);
 
             gist_file_recyclerview = (RecyclerView) view.findViewById(R.id.gists_file_recyclerview);
             LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -131,11 +213,24 @@ public class GistsRecyclerAdapter extends
             //RecyclerView.ItemDecoration itemDecoration = new
               //      DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
             //  gist_file_recyclerview.addItemDecoration(itemDecoration);
+
+            gist_file_textView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            Log.v(TAG, "Inside onClick");
+            //intent.putExtra("FILE_LIST")
+            if (fileListExpanded) {
+                gist_file_recyclerview.setVisibility(View.GONE);
+                fileListExpanded = false;
+            }else{
+                fileListExpanded = true;
+                gist_file_recyclerview.setVisibility(View.VISIBLE);
+            }
+
+            /*Intent intent = new Intent(mContext,FileListViewActivity.class);
+            intent.putExtra(Intent.EXTRA_TEXT, objects[getAdapterPosition()]);
+            mContext.startActivity(intent);*/
         }
     }
 }

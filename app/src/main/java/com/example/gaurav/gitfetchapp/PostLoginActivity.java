@@ -1,6 +1,9 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -16,18 +19,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.gaurav.gitfetchapp.UserInfo.User;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PostLoginActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GistsFragment.OnFragmentInteractionListener, PublicEventsFragment.OnPublicEventsFragmentInteractionListener {
-
+    private static final String TAG = PostLoginActivity.class.getName();
+    public static final String USER_DETAILS = "user_details";
     private Unbinder unbinder;
+    private static User userDetails;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.nav_view) NavigationView navigationView;
@@ -37,19 +51,76 @@ public class PostLoginActivity extends AppCompatActivity
                 .setAction("Action", null).show();
     }
 
+    @OnClick(R.id.search_fab) void onSearchFabClick(View view){
+        Intent searchIntent = new Intent(this,SearchGitActivity.class);
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(PostLoginActivity.this,view.findViewById(R.id.search_fab),
+                        getString(R.string.searchIconTransition));
+        startActivity(searchIntent, options.toBundle());
+        //startActivity(searchIntent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_login);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
+        final Context context = this;
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         navigationView.setNavigationItemSelectedListener(this);
+
+        Intent intent = getIntent();
+        String[] intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
+        View headerView = navigationView.getHeaderView(0);
+        TextView header_userName_textView = (TextView) headerView.findViewById(R.id.header_user_name_text);
+        header_userName_textView.setText(intentData[0]);
+        final TextView header_userEmail_textView = (TextView) headerView.findViewById(R.id.header_user_email_text);
+        final ImageView header_icon = (ImageView) headerView.findViewById(R.id.header_icon);
+        GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
+                                    GitHubEndpointInterface.class);
+        Call<User> call = gitHubEndpointInterface.getUserDetails("hemanth");//intentData[0]);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful()){
+                    User item = response.body();
+                    userDetails = item;
+                    Log.v(TAG,"userDetails: "+userDetails.getHtmlUrl());
+                    if(item.getEmail() == null) {
+                        header_userEmail_textView.setText(item.getHtmlUrl());
+                        Log.v(TAG,"html url: "+item.getHtmlUrl());
+                    }else
+                        header_userEmail_textView.setText((String)item.getEmail());
+
+                    Picasso.with(context)
+                            .load(item.getAvatarUrl())
+                            .transform(new CircleTransform())
+                            .into(header_icon);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent userIntent = new Intent(context,UserInfoActivity.class);
+                userIntent.putExtra(USER_DETAILS,userDetails);
+                //Log.v(TAG,"onCLICK userDetails: "+userDetails.getAvatarUrl());
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(PostLoginActivity.this, (ImageView)header_icon, "user_avatar_transition");
+                context.startActivity(userIntent, options.toBundle());
+                overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
+            }
+        });
 
         Fragment fragment = new RepositoriesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

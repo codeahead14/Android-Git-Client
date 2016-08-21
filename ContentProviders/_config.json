@@ -1,0 +1,13 @@
+{
+    "syntaxVersion": 3,
+    "projectPackageId": "com.example.gaurav.gitfetchapp",
+    "authority": "com.example.gaurav.gitfetchapp.provider",
+    "providerJavaPackage": "com.example.gaurav.gitfetchapp.provider",
+    "providerClassName": "RepositoryContentProvider",
+    "sqliteOpenHelperClassName": "RepositorySQLiteOpenHelper",
+    "sqliteOpenHelperCallbacksClassName": "RepositorySQLiteOpenHelperCallbacks",
+    "databaseFileName": "repository.db",
+    "databaseVersion": 1,
+    "enableForeignKeys": true,
+    "useAnnotations": true
+}

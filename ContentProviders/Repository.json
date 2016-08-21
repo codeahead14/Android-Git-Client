@@ -1,0 +1,352 @@
+{
+    "documentation": "Repository details with Owner table as foreignKey. Permissions table skipped",
+    "fields": [
+	    {
+            "name": "main_owner_id",
+            "type": "Long",
+            "nullable": false,
+            "foreignKey": {
+                "table": "owner",
+                "onDelete": "CASCADE"
+            }
+        },
+		{
+            "documentation": "Repository Id",
+            "name": "id",
+            "type": "Integer",
+        },
+        {
+            "documentation": "Repository name",
+            "name": "name",
+            "type": "String",
+        },
+        {
+            "documentation": "Repository Full name",
+            "name": "full_name",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository isPrivate? ",
+            "name": "private",
+            "type": "Boolean",
+        },
+		{
+            "documentation": "Repository HTML Url",
+            "name": "html_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository Description",
+            "name": "description",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository isFork?",
+            "name": "fork",
+            "type": "Boolean",
+        },
+		{
+            "documentation": "Repository Full name",
+            "name": "full_name",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository url",
+            "name": "url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository Forks url",
+            "name": "forks_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository Key url",
+            "name": "keys_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository Collaborators Url",
+            "name": "collaborators_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository Teams Url",
+            "name": "teams_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository issue_events_url",
+            "name": "issue_events_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository events_url",
+            "name": "events_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository assignees_url",
+            "name": "assignees_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository branches_url",
+            "name": "branches_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository tags_url",
+            "name": "tags_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository blobs_url",
+            "name": "blobs_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository git_tags_url",
+            "name": "git_tags_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository git_refs_url",
+            "name": "git_refs_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository trees_url",
+            "name": "trees_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository statuses_url",
+            "name": "statuses_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository languages_url",
+            "name": "languages_url",
+            "type": "String",
+        },	
+		{
+            "documentation": "Repository stargazers_url",
+            "name": "stargazers_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository contributors_url",
+            "name": "contributors_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository subscribers_url",
+            "name": "subscribers_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository subscription_url",
+            "name": "subscription_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository commits_url",
+            "name": "commits_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository git_commits_url",
+            "name": "git_commits_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository comments_url",
+            "name": "comments_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository issue_comment_url",
+            "name": "issue_comment_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository contents_url",
+            "name": "contents_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository compare_url",
+            "name": "compare_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository merges_url",
+            "name": "merges_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository archive_url",
+            "name": "archive_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository downloads_url",
+            "name": "downloads_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository issues_url",
+            "name": "issues_url",
+            "type": "String",
+        }	,
+		{
+            "documentation": "Repository pulls_url",
+            "name": "pulls_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository milestones_url",
+            "name": "milestones_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository notifications_url",
+            "name": "notifications_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository labels_url",
+            "name": "labels_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository releases_url",
+            "name": "releases_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository deployments_url",
+            "name": "deployments_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository created_at",
+            "name": "created_at",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository pushed_at",
+            "name": "pushed_at",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository git_url",
+            "name": "git_url",
+            "type": "String",
+        }		,
+		{
+            "documentation": "Repository ssh_url",
+            "name": "ssh_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository clone_url",
+            "name": "clone_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository svn_url",
+            "name": "svn_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository homepage",
+            "name": "homepage",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository size",
+            "name": "size",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository stargazers_count",
+            "name": "stargazers_count",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository watchers_count",
+            "name": "watchers_count",
+            "type": "String",
+        }	,
+		{
+            "documentation": "Repository language",
+            "name": "language",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository has_issues",
+            "name": "has_issues",
+            "type": "Boolean",
+        },
+		{
+            "documentation": "Repository has_downloads",
+            "name": "has_downloads",
+            "type": "Boolean",
+        },
+		{
+            "documentation": "Repository has_wiki",
+            "name": "has_wiki",
+            "type": "Boolean",
+        },
+		{
+            "documentation": "Repository has_pages",
+            "name": "has_pages",
+            "type": "Boolean",
+        },
+		{
+            "documentation": "Repository forks_count",
+            "name": "forks_count",
+            "type": "Integer",
+        },
+		{
+            "documentation": "Repository mirror_url",
+            "name": "mirror_url",
+            "type": "String",
+        },
+		{
+            "documentation": "Repository open_issues_count",
+            "name": "open_issues_count",
+            "type": "Integer",
+        },
+		{
+            "documentation": "Repository forks",
+            "name": "forks",
+            "type": "Integer",
+        },
+		{
+            "documentation": "Repository open_issues",
+            "name": "open_issues",
+            "type": "Integer",
+        },
+		{
+            "documentation": "Repository watchers",
+            "name": "watchers",
+            "type": "Integer",
+        },
+		{
+            "documentation": "Repository default_branch",
+            "name": "default_branch",
+            "type": "String",
+        }
+		
+	],
+
+    "constraints": [
+        {
+            "name": "unique_name",
+            "definition": "UNIQUE (name) ON CONFLICT REPLACE"
+        }
+    ]
+}

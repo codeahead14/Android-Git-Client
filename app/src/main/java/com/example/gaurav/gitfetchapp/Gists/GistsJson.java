@@ -1,11 +1,14 @@
 package com.example.gaurav.gitfetchapp.Gists;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;
 
-public class GistsJson {
+public class GistsJson implements Parcelable {
 
     @SerializedName("url")
     @Expose
@@ -375,4 +378,13 @@ public class GistsJson {
         this.truncated = truncated;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+    }
 }

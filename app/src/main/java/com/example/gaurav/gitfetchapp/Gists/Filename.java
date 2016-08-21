@@ -1,9 +1,12 @@
 package com.example.gaurav.gitfetchapp.Gists;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Filename {
+public class Filename implements Parcelable {
 
     @SerializedName("filename")
     @Expose
@@ -111,4 +114,37 @@ public class Filename {
         this.size = size;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    protected Filename(Parcel in) {
+        filename = in.readString();
+        type = in.readString();
+        language = in.readString();
+        rawUrl = in.readString();
+        size = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(filename);
+        parcel.writeString(type);
+        parcel.writeString(language);
+        parcel.writeString(rawUrl);
+        parcel.writeInt(size);
+    }
+
+    public static final Parcelable.Creator<Filename> CREATOR = new Parcelable.Creator<Filename>() {
+        @Override
+        public Filename createFromParcel(Parcel in) {
+            return new Filename(in);
+        }
+
+        @Override
+        public Filename[] newArray(int size) {
+            return new Filename[size];
+        }
+    };
 }

@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.gaurav.gitfetchapp.AccessToken;
+import com.example.gaurav.gitfetchapp.CircleTransform;
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.BranchDetails.BranchDetailJson;
@@ -170,6 +171,7 @@ public class RepositoryBranchPagerFragment extends Fragment {
         Picasso.with(getContext())
                 .load(item.getCommit().getCommitter().getAvatarUrl())
                 .resize(14,14)
+                .transform(new CircleTransform())
                 .into(branch_committer_imageView);
     }
 }

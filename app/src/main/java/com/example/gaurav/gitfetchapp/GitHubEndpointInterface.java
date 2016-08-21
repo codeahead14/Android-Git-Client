@@ -8,9 +8,12 @@ import com.example.gaurav.gitfetchapp.Repositories.BranchesJson;
 import com.example.gaurav.gitfetchapp.Events.EventsJson;
 import com.example.gaurav.gitfetchapp.Repositories.CollaboratorsJson;
 import com.example.gaurav.gitfetchapp.Repositories.Commits.CommitsRepoJson;
+import com.example.gaurav.gitfetchapp.Repositories.StarredRepoJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.RepoContentsJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.TreeDetailsJson;
 import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
+import com.example.gaurav.gitfetchapp.SearchGit.SearchGitJson;
+import com.example.gaurav.gitfetchapp.UserInfo.User;
 
 import java.util.ArrayList;
 
@@ -34,6 +37,9 @@ public interface GitHubEndpointInterface {
 
     @POST("/authorizations")
     Call<LoginJson> getLoginCode(@Body LoginPost post);
+
+    @GET("/users/{username}")
+    Call<User> getUserDetails(@Path("username") String username);
 
     @GET("/user/repos")
     Call<ArrayList<UserRepoJson>> getUserRepositories();
@@ -86,6 +92,10 @@ public interface GitHubEndpointInterface {
     @GET
     Call<Feed> getTimeline(@Url String url);
 
+    // For fetching Starred Repo details
+    @GET
+    Call<ArrayList<StarredRepoJson>> getUserStarredRepos(@Url String url);
+
     // For accessing Gists
     @GET("/users/{username}/gists")
     Call<ArrayList<GistsJson>> getPrivateGists(@Path("username") String username);
@@ -96,4 +106,12 @@ public interface GitHubEndpointInterface {
     Call<AccessToken> getAccessToken(@Query("client_id") String id,
                                @Query("client_secret") String client_secret,
                                @Query("code") String code);
+
+    // For fetching search Queries
+    @GET("search/users")
+    Call<SearchGitJson> getSearchResults(@Query("q") String query);
+
+    // For fetching public user repositories
+    @GET
+    Call<ArrayList<UserRepoJson>> getPublicRepos(@Url String url);
 }
