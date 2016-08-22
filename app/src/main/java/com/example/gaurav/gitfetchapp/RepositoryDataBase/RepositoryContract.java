@@ -1,5 +1,7 @@
 package com.example.gaurav.gitfetchapp.RepositoryDataBase;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
@@ -26,6 +28,13 @@ public class RepositoryContract {
     }
 
     public static final class OwnerEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+              BASE_CONTENT_URI.buildUpon().appendPath(PATH_OWNER).build();
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_OWNER;
+        public static final String CONTENT_ITEM_TYPE =
+                    ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_OWNER;
+
         public static final String TABLE_NAME = "owner";
 
         public static final String COLUMN_ID = "id";
@@ -43,11 +52,23 @@ public class RepositoryContract {
         public static final String COLUMN_REPOS_URL = "repos_url";
         public static final String COLUMN_EVENTS_URL = "events_url";
         public static final String COLUMN_RECEIVED_EVENTS_URL = "received_events_url";
-        public static final String COLUMN_TYPE = "Type";
+        public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_SITE_ADMIN = "siteAdmin";
+
+        public static Uri buildOwnerUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI,id);
+        }
     }
 
     public static final class RepositoryEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_REPOSITORY).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REPOSITORY;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REPOSITORY;
+
 
         public static final String TABLE_NAME = "repository";
 
@@ -117,5 +138,26 @@ public class RepositoryContract {
         public static final String COLUMN_OPEN_ISSUES = "open_issues";
         public static final String COLUMN_WATCHERS = "watchers";
         public static final String COLUMN_DEFAULT_BRANCH = "default_branch";
+
+        public static Uri buildRepositoryUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildRepositoryUriWithOwner(String ownerName){
+            return CONTENT_URI.buildUpon().appendPath(ownerName).build();
+        }
+
+        public static Uri buildRepositoryUriWithOwnerAndRepoName(String ownerName, String repoName){
+            return CONTENT_URI.buildUpon().appendPath(ownerName)
+                    .appendPath(repoName).build();
+        }
+
+        public static String getOwnerFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static String getRepoNameFromUri(Uri uri) {
+            return uri.getPathSegments().get(2);
+        }
     }
 }

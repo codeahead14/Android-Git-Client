@@ -43,16 +43,15 @@ public class RepositoryDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase){
-        final String SQL_CREATE_OWNER_TABLE = "Create TABLE " + RepositoryEntry.TABLE_NAME + " (" +
-                OwnerEntry._ID + " INTEGER PRIMARY, "
+        final String SQL_CREATE_OWNER_TABLE = "CREATE TABLE " + OwnerEntry.TABLE_NAME + " (" +
+                OwnerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + OwnerEntry.COLUMN_LOGIN + " TEXT UNIQUE NOT NULL, "
                 + OwnerEntry.COLUMN_ID + " INTEGER NOT NULL, "
                 + OwnerEntry.COLUMN_AVATAR_URL + " TEXT, "
                 + OwnerEntry.COLUMN_GRAVATAR_ID + " TEXT, "
                 + OwnerEntry.COLUMN_URL + " TEXT, "
                 + OwnerEntry.COLUMN_HTML_URL + " TEXT, "
-                + OwnerEntry.COLUMN_HTML_URL + " TEXT, "
-                + OwnerEntry.COLUMN_FOLLOWERS_URL + " OwnerEntry, "
+                + OwnerEntry.COLUMN_FOLLOWERS_URL + " TEXT, "
                 + OwnerEntry.COLUMN_FOLLOWING_URL + " TEXT, "
                 + OwnerEntry.COLUMN_GISTS_URL + " TEXT, "
                 + OwnerEntry.COLUMN_STARRED_URL + " TEXT, "
@@ -69,8 +68,9 @@ public class RepositoryDBHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_REPOSITORY_TABLE = "Create TABLE " + RepositoryEntry.TABLE_NAME + " (" +
                 RepositoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + RepositoryEntry.COLUMN_ID + " INTEGER NOT NULL, "
+                + RepositoryEntry.COLUMN_OWNER_KEY + " INTEGER NOT NULL, "
                 + RepositoryEntry.COLUMN_NAME + " TEXT NOT NULL, "
-                + RepositoryEntry.COLUMN_FULL_NAME + " TEXT NOT NULL, "
+                + RepositoryEntry.COLUMN_FULL_NAME + " TEXT, "
                 + RepositoryEntry.COLUMN_IS_PRIVATE + " BOOLEAN, "
                 + RepositoryEntry.COLUMN_HTML_URL + " TEXT, "
                 + RepositoryEntry.COLUMN_DESCRIPTION + " TEXT, "

@@ -1,6 +1,7 @@
 package com.example.gaurav.gitfetchapp.Repositories;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,7 @@ import retrofit2.Response;
 public class RepositoryPagerFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final String USER_REPO = "USER_REPO";
+    private static final String REPOSITORY_PAGER_STATE = "repo_pager_state";
     private static final String TAG = RepositoryPagerFragment.class.getName();
     private int mPage;
     private UserRepoJson userRepoJson;
@@ -42,6 +44,8 @@ public class RepositoryPagerFragment extends Fragment {
     private CommitsRecyclerAdapter commitsRecyclerAdapter;
     private String default_branch;
     private String repo_branch;
+    private Parcelable state, mRecyclerState;
+    private LinearLayoutManager layoutManager;
 
     private GitHubEndpointInterface gitHubEndpointInterface;
 
@@ -55,26 +59,6 @@ public class RepositoryPagerFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    /*private void fetchTree(String sha){
-        String owner = userRepoJson.getOwner().getLogin();
-        String repo = userRepoJson.getName();
-        Call<TreeDetailsJson> call = gitHubEndpointInterface.getRepoTree(owner,repo,"trees",sha);
-        call.enqueue(new Callback<TreeDetailsJson>() {
-            @Override
-            public void onResponse(Call<TreeDetailsJson> call, Response<TreeDetailsJson> response) {
-                TreeDetailsJson item = response.body();
-                for(com.example.gaurav.gitfetchapp.Repositories.TreeDetails.Tree elem : item.getTree())
-                    filesRecyclerAdapter.addItem(elem);
-                filesRecyclerAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<TreeDetailsJson> call, Throwable t) {
-
-            }
-        });
-    }*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,30 +75,7 @@ public class RepositoryPagerFragment extends Fragment {
     private void fetchPagerData(){
         repo_branch = RepositoryDetailActivityFragment.repoBranch;
         Log.v(TAG,"repo branch in Pager: "+repo_branch);
-        if(mPage==1) {
-            /*branchRecyclerAdapter = new BranchRecyclerAdapter(getContext(), new ArrayList<BranchesJson>(),
-                    default_branch);
-            Call<ArrayList<BranchesJson>> call = gitHubEndpointInterface.getUserBranches(
-                    userRepoJson.getOwner().getLogin(), userRepoJson.getName());
-            call.enqueue(new Callback<ArrayList<BranchesJson>>() {
-                @Override
-                public void onResponse(Call<ArrayList<BranchesJson>> call, Response<ArrayList<BranchesJson>> response) {
-                    ArrayList<BranchesJson> item = response.body();
-                    branchRecyclerAdapter.clear();
-                    for (BranchesJson elem : item) {
-                        branchRecyclerAdapter.addItem(elem);
-                    }
-                    branchRecyclerAdapter.notifyDataSetChanged();
-                    Log.v(TAG, "response: " + item.size());
-                }
-
-                @Override
-                public void onFailure(Call<ArrayList<BranchesJson>> call, Throwable t) {
-
-                }
-            });*/
-
-        } else if(mPage == 2) {
+        if(mPage == 2) {
             //filesRecyclerAdapter = new FilesRecyclerAdapter(getContext(), new TreeDetailsJson(),
             //      userRepoJson.getOwner().getLogin(), userRepoJson.getName());
             //Call<BranchDetailJson> call = gitHubEndpointInterface.getBranchDetails(
@@ -209,7 +170,7 @@ public class RepositoryPagerFragment extends Fragment {
 
         //if(mPage == 1){
         //} else {
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            layoutManager = new LinearLayoutManager(getActivity());
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             branchesRecyclerView.setLayoutManager(layoutManager);
             RecyclerView.ItemDecoration itemDecoration = new
@@ -218,12 +179,43 @@ public class RepositoryPagerFragment extends Fragment {
 
             //if(mPage == 1)
             //  branchesRecyclerView.setAdapter(branchRecyclerAdapter);
-            if (mPage == 2)
+/*            if (mPage == 2)
                 branchesRecyclerView.setAdapter(filesRecyclerAdapter);
             else if (mPage == 3)
                 //branchesRecyclerView.setAdapter(eventsRecyclerAdapter);
-                branchesRecyclerView.setAdapter(commitsRecyclerAdapter);
+                branchesRecyclerView.setAdapter(commitsRecyclerAdapter);*/
         //}
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        state = layoutManager.onSaveInstanceState();
+        outState.putParcelable(REPOSITORY_PAGER_STATE,state);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (state != null) {
+            layoutManager.onRestoreInstanceState(state);
+        }
+    }
+
+    @Override
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (mPage == 2)
+            branchesRecyclerView.setAdapter(filesRecyclerAdapter);
+        else if (mPage == 3)
+            //branchesRecyclerView.setAdapter(eventsRecyclerAdapter);
+            branchesRecyclerView.setAdapter(commitsRecyclerAdapter);
+
+        // Restore previous state (including selected item index and scroll position)
+        if(state != null) {
+            //Log.d(TAG, "trying to restore gridview state..");
+            layoutManager.onRestoreInstanceState(state);
+        }
     }
 }

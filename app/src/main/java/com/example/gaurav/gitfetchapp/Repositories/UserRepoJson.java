@@ -216,6 +216,10 @@ public class UserRepoJson implements Parcelable {
     @Expose
     private Permissions permissions;
 
+    public UserRepoJson(){
+
+    }
+
     /**
      *
      * @return

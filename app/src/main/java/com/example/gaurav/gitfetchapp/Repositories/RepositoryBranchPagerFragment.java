@@ -163,11 +163,13 @@ public class RepositoryBranchPagerFragment extends Fragment {
         String committer = item.getCommit().getCommit().getCommitter().getName();
         branch_commit_textView.setText(item.getCommit().getCommit().getMessage());
         branch_detail_name_textView.setText(item.getName());
+        Log.v(TAG,"detail name: "+item.getName());
 
         Spanned commit_action = Html.fromHtml("<b>" + committer + "</b>" + " committed on " + "<b>" + "Monday" + " </b>");
                // item.getCommit().getCommit().getCommitter().getDate() + "</b>");
         branch_committer_textView.setText(commit_action);
 
+        Log.v(TAG,"avatar url "+item.getCommit().getCommitter().getAvatarUrl());
         Picasso.with(getContext())
                 .load(item.getCommit().getCommitter().getAvatarUrl())
                 .resize(14,14)

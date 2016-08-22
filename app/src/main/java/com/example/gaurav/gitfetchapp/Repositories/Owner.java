@@ -60,6 +60,10 @@ public class Owner implements Parcelable {
     @Expose
     private Boolean siteAdmin;
 
+    public Owner(){
+
+    }
+
     /**
      *
      * @return

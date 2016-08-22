@@ -60,6 +60,12 @@
             android:name=".UserInfo.PublicUserRepoActivity"
             android:label="@string/respositories"
             android:theme="@style/Theme.AppCompat.Light.Dialog"/>
+
+        <provider
+            android:authorities="com.example.gaurav.gitfetchapp"
+            android:name=".RepositoryDataBase.RepositoryProvider"
+            android:exported="true"
+            android:enabled="true"/>
     </application>
 
 </manifest>
