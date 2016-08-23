@@ -247,8 +247,8 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         Log.v(TAG,"on Create");
         intent = getActivity().getIntent();
         //String token = intent.getExtras().getString(Intent.EXTRA_TEXT);
-        intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
-        String token = intentData[1];
+        //intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
+        //String token = intentData[1];
         userRepoList = null;
         mRepositoryAdapter = new RepositoryAdapter(getContext(), R.layout.repository_cardview,
                 new ArrayList<UserRepoJson>());
@@ -331,7 +331,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String owner = intentData[0];
+        String owner = PreLoginDeciderActivity.getLoginName();// intentData[0];
         Uri repoWithOwnerUri = RepositoryContract.RepositoryEntry.buildRepositoryUriWithOwner(owner);
         Log.v(TAG,"repo with owner uri: "+repoWithOwnerUri);
         return new CursorLoader(getActivity(),

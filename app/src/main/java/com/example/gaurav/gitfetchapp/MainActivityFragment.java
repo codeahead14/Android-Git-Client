@@ -1,7 +1,9 @@
 package com.example.gaurav.gitfetchapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,20 +32,20 @@ import retrofit2.Response;
  */
 public class MainActivityFragment extends Fragment {
     private static final String TAG = MainActivityFragment.class.getName();
-
     private View rootView;
     private static CatLoadingView catView;
-
-    @BindView(R.id.email) EditText userEmail;
-    @BindView(R.id.pass) EditText userPassword;
-
     private Unbinder unbinder;
     private final String clientId = "158a0d1c5f2352735a22";
     private final String clientSecret = "add98d28020b075d669e76a799deb67b110dbc96";
     private final String redirectUri = "welcome://com.project.github";
+    private String userNameField = null;
+    private String passwordField = null;
+    private SharedPreferences prefs;
 
-    public static String userNameField = null;
-    public static String passwordField = null;
+    public static String loginName = null;
+
+    @BindView(R.id.email) EditText userEmail;
+    @BindView(R.id.pass) EditText userPassword;
 
     public MainActivityFragment() {
     }
@@ -83,11 +85,18 @@ public class MainActivityFragment extends Fragment {
                 @Override
                 public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
                     LoginJson item = response.body();
-                    if (item.getToken()!=null)
+                    if (item.getToken()!=null) {
                         AccessToken.getInstance().setAccessToken(item.getToken());
+                        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString(PreLoginDeciderActivity.ACCESS_TOKEN_KEY, item.getToken());
+                        editor.putString(PreLoginDeciderActivity.USERNAME_KEY,userNameField);
+                        PreLoginDeciderActivity.setLoginName(userNameField);
+                        editor.apply();
+                    }
                     catView.dismiss();
                     Intent intent = new Intent(getActivity(),PostLoginActivity.class);
-                    intent.putExtra(Intent.EXTRA_TEXT,new String[]{userNameField, item.getToken()});
+                    //intent.putExtra(Intent.EXTRA_TEXT,new String[]{userNameField, item.getToken()});
                     startActivity(intent);
                 }
 

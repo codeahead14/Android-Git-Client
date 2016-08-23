@@ -87,7 +87,7 @@ public class GistsFragment extends Fragment {
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
         Call<ArrayList<GistsJson>> call = gitHubEndpointInterface.getPrivateGists(//"hemanth");
-                MainActivityFragment.userNameField);
+                PreLoginDeciderActivity.getLoginName());
         call.enqueue(new Callback<ArrayList<GistsJson>>() {
             @Override
             public void onResponse(Call<ArrayList<GistsJson>> call, Response<ArrayList<GistsJson>> response) {

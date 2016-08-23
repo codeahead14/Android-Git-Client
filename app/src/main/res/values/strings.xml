@@ -7,6 +7,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in_short">Sign In</string>
     <string name="title_activity_post_login">Repositories</string>
+    <string name="title_activity_pre_login">Prelogin</string>
     <string name="branch_cancel">Cancel</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -82,6 +83,7 @@
     <string name="following">Following</string>
 
     <string name="SearchHint">Search for Users, Repos, Commits</string>
+    <string name="title_widget_repo">Repositories</string>
 
     <!-- Transition Names below this -->
     <string name="userAvatarTransition">user_avatar_transition</string>

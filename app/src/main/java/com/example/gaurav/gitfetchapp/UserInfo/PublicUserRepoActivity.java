@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.DividerItemDecoration;
@@ -32,6 +33,7 @@ public class PublicUserRepoActivity extends AppCompatActivity {
 
     @BindView(R.id.public_user_repo_recycler)
     RecyclerView repo_RecyclerView;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
 
     private RepositoryAdapter repositoryAdapter;
@@ -41,8 +43,10 @@ public class PublicUserRepoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_public_user_repo);
-        setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setVisibility(View.GONE);
 
         Intent intent = getIntent();
         String repo_url = intent.getExtras().getString(UserInfoActivity.REPO_URL);

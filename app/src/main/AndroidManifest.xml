@@ -11,27 +11,35 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".PreLoginDeciderActivity"
+            android:label="@string/title_activity_pre_login"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="com.project.github"
-                    android:pathPattern=".*"
-                    android:scheme="welcome" />
             </intent-filter>
         </activity>
         <activity
             android:name=".PostLoginActivity"
             android:label="@string/title_activity_post_login"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".Repositories.RepositoryDetailActivity"
             android:label="@string/title_activity_repository_detail"
@@ -66,6 +74,19 @@
             android:name=".RepositoryDataBase.RepositoryProvider"
             android:exported="true"
             android:enabled="true"/>
+
+        <receiver
+            android:name=".Widgets.RepositoriesListWidgetProvider"
+            android:label="@string/title_widget_repo" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/repo_widget_info" />
+        </receiver>
+
+        <service android:name=".Widgets.RepositoryWidgetRemoteService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 
 </manifest>

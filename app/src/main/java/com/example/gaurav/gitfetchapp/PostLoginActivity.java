@@ -74,15 +74,15 @@ public class PostLoginActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Intent intent = getIntent();
-        String[] intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
+        //String[] intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
         View headerView = navigationView.getHeaderView(0);
         TextView header_userName_textView = (TextView) headerView.findViewById(R.id.header_user_name_text);
-        header_userName_textView.setText(intentData[0]);
+        header_userName_textView.setText(PreLoginDeciderActivity.getLoginName());//intentData[0]);
         final TextView header_userEmail_textView = (TextView) headerView.findViewById(R.id.header_user_email_text);
         final ImageView header_icon = (ImageView) headerView.findViewById(R.id.header_icon);
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                                     GitHubEndpointInterface.class);
-        Call<User> call = gitHubEndpointInterface.getUserDetails("hemanth");//intentData[0]);
+        Call<User> call = gitHubEndpointInterface.getUserDetails(PreLoginDeciderActivity.getLoginName());//"hemanth");//intentData[0]);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
