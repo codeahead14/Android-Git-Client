@@ -1,11 +1,14 @@
 package com.example.gaurav.gitfetchapp.Repositories.BranchDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Commit {
+public class Commit implements Parcelable {
 
     @SerializedName("sha")
     @Expose
@@ -176,4 +179,55 @@ public class Commit {
         this.parents = parents;
     }
 
+
+    protected Commit(Parcel in) {
+        sha = in.readString();
+        commit = (Commit_) in.readValue(Commit_.class.getClassLoader());
+        url = in.readString();
+        htmlUrl = in.readString();
+        commentsUrl = in.readString();
+        author = (Author_) in.readValue(Author_.class.getClassLoader());
+        committer = (Committer_) in.readValue(Committer_.class.getClassLoader());
+        if (in.readByte() == 0x01) {
+            parents = new ArrayList<Object>();
+            in.readList(parents, Object.class.getClassLoader());
+        } else {
+            parents = null;
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(sha);
+        dest.writeValue(commit);
+        dest.writeString(url);
+        dest.writeString(htmlUrl);
+        dest.writeString(commentsUrl);
+        dest.writeValue(author);
+        dest.writeValue(committer);
+        if (parents == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(parents);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Commit> CREATOR = new Parcelable.Creator<Commit>() {
+        @Override
+        public Commit createFromParcel(Parcel in) {
+            return new Commit(in);
+        }
+
+        @Override
+        public Commit[] newArray(int size) {
+            return new Commit[size];
+        }
+    };
 }

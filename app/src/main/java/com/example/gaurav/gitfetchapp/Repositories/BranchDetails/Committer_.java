@@ -1,9 +1,12 @@
 package com.example.gaurav.gitfetchapp.Repositories.BranchDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Committer_ {
+public class Committer_ implements Parcelable {
 
     @SerializedName("login")
     @Expose
@@ -363,4 +366,73 @@ public class Committer_ {
         this.siteAdmin = siteAdmin;
     }
 
+
+    protected Committer_(Parcel in) {
+        login = in.readString();
+        id = in.readByte() == 0x00 ? null : in.readInt();
+        avatarUrl = in.readString();
+        gravatarId = in.readString();
+        url = in.readString();
+        htmlUrl = in.readString();
+        followersUrl = in.readString();
+        followingUrl = in.readString();
+        gistsUrl = in.readString();
+        starredUrl = in.readString();
+        subscriptionsUrl = in.readString();
+        organizationsUrl = in.readString();
+        reposUrl = in.readString();
+        eventsUrl = in.readString();
+        receivedEventsUrl = in.readString();
+        type = in.readString();
+        byte siteAdminVal = in.readByte();
+        siteAdmin = siteAdminVal == 0x02 ? null : siteAdminVal != 0x00;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(login);
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
+        dest.writeString(avatarUrl);
+        dest.writeString(gravatarId);
+        dest.writeString(url);
+        dest.writeString(htmlUrl);
+        dest.writeString(followersUrl);
+        dest.writeString(followingUrl);
+        dest.writeString(gistsUrl);
+        dest.writeString(starredUrl);
+        dest.writeString(subscriptionsUrl);
+        dest.writeString(organizationsUrl);
+        dest.writeString(reposUrl);
+        dest.writeString(eventsUrl);
+        dest.writeString(receivedEventsUrl);
+        dest.writeString(type);
+        if (siteAdmin == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (siteAdmin ? 0x01 : 0x00));
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Committer_> CREATOR = new Parcelable.Creator<Committer_>() {
+        @Override
+        public Committer_ createFromParcel(Parcel in) {
+            return new Committer_(in);
+        }
+
+        @Override
+        public Committer_[] newArray(int size) {
+            return new Committer_[size];
+        }
+    };
 }

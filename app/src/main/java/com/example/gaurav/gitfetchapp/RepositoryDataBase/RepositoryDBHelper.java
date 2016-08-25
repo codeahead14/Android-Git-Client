@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.gaurav.gitfetchapp.Repositories.Owner;
 import com.example.gaurav.gitfetchapp.RepositoryDataBase.RepositoryContract.*;
 
-import org.eclipse.egit.github.core.Repository;
-
 /**
  * Created by GAURAV on 21-08-2016.
  */

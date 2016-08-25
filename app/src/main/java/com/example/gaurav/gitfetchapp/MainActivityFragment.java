@@ -35,8 +35,8 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static CatLoadingView catView;
     private Unbinder unbinder;
-    private final String clientId = "158a0d1c5f2352735a22";
-    private final String clientSecret = "add98d28020b075d669e76a799deb67b110dbc96";
+    private final String clientId = "";
+    private final String clientSecret = "";
     private final String redirectUri = "welcome://com.project.github";
     private String userNameField = null;
     private String passwordField = null;
@@ -64,9 +64,8 @@ public class MainActivityFragment extends Fragment {
     }
 
     @OnClick(R.id.loginbutton) void submit(){
-        catView.show(getFragmentManager(),TAG);
-        userNameField = "codeahead14"; //userEmail.getText().toString();
-        passwordField = "Gaurav14"; //userPassword.getText().toString();
+        userNameField = userEmail.getText().toString();
+        passwordField = userPassword.getText().toString();
         if(userNameField.matches("") || passwordField.matches("")){
             Toast.makeText(getActivity(), "Cannot Leave UserName/Password Blank",
                     Toast.LENGTH_SHORT).show();
@@ -81,37 +80,41 @@ public class MainActivityFragment extends Fragment {
             loginPost.setClient_secret(clientSecret);
             Call<LoginJson> call = gitInterface.getLoginCode(loginPost);
 
-            call.enqueue(new Callback<LoginJson>() {
-                @Override
-                public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
-                    LoginJson item = response.body();
-                    if (item.getToken()!=null) {
-                        AccessToken.getInstance().setAccessToken(item.getToken());
-                        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString(PreLoginDeciderActivity.ACCESS_TOKEN_KEY, item.getToken());
-                        editor.putString(PreLoginDeciderActivity.USERNAME_KEY,userNameField);
-                        PreLoginDeciderActivity.setLoginName(userNameField);
-                        editor.apply();
+            if(Utility.hasConnection(getContext())) {
+                catView.show(getFragmentManager(),TAG);
+                call.enqueue(new Callback<LoginJson>() {
+                    @Override
+                    public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
+                        LoginJson item = response.body();
+                        if (item.getToken() != null) {
+                            AccessToken.getInstance().setAccessToken(item.getToken());
+                            prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString(PreLoginDeciderActivity.ACCESS_TOKEN_KEY, item.getToken());
+                            editor.putString(PreLoginDeciderActivity.USERNAME_KEY, userNameField);
+                            PreLoginDeciderActivity.setLoginName(userNameField);
+                            editor.apply();
+                        }
+                        catView.dismiss();
+                        Intent intent = new Intent(getActivity(), PostLoginActivity.class);
+                        //intent.putExtra(Intent.EXTRA_TEXT,new String[]{userNameField, item.getToken()});
+                        startActivity(intent);
+                        getActivity().finish();
                     }
-                    catView.dismiss();
-                    Intent intent = new Intent(getActivity(),PostLoginActivity.class);
-                    //intent.putExtra(Intent.EXTRA_TEXT,new String[]{userNameField, item.getToken()});
-                    startActivity(intent);
-                }
 
-                @Override
-                public void onFailure(Call<LoginJson> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<LoginJson> call, Throwable t) {
 
-                }
-            });
+                    }
+                });
+            }else
+                Toast.makeText(getContext(), getContext().getResources().getString(R.string.notOnline), Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.v(TAG,"onCreateView");
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this,rootView);
 

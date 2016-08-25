@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -27,6 +28,7 @@ import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.BranchDetails.BranchDetailJson;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
+import com.example.gaurav.gitfetchapp.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -49,7 +51,12 @@ public class RepositoryBranchPagerFragment extends Fragment {
     private UserRepoJson userRepoJson;
     private String default_branch;
     private String repo_branch;
+    private Parcelable state;
     private GitHubEndpointInterface gitHubEndpointInterface;
+
+    // Variables to save state
+    private static final String BRANCH_DETAILS_KEY = "BRANCH_DETAILS";
+    private BranchDetailJson branchDetails;
 
     @BindView(R.id.branch_detail_commit_text) TextView branch_commit_textView;
     @BindView(R.id.branch_detail_committer_text) TextView branch_committer_textView;
@@ -78,6 +85,19 @@ public class RepositoryBranchPagerFragment extends Fragment {
         repo_branch = RepositoryDetailActivityFragment.repoBranch;
         gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
+
+        //if (savedInstanceState != null){
+          //  branchDetails = savedInstanceState.getParcelable(BRANCH_DETAILS_KEY);
+          //  setUpView(branchDetails);
+        //}else
+            //fetchBranchDetails();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.v(TAG,"saving state");
+        outState.putParcelable(BRANCH_DETAILS_KEY,branchDetails);
     }
 
     @Override
@@ -94,8 +114,8 @@ public class RepositoryBranchPagerFragment extends Fragment {
             @Override
             public void onResponse(Call<BranchDetailJson> call, Response<BranchDetailJson> response) {
                 if (response.isSuccessful()){
-                    BranchDetailJson item = response.body();
-                    setUpView(item);
+                    branchDetails = response.body();
+                    setUpView(branchDetails);
                 }
             }
 
@@ -165,7 +185,8 @@ public class RepositoryBranchPagerFragment extends Fragment {
         branch_detail_name_textView.setText(item.getName());
         Log.v(TAG,"detail name: "+item.getName());
 
-        Spanned commit_action = Html.fromHtml("<b>" + committer + "</b>" + " committed on " + "<b>" + "Monday" + " </b>");
+        Spanned commit_action = Html.fromHtml("<b>" + committer + "</b>" + " committed on " + "<b>" +
+                Utility.formatDateString(item.getCommit().getCommit().getAuthor().getDate()) + " </b>");
                // item.getCommit().getCommit().getCommitter().getDate() + "</b>");
         branch_committer_textView.setText(commit_action);
 

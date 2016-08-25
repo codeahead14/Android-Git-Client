@@ -2,7 +2,10 @@ package com.example.gaurav.gitfetchapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -23,7 +26,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
 import com.example.gaurav.gitfetchapp.UserInfo.User;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -41,15 +47,13 @@ public class PostLoginActivity extends AppCompatActivity
     public static final String USER_DETAILS = "user_details";
     private Unbinder unbinder;
     private static User userDetails;
+    private Tracker mTracker;
+    private int screenType;
+    private boolean tabletSize;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.nav_view) NavigationView navigationView;
-
-    @OnClick(R.id.fab) void onFabClick(View view){
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-    }
 
     @OnClick(R.id.search_fab) void onSearchFabClick(View view){
         Intent searchIntent = new Intent(this,SearchGitActivity.class);
@@ -65,49 +69,70 @@ public class PostLoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_login);
         ButterKnife.bind(this);
+        TrackerApplication application = (TrackerApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+        screenType = getScreenSize();
+        tabletSize = getResources().getBoolean(R.bool.isTablet);
         setSupportActionBar(toolbar);
         final Context context = this;
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+
+        if(tabletSize){//screenType == 0) {
+            Log.v(TAG," In tablet");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+        }else {
+            drawer.setDrawerListener(toggle);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
+
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
 
         Intent intent = getIntent();
         //String[] intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
         View headerView = navigationView.getHeaderView(0);
         TextView header_userName_textView = (TextView) headerView.findViewById(R.id.header_user_name_text);
-        header_userName_textView.setText(PreLoginDeciderActivity.getLoginName());//intentData[0]);
+        header_userName_textView.setText(owner);//PreLoginDeciderActivity.getLoginName());//intentData[0]);
         final TextView header_userEmail_textView = (TextView) headerView.findViewById(R.id.header_user_email_text);
         final ImageView header_icon = (ImageView) headerView.findViewById(R.id.header_icon);
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                                     GitHubEndpointInterface.class);
-        Call<User> call = gitHubEndpointInterface.getUserDetails(PreLoginDeciderActivity.getLoginName());//"hemanth");//intentData[0]);
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()){
-                    User item = response.body();
-                    userDetails = item;
-                    Log.v(TAG,"userDetails: "+userDetails.getHtmlUrl());
-                    if(item.getEmail() == null) {
-                        header_userEmail_textView.setText(item.getHtmlUrl());
-                        Log.v(TAG,"html url: "+item.getHtmlUrl());
-                    }else
-                        header_userEmail_textView.setText((String)item.getEmail());
+        if(Utility.hasConnection(context)) {
+            Call<User> call = gitHubEndpointInterface.getUserDetails(owner);//PreLoginDeciderActivity.getLoginName());//intentData[0]);
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful()) {
+                        User item = response.body();
+                        userDetails = item;
+                        Log.v(TAG, "userDetails: " + userDetails.getHtmlUrl());
+                        if (item.getEmail() == null) {
+                            header_userEmail_textView.setText(item.getHtmlUrl());
+                            Log.v(TAG, "html url: " + item.getHtmlUrl());
+                        } else
+                            header_userEmail_textView.setText((String) item.getEmail());
 
-                    Picasso.with(context)
-                            .load(item.getAvatarUrl())
-                            .transform(new CircleTransform())
-                            .into(header_icon);
+                        Picasso.with(context)
+                                .load(item.getAvatarUrl())
+                                .transform(new CircleTransform())
+                                .into(header_icon);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        } else {
+            Toast.makeText(context,R.string.notOnline,Toast.LENGTH_SHORT).show();
+        }
 
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +153,22 @@ public class PostLoginActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
+    public int getScreenSize(){
+        int screenSize = getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+
+        switch(screenSize) {
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                return 0;
+            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                return 1;
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                return 2;
+            default:
+                return 1;
+        }
+    }
+
     @Override
     public void onDestroy(){
         super.onDestroy();
@@ -136,13 +177,24 @@ public class PostLoginActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "Setting screen name: " + TAG);
+        mTracker.setScreenName("Screen"+TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if(!tabletSize){// screenType == 1 || screenType == 2) {
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else {
+                super.onBackPressed();
+            }
+        }else
+            Log.v(TAG," In tablet");
     }
 
     @Override
@@ -178,23 +230,23 @@ public class PostLoginActivity extends AppCompatActivity
         Class fragmentClass;
 
         switch(id) {
-            case R.id.nav_camera:
+            case R.id.nav_repositories:
                 fragmentClass = RepositoriesFragment.class;
                 break;
-            case R.id.nav_gallery:
-                fragmentClass = FeedsFragment.class;
+            case R.id.nav_issues:
+                fragmentClass = IssuesFragment.class;
                 break;
-            case R.id.nav_slideshow:
+            case R.id.nav_gists:
                 fragmentClass = GistsFragment.class;
                 break;
-            case R.id.nav_manage:
+            case R.id.nav_public_events:
                 fragmentClass = PublicEventsFragment.class;
                 break;
             case R.id.nav_share:
                 fragmentClass = RepositoriesFragment.class;
                 break;
-            case R.id.nav_send:
-                fragmentClass = RepositoriesFragment.class;
+            case R.id.nav_logout:
+                fragmentClass = LogoutFragment.class;
                 break;
             default:
                 fragmentClass = RepositoriesFragment.class;
@@ -205,13 +257,17 @@ public class PostLoginActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if(!tabletSize)// screenType == 1 || screenType == 2)
+            drawer.closeDrawer(GravityCompat.START);
+        else
+            Log.v(TAG," In tablet");
+
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack();
         fragmentManager.beginTransaction().replace(R.id.container_repo,fragment,null).commit();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

@@ -1,9 +1,16 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +22,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.Gists.GistsJson;
 import com.example.gaurav.gitfetchapp.Gists.GistsRecyclerAdapter;
+import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 
@@ -46,11 +60,18 @@ public class GistsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    Tracker mTracker;
+    BroadcastReceiver broadcastReceiver;
+    private boolean connectionLostFlag;
     private OnFragmentInteractionListener mListener;
     private GistsRecyclerAdapter gistsRecyclerAdapter;
 
     @BindView(R.id.gists_recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.networkLayout)
+    RelativeLayout networkLayout;
+    @BindView(R.id.networkButton)
+    Button networkSettings;
+    @BindView(R.id.avi_gists) AVLoadingIndicatorView avLoadingIndicatorView;
 
     public GistsFragment() {
         // Required empty public constructor
@@ -75,42 +96,72 @@ public class GistsFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName("Image~" + TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent){
+                if(!Utility.hasConnection(context)){
+                    connectionLostFlag = true;
+                    networkLayout.setVisibility(View.VISIBLE);
+                } else if(Utility.hasConnection(context)) {
+                    if( connectionLostFlag) {
+                        connectionLostFlag = false;
+                        networkLayout.setVisibility(View.GONE);
+                    }
+                }
+            }
+        };
+
+        getActivity().registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
         gistsRecyclerAdapter = new GistsRecyclerAdapter(getContext(), new ArrayList<GistsJson>());
 
-        GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
-                GitHubEndpointInterface.class);
-        Call<ArrayList<GistsJson>> call = gitHubEndpointInterface.getPrivateGists(//"hemanth");
-                PreLoginDeciderActivity.getLoginName());
-        call.enqueue(new Callback<ArrayList<GistsJson>>() {
-            @Override
-            public void onResponse(Call<ArrayList<GistsJson>> call, Response<ArrayList<GistsJson>> response) {
-                ArrayList<GistsJson> gists = response.body();
-                gistsRecyclerAdapter.clear();
-                for(GistsJson elem: gists)
-                    gistsRecyclerAdapter.addItem(elem);
-                gistsRecyclerAdapter.notifyDataSetChanged();
-                Log.v(TAG,"gists: "+gists.get(0).getFiles().size());
-            }
+        if(Utility.hasConnection(getContext())) {
+            //avLoadingIndicatorView.show();
+            GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
+                    GitHubEndpointInterface.class);
+            Call<ArrayList<GistsJson>> call = gitHubEndpointInterface.getPrivateGists(owner);
+            //PreLoginDeciderActivity.getLoginName());
+            call.enqueue(new Callback<ArrayList<GistsJson>>() {
+                @Override
+                public void onResponse(Call<ArrayList<GistsJson>> call, Response<ArrayList<GistsJson>> response) {
+                    ArrayList<GistsJson> gists = response.body();
+                    gistsRecyclerAdapter.clear();
+                    for (GistsJson elem : gists)
+                        gistsRecyclerAdapter.addItem(elem);
+                    gistsRecyclerAdapter.notifyDataSetChanged();
+                    //avLoadingIndicatorView.hide();
+                }
 
-            @Override
-            public void onFailure(Call<ArrayList<GistsJson>> call, Throwable t) {
-                Log.v(TAG,"Failed Miserably in Gists"+t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<ArrayList<GistsJson>> call, Throwable t) {
+                    Log.v(TAG, "Failed Miserably in Gists" + t.getMessage());
+                    //avLoadingIndicatorView.hide();
+                }
+            });
+        }else
+            Toast.makeText(getContext(),R.string.notOnline,Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
-                new ColorDrawable(getResources().getColor(R.color.deepPurple500)));
+        //((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
+          //      new ColorDrawable(getResources().getColor(R.color.deepPurple500)));
         //new ColorDrawable(getResources().getColor(R.color.red600)));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Gists");
 
@@ -118,7 +169,7 @@ public class GistsFragment extends Fragment {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         //window.setStatusBarColor(getResources().getColor(R.color.red900));
-        window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
+        //window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
     }
 
     @Override
@@ -126,6 +177,15 @@ public class GistsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_gists, container, false);
         ButterKnife.bind(this,rootView);
+        networkSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+            }
+        });
+
+        TrackerApplication application = (TrackerApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

@@ -31,6 +31,7 @@ import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
 import com.example.gaurav.gitfetchapp.UserInfo.User;
 import com.example.gaurav.gitfetchapp.UserInfoActivity;
+import com.example.gaurav.gitfetchapp.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -202,27 +203,30 @@ public class PublicEventsRecyclerAdapter extends
             int clickPos = getAdapterPosition();
             final Intent intent = new Intent(mContext, UserInfoActivity.class);
 
-            GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
-                    GitHubEndpointInterface.class);
-            Call<User> call = gitHubEndpointInterface.getUserDetails(eventsJsonArrayList
-                    .get(clickPos)
-                    .getActor()
-                    .getLogin());
-            call.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    if (response.isSuccessful()) {
-                        User item = response.body();
-                        intent.putExtra(PostLoginActivity.USER_DETAILS,item);
-                        mContext.startActivity(intent);
+            if(Utility.hasConnection(mContext)) {
+                GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
+                        GitHubEndpointInterface.class);
+                Call<User> call = gitHubEndpointInterface.getUserDetails(eventsJsonArrayList
+                        .get(clickPos)
+                        .getActor()
+                        .getLogin());
+                call.enqueue(new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        if (response.isSuccessful()) {
+                            User item = response.body();
+                            intent.putExtra(PostLoginActivity.USER_DETAILS, item);
+                            mContext.startActivity(intent);
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    Toast.makeText(mContext,"Request Failed: "+ t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+                        Toast.makeText(mContext, "Request Failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.notOnline), Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -114,14 +114,16 @@
             android:textColor="@color/teal900"
             android:textSize="22sp"
             android:textStyle="normal"
-            android:fontFamily="sans-serif-condensed"/>
+            android:fontFamily="sans-serif-condensed"
+            android:visibility="gone"/>
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             card_view:cardCornerRadius="2dp"
             card_view:cardElevation="2dp"
-            card_view:cardUseCompatPadding="true">
+            card_view:cardUseCompatPadding="true"
+            android:visibility="gone">
 
             <ListView
                 android:id="@+id/collaborators_list"
@@ -129,6 +131,24 @@
                 android:layout_height="match_parent"/>
 
         </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/issues_title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_horizontal_margin_small"
+            android:text="@string/issues_title"
+            android:textColor="@color/teal900"
+            android:textSize="22sp"
+            android:textStyle="normal"
+            android:fontFamily="sans-serif-condensed"
+            android:visibility="gone"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/issues_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"/>
 
     </LinearLayout>
 

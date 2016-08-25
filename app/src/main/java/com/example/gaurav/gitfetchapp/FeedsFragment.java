@@ -56,16 +56,17 @@ public class FeedsFragment extends Fragment {
                             .addInterceptor(interceptor)
                             .build();
 
-                    /*Retrofit retrofit = new Retrofit.Builder()
+                    Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl("https://github.com")
                             .client(client)
                             .addConverterFactory(SimpleXmlConverterFactory.create())
-                            .build();*/
+                            .build();
 
-                    GitHubEndpointInterface gitHubEndpointInterface =
-                            ServiceGenerator.createService(GitHubEndpointInterface.class);
-                    Call<Feed> responseBodyCall = gitHubEndpointInterface.getTimeline(
-                            "https://github.com/timeline");
+                    GitHubEndpointInterface gitHubEndpointInterface = retrofit.create(GitHubEndpointInterface.class);
+                            //ServiceGenerator.createService(GitHubEndpointInterface.class);
+                    //Call<Feed> responseBodyCall = gitHubEndpointInterface.getTimeline(
+                      //      "https://github.com/timeline");
+                    Call<Feed> responseBodyCall = gitHubEndpointInterface.getTimeline2();
                     responseBodyCall.enqueue(new Callback<Feed>() {
                         @Override
                         public void onResponse(Call<Feed> call, Response<Feed> response) {
@@ -75,7 +76,7 @@ public class FeedsFragment extends Fragment {
 
                         @Override
                         public void onFailure(Call<Feed> call, Throwable t) {
-                            Log.v(TAG,"Failed Miserably");
+                            Log.v(TAG,"error"+t.getMessage());
                         }
                     });
                     //Call<ResponseBody> responseBodyCall

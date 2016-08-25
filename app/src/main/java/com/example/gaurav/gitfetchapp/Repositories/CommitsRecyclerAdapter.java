@@ -11,8 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.gaurav.gitfetchapp.CircleTransform;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.Commits.CommitsRepoJson;
+import com.example.gaurav.gitfetchapp.Utility;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -46,7 +48,8 @@ public class CommitsRecyclerAdapter extends RecyclerView.Adapter<CommitsRecycler
         Typeface tf_2 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/Roboto-Light.ttf");
         String committer = commitsList.get(position).getCommit().getCommitter().getName();
         String commitMsg = commitsList.get(position).getCommit().getMessage();
-        Spanned commit_action = Html.fromHtml("<b>" + committer + "</b>" + " committed on " + "<b>" + "Monday" + " </b>");
+        Spanned commit_action = Html.fromHtml("<b>" + committer + "</b>" + " committed on " + "<b>" +
+                Utility.formatDateString(commitsList.get(position).getCommit().getAuthor().getDate())+ " </b>");
 
         holder.commit_msg_textView.setText(commitMsg);
         holder.committer_name_text.setText(commit_action);
@@ -55,6 +58,7 @@ public class CommitsRecyclerAdapter extends RecyclerView.Adapter<CommitsRecycler
 
         Picasso.with(mContext)
                 .load(commitsList.get(position).getCommitter().getAvatarUrl())
+                .transform(new CircleTransform())
                 .into(holder.committer_avatar_imageView);
     }
 

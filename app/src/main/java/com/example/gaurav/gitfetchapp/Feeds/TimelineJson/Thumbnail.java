@@ -1,11 +1,13 @@
 package com.example.gaurav.gitfetchapp.Feeds.TimelineJson;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * Created by GAURAV on 09-08-2016.
  */
-public class Media {
+@Root(name="media",strict=false)
+public class Thumbnail {
 
     @Element(name="height")
     private String height;

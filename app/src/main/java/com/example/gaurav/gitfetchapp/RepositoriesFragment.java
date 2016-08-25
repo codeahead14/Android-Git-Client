@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -31,12 +32,15 @@ import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.User;
 import com.example.gaurav.gitfetchapp.Events.Repo;
+import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
 import com.example.gaurav.gitfetchapp.Repositories.Owner;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryAdapter;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryDetailActivity;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryListAdapter;
 import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
 import com.example.gaurav.gitfetchapp.RepositoryDataBase.RepositoryContract;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,6 +49,7 @@ import java.util.Vector;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,6 +73,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     private RepositoryListAdapter mRepoListAdapter;
     private String[] intentData;
     private Parcelable state;
+    private Tracker mTracker;
 
     Vector<ContentValues> cVVector;
     //@BindView(R.id.repository_recycler) RecyclerView repoRecyclerView;
@@ -233,6 +239,9 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     public void onResume() {
         super.onResume();
         Log.v(TAG,"On resume");
+        Log.i(TAG, "Setting screen name: " + TAG);
+        mTracker.setScreenName("Image~" + TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -276,6 +285,9 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState){
         rootView = inflater.inflate(R.layout.fragment_repositories, containter, false);
         ButterKnife.bind(this,rootView);
+
+        if(!Utility.hasConnection(getContext()))
+            Toast.makeText(getActivity(),R.string.notOnline, Toast.LENGTH_SHORT).show();
         /*LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         repoRecyclerView.setLayoutManager(layoutManager);
@@ -296,6 +308,8 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        TrackerApplication application = (TrackerApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
 
         repoRecyclerView.setAdapter(mRepoListAdapter);
         repoRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -331,7 +345,10 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String owner = PreLoginDeciderActivity.getLoginName();// intentData[0];
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
+        // PreLoginDeciderActivity.getLoginName();// intentData[0];
         Uri repoWithOwnerUri = RepositoryContract.RepositoryEntry.buildRepositoryUriWithOwner(owner);
         Log.v(TAG,"repo with owner uri: "+repoWithOwnerUri);
         return new CursorLoader(getActivity(),
@@ -381,11 +398,10 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                 item.setId(data.getInt(COLUMN_ID));
                 item.setOwner(owner);
                 item.setName(data.getString(COLUMN_NAME));
-                Log.v(TAG,"repo owner: "+item.getName());
                 item.setFullName(data.getString(COLUMN_FULL_NAME));
-                item.setHtmlUrl(data.getString(COLUMN_HTML_URL));
-                item.setCreatedAt(data.getString(COLUMN_CREATED_AT));
-                item.setPushedAt(data.getString(COLUMN_PUSHED_AT));
+                item.setHtmlUrl( data.getString(COLUMN_HTML_URL));
+                item.setCreatedAt(Utility.formatDateString(data.getString(COLUMN_CREATED_AT)));
+                item.setPushedAt(Utility.formatDateString(data.getString(COLUMN_PUSHED_AT)));
                 item.setSize(data.getInt(COLUMN_SIZE));
                 item.setStargazersCount(data.getInt(COLUMN_STARGAZERS_COUNT));
                 item.setWatchersCount(data.getInt(COLUMN_WATCHERS_COUNT));
@@ -414,106 +430,112 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                 GitHubEndpointInterface.class, mAccessToken);
         Call<ArrayList<UserRepoJson>> call = gitInterface.getUserRepositories();
 
-        call.enqueue(new Callback<ArrayList<UserRepoJson>>() {
-            @Override
-            public void onResponse(Call<ArrayList<UserRepoJson>> call, Response<ArrayList<UserRepoJson>> response) {
-                if(response.isSuccessful()) {
-                    ArrayList<UserRepoJson> item = response.body();
-                    //updateList(item);
-                    cVVector = new Vector<ContentValues>(item.size());
-                    hasRepositoryData = true;
-                    mRepositoryAdapter.clear();
+        if(Utility.hasConnection(getContext())) {
+            call.enqueue(new Callback<ArrayList<UserRepoJson>>() {
+                @Override
+                public void onResponse(Call<ArrayList<UserRepoJson>> call, Response<ArrayList<UserRepoJson>> response) {
+                    if (response.isSuccessful()) {
+                        ArrayList<UserRepoJson> item = response.body();
+                        //updateList(item);
+                        cVVector = new Vector<ContentValues>(item.size());
+                        hasRepositoryData = true;
+                        mRepositoryAdapter.clear();
 
-                    Cursor repoCursor = mContext.getContentResolver().query(
-                            RepositoryContract.OwnerEntry.CONTENT_URI,
-                            new String[]{RepositoryContract.OwnerEntry._ID},
-                            RepositoryContract.OwnerEntry.COLUMN_LOGIN + " = ?",
-                            new String[]{item.get(0).getOwner().getLogin()},
-                            null);
-
-                    long ownerId;
-
-
-                    if(repoCursor.moveToFirst()) {
-                        int ownerIndex = repoCursor.getColumnIndex(RepositoryContract.OwnerEntry._ID);
-                        ownerId = repoCursor.getLong(ownerIndex);
-                    }else {
-
-                        Owner ownerItem = item.get(0).getOwner();
-                        ContentValues ownerValues = new ContentValues();
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_ID, ownerItem.getId());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_LOGIN, ownerItem.getLogin());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_AVATAR_URL, ownerItem.getAvatarUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_GRAVATAR_ID, ownerItem.getGravatarId());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_URL, ownerItem.getUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_HTML_URL, ownerItem.getHtmlUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_EVENTS_URL, ownerItem.getEventsUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_FOLLOWERS_URL, ownerItem.getFollowersUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_FOLLOWING_URL, ownerItem.getFollowingUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_SUBSCRIPTION_URL, ownerItem.getSubscriptionsUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_ORGANIZATIONS_URL, ownerItem.getOrganizationsUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_GISTS_URL, ownerItem.getGistsUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_STARRED_URL, ownerItem.getStarredUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_RECEIVED_EVENTS_URL, ownerItem.getReceivedEventsUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_REPOS_URL, ownerItem.getReposUrl());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_TYPE, ownerItem.getType());
-                        ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_SITE_ADMIN, ownerItem.getSiteAdmin());
-
-                        // Finally, insert owner data into the database.
-                        Uri insertedUri = getContext().getContentResolver().insert(
+                        Cursor repoCursor = mContext.getContentResolver().query(
                                 RepositoryContract.OwnerEntry.CONTENT_URI,
-                                ownerValues
-                        );
-                        ownerId = ContentUris.parseId(insertedUri);
+                                new String[]{RepositoryContract.OwnerEntry._ID},
+                                RepositoryContract.OwnerEntry.COLUMN_LOGIN + " = ?",
+                                new String[]{item.get(0).getOwner().getLogin()},
+                                null);
+
+                        long ownerId;
+
+
+                        if (repoCursor.moveToFirst()) {
+                            int ownerIndex = repoCursor.getColumnIndex(RepositoryContract.OwnerEntry._ID);
+                            ownerId = repoCursor.getLong(ownerIndex);
+                        } else {
+
+                            Owner ownerItem = item.get(0).getOwner();
+                            ContentValues ownerValues = new ContentValues();
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_ID, ownerItem.getId());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_LOGIN, ownerItem.getLogin());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_AVATAR_URL, ownerItem.getAvatarUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_GRAVATAR_ID, ownerItem.getGravatarId());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_URL, ownerItem.getUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_HTML_URL, ownerItem.getHtmlUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_EVENTS_URL, ownerItem.getEventsUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_FOLLOWERS_URL, ownerItem.getFollowersUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_FOLLOWING_URL, ownerItem.getFollowingUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_SUBSCRIPTION_URL, ownerItem.getSubscriptionsUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_ORGANIZATIONS_URL, ownerItem.getOrganizationsUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_GISTS_URL, ownerItem.getGistsUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_STARRED_URL, ownerItem.getStarredUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_RECEIVED_EVENTS_URL, ownerItem.getReceivedEventsUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_REPOS_URL, ownerItem.getReposUrl());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_TYPE, ownerItem.getType());
+                            ownerValues.put(RepositoryContract.OwnerEntry.COLUMN_SITE_ADMIN, ownerItem.getSiteAdmin());
+
+                            // Finally, insert owner data into the database.
+                            Uri insertedUri = getContext().getContentResolver().insert(
+                                    RepositoryContract.OwnerEntry.CONTENT_URI,
+                                    ownerValues
+                            );
+                            ownerId = ContentUris.parseId(insertedUri);
+                        }
+
+                        for (UserRepoJson elem : item) {
+                            mRepositoryAdapter.addItem(elem);
+                            repoNames.add(elem.getName());
+                            ContentValues repoValues = new ContentValues();
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_OWNER_KEY, ownerId);
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_ID, elem.getId());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_NAME, elem.getName());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_FULL_NAME, elem.getFullName());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_HTML_URL, elem.getHtmlUrl());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_CREATED_AT,
+                                    Utility.formatDateString(elem.getCreatedAt()));
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_PUSHED_AT,
+                                    Utility.formatDateString(elem.getPushedAt()));
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_SIZE, elem.getSize());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_STARGAZERS_COUNT, elem.getStargazersCount());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_WATCHERS_COUNT, elem.getWatchersCount());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_LANGUAGE, elem.getLanguage());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_FORKS_COUNT, elem.getForksCount());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_OPEN_ISSUES_COUNT, elem.getOpenIssuesCount());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_FORKS, elem.getForks());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_OPEN_ISSUES, elem.getOpenIssues());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_WATCHERS, elem.getWatchers());
+                            repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_DEFAULT_BRANCH, elem.getDefaultBranch());
+
+                            cVVector.add(repoValues);
+                        }
+
+                        int inserted = 0;
+                        // add to database
+                        if (cVVector.size() > 0) {
+                            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+                            cVVector.toArray(cvArray);
+                            inserted = mContext.getContentResolver().bulkInsert(
+                                    RepositoryContract.RepositoryEntry.CONTENT_URI, cvArray);
+                        }
+
+                        mRepositoryAdapter.notifyDataSetChanged();
+                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putStringSet(REPO_NAMES_PREFS, new HashSet<String>(repoNames));
+                        editor.apply();
                     }
-
-                    for (UserRepoJson elem : item){
-                        mRepositoryAdapter.addItem(elem);
-                        repoNames.add(elem.getName());
-                        ContentValues repoValues = new ContentValues();
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_OWNER_KEY,ownerId);
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_ID,elem.getId());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_NAME,elem.getName());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_FULL_NAME,elem.getFullName());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_HTML_URL,elem.getHtmlUrl());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_CREATED_AT,elem.getCreatedAt());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_PUSHED_AT,elem.getPushedAt());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_SIZE,elem.getSize());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_STARGAZERS_COUNT,elem.getStargazersCount());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_WATCHERS_COUNT,elem.getWatchersCount());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_LANGUAGE,elem.getLanguage());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_FORKS_COUNT,elem.getForksCount());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_OPEN_ISSUES_COUNT,elem.getOpenIssuesCount());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_FORKS,elem.getForks());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_OPEN_ISSUES,elem.getOpenIssues());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_WATCHERS,elem.getWatchers());
-                        repoValues.put(RepositoryContract.RepositoryEntry.COLUMN_DEFAULT_BRANCH,elem.getDefaultBranch());
-
-                        cVVector.add(repoValues);
-                    }
-
-                    int inserted = 0;
-                    // add to database
-                    if ( cVVector.size() > 0 ) {
-                        ContentValues[] cvArray = new ContentValues[cVVector.size()];
-                        cVVector.toArray(cvArray);
-                        inserted = mContext.getContentResolver().bulkInsert(
-                                RepositoryContract.RepositoryEntry.CONTENT_URI, cvArray);
-                    }
-
-                    mRepositoryAdapter.notifyDataSetChanged();
-                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putStringSet(REPO_NAMES_PREFS, new HashSet<String>(repoNames));
-                    editor.apply();
+                    //repoRecyclerView.setAdapter(mRepositoryAdapter);
                 }
-                //repoRecyclerView.setAdapter(mRepositoryAdapter);
-            }
 
-            @Override
-            public void onFailure(Call<ArrayList<UserRepoJson>> call, Throwable t) {
-                Log.v(TAG,"Stack trace"+t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<ArrayList<UserRepoJson>> call, Throwable t) {
+                    Log.v(TAG, "Stack trace" + t.getMessage());
+                }
+            });
+        } else {
+            Toast.makeText(getActivity(),R.string.notOnline, Toast.LENGTH_SHORT).show();
+        }
     }
 }

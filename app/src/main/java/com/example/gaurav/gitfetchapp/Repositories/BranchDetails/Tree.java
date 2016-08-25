@@ -1,9 +1,12 @@
 package com.example.gaurav.gitfetchapp.Repositories.BranchDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Tree {
+public class Tree implements Parcelable {
 
     @SerializedName("sha")
     @Expose
@@ -48,4 +51,33 @@ public class Tree {
         this.url = url;
     }
 
+
+    protected Tree(Parcel in) {
+        sha = in.readString();
+        url = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(sha);
+        dest.writeString(url);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Tree> CREATOR = new Parcelable.Creator<Tree>() {
+        @Override
+        public Tree createFromParcel(Parcel in) {
+            return new Tree(in);
+        }
+
+        @Override
+        public Tree[] newArray(int size) {
+            return new Tree[size];
+        }
+    };
 }

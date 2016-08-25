@@ -81,7 +81,9 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
         holder.stargazer_textview.setText(stars.toString());
         holder.language_textview.setText(language);
 
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Log.v("Repository Adapter",Utility.formatDateString(pushedAt));
+        holder.pushed_at_textview.setText(Utility.formatDateString(pushedAt));
+        /*SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         try {
             Date d = date.parse(pushedAt);
             String friendlyDay = Utility.getFriendlyDayString(mContext, d.getTime());
@@ -90,7 +92,7 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Re
             holder.pushed_at_textview.setText(pushedAt);
         }catch(ParseException p){
             Log.v("RepositoryAdapter","Caught Exception: "+p.getMessage());
-        }
+        }*/
     }
 
     public void clear(){

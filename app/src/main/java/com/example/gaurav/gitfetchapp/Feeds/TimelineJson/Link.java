@@ -1,10 +1,12 @@
 package com.example.gaurav.gitfetchapp.Feeds.TimelineJson;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * Created by GAURAV on 09-08-2016.
  */
+@Root(name="link",strict=false)
 public class Link {
 
     @Element(name = "type")

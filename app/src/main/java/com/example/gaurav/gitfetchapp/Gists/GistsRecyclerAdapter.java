@@ -21,6 +21,7 @@ import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.FileViewActivity;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryDetailActivity;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
+import com.example.gaurav.gitfetchapp.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
@@ -103,7 +104,8 @@ public class GistsRecyclerAdapter extends
                 R.string.login_filename),gistsJsons.get(position).getOwner().getLogin(),
                 fileNames[0]));
         holder.login_filename_button.setTypeface(tf_1);
-        Spanned text = Html.fromHtml("created on "+"<b>"+gistsJsons.get(position).getCreatedAt()+"</b>");
+        Spanned text = Html.fromHtml("created on "+"<b>"+ Utility.formatDateString(
+                gistsJsons.get(position).getCreatedAt())+"</b>");
         holder.gist_created_textView.setText(text);
         holder.gist_description_text_view.setText(gistsJsons.get(position).getDescription());
         holder.gist_file_textView.setText(String.format(mContext.getResources().getString(

@@ -1,10 +1,15 @@
 package com.example.gaurav.gitfetchapp;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.v7.app.AlertDialog;
 import android.text.format.Time;
 import android.util.Log;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by GAURAV on 01-08-2016.
@@ -12,11 +17,40 @@ import java.text.SimpleDateFormat;
 public class Utility {
     private static final String TAG = Utility.class.getName();
     public static final String DATE_FORMAT = "yyyyMMdd";
+    public static final String dateFormat_1 = "EEE, MMM d, ''yy";
+    public static final String dateFormat_2 = "dd-MMM-yyyy";
 
-    public static String getFriendlyDayDateString(){
+    public static String formatDateString(String input){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+        SimpleDateFormat outputFormat = new SimpleDateFormat(dateFormat_2, Locale.ENGLISH);
+
+        try{
+            return outputFormat.format(sdf.parse(input));
+        }catch(ParseException e){
+            return input;
+        }
+    }
+
+    public static boolean hasConnection(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
+    }
 
 
-        return null;
+    private void alert(Context context)
+    {   String title = "No Internet Connection";
+        String message = Integer.toString(R.string.notOnline);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        if (title != null) builder.setTitle(title);
+
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", null);
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 
     public static String getFriendlyDayString(Context context, long dateInMillis) {

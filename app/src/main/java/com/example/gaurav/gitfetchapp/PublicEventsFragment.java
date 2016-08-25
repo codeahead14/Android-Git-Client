@@ -1,7 +1,11 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,11 +18,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.Events.EventsAsyncTask;
 import com.example.gaurav.gitfetchapp.Events.EventsJson;
 import com.example.gaurav.gitfetchapp.Events.Payload;
 import com.example.gaurav.gitfetchapp.Events.PublicEventsRecyclerAdapter;
+import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 
@@ -38,16 +49,23 @@ import retrofit2.Response;
  * create an instance of this fragment.
  */
 public class PublicEventsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String TAG = PublicEventsFragment.class.getName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private PublicEventsRecyclerAdapter publicEventsRecyclerAdapter;
+    Tracker mTracker;
+    BroadcastReceiver broadcastReceiver;
+    private boolean connectionLostFlag;
 
+    private PublicEventsRecyclerAdapter publicEventsRecyclerAdapter;
+    @BindView(R.id.networkLayout)
+    RelativeLayout networkLayout;
+    @BindView(R.id.networkButton)
+    Button networkSettings;
+    @BindView(R.id.avi) AVLoadingIndicatorView avLoadingIndicatorView;
     @BindView(R.id.public_events_recyclerview)
     RecyclerView public_events_recyclerview;
 
@@ -76,10 +94,34 @@ public class PublicEventsFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName("Image~" + TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent){
+                if(!Utility.hasConnection(context)){
+                    connectionLostFlag = true;
+                    networkLayout.setVisibility(View.VISIBLE);
+                } else if(Utility.hasConnection(context)) {
+                    if( connectionLostFlag) {
+                        connectionLostFlag = false;
+                        networkLayout.setVisibility(View.GONE);
+                    }
+                }
+            }
+        };
+
+        getActivity().registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
-                new ColorDrawable(getResources().getColor(R.color.deepPurple500)));
+        //((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
+          //      new ColorDrawable(getResources().getColor(R.color.deepPurple500)));
                 //new ColorDrawable(getResources().getColor(R.color.red600)));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Public Events");
 
@@ -87,7 +129,7 @@ public class PublicEventsFragment extends Fragment {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         //window.setStatusBarColor(getResources().getColor(R.color.red900));
-        window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
+        //window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
     }
 
     @Override
@@ -98,12 +140,16 @@ public class PublicEventsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         publicEventsRecyclerAdapter = new PublicEventsRecyclerAdapter(getContext(),new ArrayList<EventsJson>());
-
+        TrackerApplication application = (TrackerApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
         /*
             Using HTTP Async Task
          */
-        EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter);
-        eventsAsyncTask.execute();
+        if(Utility.hasConnection(getContext())) {
+            EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter);
+            eventsAsyncTask.execute();
+        } else
+            Toast.makeText(getContext(),R.string.notOnline,Toast.LENGTH_LONG).show();
 
         /*GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);

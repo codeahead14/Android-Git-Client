@@ -10,12 +10,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.*;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.Tree;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
+import com.example.gaurav.gitfetchapp.Utility;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -95,6 +98,7 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdap
     public class FilesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView file_name_textview;
         private ImageView files_type_imageview;
+       // private AVLoadingIndicatorView avLoadingIndicatorView;
 
         FilesViewHolder(View view){
             super(view);
@@ -110,74 +114,81 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdap
             GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                     GitHubEndpointInterface.class);
 
-            Log.v(TAG,"onclick : "+type);
-            if(type.compareTo("file") == 0){
-                String download_url = files.get(clickPos).getDownloadUrl().toString();
-                Call<ResponseBody> call = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.isSuccessful()) {
-                            Log.d(TAG, "server contacted and has file");
-                            BufferedReader reader = null;
-                            StringBuilder sb = new StringBuilder();
-                            try{
-                                reader = new BufferedReader(new InputStreamReader(
-                                        response.body().byteStream()));
-                                String line;
-                                try{
-                                    while ((line=reader.readLine())!=null) {
-                                        sb.append(line);
-                                        sb.append("\n");
+            if(Utility.hasConnection(mContext)) {
+                //avLoadingIndicatorView.show();
+                if (type.compareTo("file") == 0) {
+                    String download_url = files.get(clickPos).getDownloadUrl().toString();
+                    Call<ResponseBody> call = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
+                    call.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.isSuccessful()) {
+                                Log.d(TAG, "server contacted and has file");
+                                BufferedReader reader = null;
+                                StringBuilder sb = new StringBuilder();
+                                try {
+                                    reader = new BufferedReader(new InputStreamReader(
+                                            response.body().byteStream()));
+                                    String line;
+                                    try {
+                                        while ((line = reader.readLine()) != null) {
+                                            sb.append(line);
+                                            sb.append("\n");
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
                                     }
-                                }catch (IOException e){
-                                    e.printStackTrace();
-                                };
-                            }finally {
+                                    ;
+                                } finally {
 
+                                }
+                                Log.v(TAG, sb.toString());
+                                //avLoadingIndicatorView.hide();
+                                //file_name_textview.setText(sb.toString());
+                                Intent intent = new Intent(mContext, FileViewActivity.class);
+                                intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
+                                Log.v(TAG, "intent string: " + sb.toString());
+                                mContext.startActivity(intent);
+                                //boolean writtenToDisk = writeResponseBodyToDisk(response.body());
+                                //Log.d(TAG, "file download was a success? " + writtenToDisk);
+                            } else {
+                                Log.d(TAG, "server contact failed");
+                                //avLoadingIndicatorView.hide();
                             }
-                            Log.v(TAG,sb.toString());
-                            //file_name_textview.setText(sb.toString());
-                            Intent intent = new Intent(mContext,FileViewActivity.class);
-                            intent.putExtra(Intent.EXTRA_TEXT,sb.toString());
-                            Log.v(TAG,"intent string: "+sb.toString());
-                            mContext.startActivity(intent);
-                            //boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-                            //Log.d(TAG, "file download was a success? " + writtenToDisk);
-                        } else {
-                            Log.d(TAG, "server contact failed");
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e(TAG, "error");
-                    }
-                });
-            } else{
-                String path = files.get(clickPos).getPath();
-                Call<ArrayList<RepoContentsJson>> call = gitHubEndpointInterface.getRepoContents(
-                        mOwner, mRepoName, path, mBranch);
-                call.enqueue(new Callback<ArrayList<RepoContentsJson>>() {
-                    @Override
-                    public void onResponse(Call<ArrayList<RepoContentsJson>> call,
-                                           Response<ArrayList<RepoContentsJson>> response) {
-                        clear();
-                        ArrayList<RepoContentsJson> item = response.body();
-                        for(RepoContentsJson elem : item)
-                            addItem(elem);
-                        notifyDataSetChanged();
-                    }
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Log.e(TAG, "error");
+                           // avLoadingIndicatorView.hide();
+                        }
+                    });
+                } else {
+                    //avLoadingIndicatorView.show();
+                    String path = files.get(clickPos).getPath();
+                    Call<ArrayList<RepoContentsJson>> call = gitHubEndpointInterface.getRepoContents(
+                            mOwner, mRepoName, path, mBranch);
+                    call.enqueue(new Callback<ArrayList<RepoContentsJson>>() {
+                        @Override
+                        public void onResponse(Call<ArrayList<RepoContentsJson>> call,
+                                               Response<ArrayList<RepoContentsJson>> response) {
+                            clear();
+                            ArrayList<RepoContentsJson> item = response.body();
+                            for (RepoContentsJson elem : item)
+                                addItem(elem);
+                            notifyDataSetChanged();
+                            //avLoadingIndicatorView.hide();
+                        }
 
-                    @Override
-                    public void onFailure(Call<ArrayList<RepoContentsJson>> call, Throwable t) {
+                        @Override
+                        public void onFailure(Call<ArrayList<RepoContentsJson>> call, Throwable t) {
+                            //avLoadingIndicatorView.hide();
+                        }
+                    });
 
-                    }
-                });
-
-            }
-            //Call<TreeDetailsJson> call = gitHubEndpointInterface.getRepoTree(mOwner,mRepoName,
-              //      files.getTree().get(clickPos).getType()+"s",files.getTree().get(clickPos).getSha());
+                }
+                //Call<TreeDetailsJson> call = gitHubEndpointInterface.getRepoTree(mOwner,mRepoName,
+                //      files.getTree().get(clickPos).getType()+"s",files.getTree().get(clickPos).getSha());
             /*call.enqueue(new Callback<TreeDetailsJson>() {
                 @Override
                 public void onResponse(Call<TreeDetailsJson> call, Response<TreeDetailsJson> response) {
@@ -197,6 +208,8 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdap
                     Log.v(TAG,"Failure response");
                 }
             });*/
+            }else
+                Toast.makeText(mContext, mContext.getResources().getString(R.string.notOnline), Toast.LENGTH_SHORT).show();
         }
     }
 }

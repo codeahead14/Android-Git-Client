@@ -20,21 +20,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/teal300"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="true">
 
         <ImageView
             android:id="@+id/widget_userimage"
             android:layout_width="36dp"
             android:layout_height="36dp"
+            android:padding="@dimen/item_horizontal_margin_normal"
+            android:src="@drawable/repo_12x16"
+            android:tint="@color/white"
+            android:visibility="gone"
             android:contentDescription="@string/userIcon_desc" />
 
         <TextView
             android:id="@+id/widget_username_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:padding="@dimen/item_horizontal_margin_normal"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 

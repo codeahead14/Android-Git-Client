@@ -7,15 +7,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
 import com.example.gaurav.gitfetchapp.Repositories.StarredRepoJson;
 import com.example.gaurav.gitfetchapp.UserInfo.PublicUserRepoActivity;
 import com.example.gaurav.gitfetchapp.UserInfo.User;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -34,7 +41,8 @@ public class UserInfoActivity extends AppCompatActivity {
     private final static String SAVE_STARRED = "save_starred";
     public final static String REPO_URL = "repo_url";
     private static int num_starred = 0;
-
+    private Tracker mTracker;
+    private InterstitialAd mInterstitialAd;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.user_login_name) TextView user_login_textView;
@@ -50,11 +58,20 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.user_following) TextView user_following_textView;
 
     @OnClick(R.id.fab) void onClick(View view){
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        if(mInterstitialAd.isLoaded()){
+            Log.v(TAG,"Interstitial Ready");
+            mInterstitialAd.show();
+        }
         Intent intent = new Intent(this, PublicUserRepoActivity.class);
         intent.putExtra(REPO_URL,userItem.getReposUrl());
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mTracker.setScreenName("Screen"+TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -63,8 +80,20 @@ public class UserInfoActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_user_info);
         setSupportActionBar(toolbar);
+        TrackerApplication application = (TrackerApplication) getApplication();
+        mTracker = application.getDefaultTracker();
         //toolbar.setBackgroundColor(getResources().getColor(R.color.white));
         ButterKnife.bind(this);
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                requestNewInterstitial();
+            }
+        });
+        requestNewInterstitial();
 
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
@@ -101,6 +130,15 @@ public class UserInfoActivity extends AppCompatActivity {
                     .into(userAvatarImage);
             setUpViews(userItem);
         }
+    }
+
+    private void requestNewInterstitial() {
+        Log.v(TAG,"requesting new Ad");
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("23673")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
     }
 
     @Override

@@ -5,6 +5,8 @@ import android.widget.ListView;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Namespace;
+import org.simpleframework.xml.NamespaceList;
 import org.simpleframework.xml.Root;
 
 import java.util.List;
@@ -14,15 +16,16 @@ import java.util.List;
  */
 
 @Root(name="feed")
+@NamespaceList({
+@Namespace(reference="http://www.w3.org/2005/Atom")})
 public class Feed {
 
-    @Attribute(name="xmlns")
-    private String xmlns;
-
-    @Attribute(name="xmlns:media")
+    @Attribute(name = "media", required = false)
+    @Namespace(prefix = "xml", reference = "")
     private String xmlns_media;
 
-    @Attribute(name="xml:lang")
+    @Attribute(name = "lang", required = false)
+    @Namespace(prefix = "xml", reference = "")
     private String xml_lang;
 
     @Element(name="id")
@@ -39,14 +42,6 @@ public class Feed {
 
     @ElementList(name="Entry",inline=true)
     private List<Entry> entry;
-
-    public String getXmlns(){
-        return this.xmlns;
-    }
-
-    public void setXmlns(String xmlns){
-        this.xmlns = xmlns;
-    }
 
     public String getXmlns_media(){
         return this.xmlns_media;

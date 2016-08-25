@@ -16,6 +16,7 @@ import com.example.gaurav.gitfetchapp.Events.PushEventPayload.PushEventPayload;
 import com.example.gaurav.gitfetchapp.Events.WatchEventPayload.WatchEventPayload;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +41,7 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>
     private static final String TAG = EventsAsyncTask.class.getName();
     private String responseJSONStr;
     private PublicEventsRecyclerAdapter adapter;
+    private AVLoadingIndicatorView avLoadingIndicatorView;
 
     public EventsAsyncTask(PublicEventsRecyclerAdapter adapter){
         this.adapter = adapter;
@@ -48,6 +50,7 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        //avLoadingIndicatorView.show();
     }
 
     @Override
@@ -198,9 +201,12 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>
     @Override
     protected void onPostExecute(ArrayList<EventsJson> eventsJsons) {
         super.onPostExecute(eventsJsons);
-        for(EventsJson elem : eventsJsons){
-            adapter.addItem(elem);
+        //avLoadingIndicatorView.hide();
+        if(eventsJsons != null) {
+            for (EventsJson elem : eventsJsons) {
+                adapter.addItem(elem);
+            }
+            adapter.notifyDataSetChanged();
         }
-        adapter.notifyDataSetChanged();
     }
 }

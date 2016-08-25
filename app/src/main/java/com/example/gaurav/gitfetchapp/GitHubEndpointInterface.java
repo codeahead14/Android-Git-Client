@@ -3,6 +3,7 @@ package com.example.gaurav.gitfetchapp;
 import com.example.gaurav.gitfetchapp.Feeds.FeedsJson;
 import com.example.gaurav.gitfetchapp.Feeds.TimelineJson.Feed;
 import com.example.gaurav.gitfetchapp.Gists.GistsJson;
+import com.example.gaurav.gitfetchapp.Issues.IssuesJson;
 import com.example.gaurav.gitfetchapp.Repositories.BranchDetails.BranchDetailJson;
 import com.example.gaurav.gitfetchapp.Repositories.BranchesJson;
 import com.example.gaurav.gitfetchapp.Events.EventsJson;
@@ -84,6 +85,15 @@ public interface GitHubEndpointInterface {
     @GET
     Call<ResponseBody> downloadFileWithDynamicUrlSync(@Url String fileUrl);
 
+    // For fetching user repository issues
+    @GET ("/repos/{owner}/{repo}/issues")
+    Call<ArrayList<IssuesJson>> getRepoIssues(@Path("owner") String owner,
+                                   @Path("repo") String repo);
+
+    // Fore fetching public issues
+    @GET ("/user/issues")
+    Call<ArrayList<IssuesJson>> getPublicIssues();
+
     // For accessing Private User Feeds
     @GET("/feeds")
     Call<FeedsJson> getUserFeeds();
@@ -91,6 +101,9 @@ public interface GitHubEndpointInterface {
     // For accessing Timeline
     @GET
     Call<Feed> getTimeline(@Url String url);
+
+    @GET ("/timeline")
+    Call<Feed> getTimeline2();
 
     // For fetching Starred Repo details
     @GET

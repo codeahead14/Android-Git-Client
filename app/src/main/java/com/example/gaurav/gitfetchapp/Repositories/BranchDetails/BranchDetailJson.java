@@ -1,9 +1,12 @@
 package com.example.gaurav.gitfetchapp.Repositories.BranchDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class BranchDetailJson {
+public class BranchDetailJson implements Parcelable {
 
     @SerializedName("name")
     @Expose
@@ -69,4 +72,35 @@ public class BranchDetailJson {
         this.links = links;
     }
 
+
+    protected BranchDetailJson(Parcel in) {
+        name = in.readString();
+        commit = (Commit) in.readValue(Commit.class.getClassLoader());
+        links = (Links) in.readValue(Links.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeValue(commit);
+        dest.writeValue(links);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<BranchDetailJson> CREATOR = new Parcelable.Creator<BranchDetailJson>() {
+        @Override
+        public BranchDetailJson createFromParcel(Parcel in) {
+            return new BranchDetailJson(in);
+        }
+
+        @Override
+        public BranchDetailJson[] newArray(int size) {
+            return new BranchDetailJson[size];
+        }
+    };
 }

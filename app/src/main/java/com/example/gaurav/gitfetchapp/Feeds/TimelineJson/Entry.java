@@ -1,10 +1,12 @@
 package com.example.gaurav.gitfetchapp.Feeds.TimelineJson;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * Created by GAURAV on 09-08-2016.
  */
+@Root(name="entry",strict=false)
 public class Entry {
 
     @Element(name="id")
@@ -26,7 +28,7 @@ public class Entry {
     private Author author;
 
     @Element(name="media:thumbnail")
-    private Media media;
+    private Thumbnail media;
 
     @Element(name="content")
     private Content content;
@@ -87,11 +89,11 @@ public class Entry {
         this.author = author;
     }
 
-    public Media getMedia(){
+    public Thumbnail getMedia(){
         return this.media;
     }
 
-    public void setMedia(Media media){
+    public void setMedia(Thumbnail media){
         this.media = media;
     }
 }

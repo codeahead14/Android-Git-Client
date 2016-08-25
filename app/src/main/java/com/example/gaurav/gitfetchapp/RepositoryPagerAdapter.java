@@ -16,8 +16,8 @@ import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
  */
 public class RepositoryPagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = RepositoryPagerAdapter.class.getName();
-    final int PAGE_COUNT = 3;
-    private String tabTitles[] = new String[] { "BRANCHES", "FILES", "COMMITS" };
+    final int PAGE_COUNT = 4;
+    private String tabTitles[] = new String[] { "INFO", "FILES", "COMMITS", "ISSUES" };
     private Context context;
     private UserRepoJson userRepoJson;
 
@@ -40,6 +40,7 @@ public class RepositoryPagerAdapter extends FragmentPagerAdapter {
             case 0: return RepositoryBranchPagerFragment.newInstance(position + 1, userRepoJson);
             case 1: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson);
             case 2: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson);
+            case 3: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson);
             default: return RepositoryBranchPagerFragment.newInstance(position + 1, userRepoJson);
         }
     }

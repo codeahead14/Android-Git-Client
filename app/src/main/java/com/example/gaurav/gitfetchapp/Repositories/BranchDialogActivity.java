@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.DataBus.BusProvider;
 import com.example.gaurav.gitfetchapp.DataBus.UserInteractionEvent;
@@ -19,7 +20,9 @@ import com.example.gaurav.gitfetchapp.DividerItemDecoration;
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
+import com.example.gaurav.gitfetchapp.Utility;
 import com.squareup.otto.Subscribe;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 
@@ -36,6 +39,7 @@ public class BranchDialogActivity extends AppCompatActivity {
     private GitHubEndpointInterface gitHubEndpointInterface;
 
     @BindView(R.id.dialog_branch_recycler) RecyclerView dialog_branch_recyclerview;
+    @BindView(R.id.avi) AVLoadingIndicatorView avLoadingIndicatorView;
     //@BindView(R.id.branch_cancel_button) Button cancelButton;
 
     @Override
@@ -63,23 +67,27 @@ public class BranchDialogActivity extends AppCompatActivity {
                 GitHubEndpointInterface.class);
         Call<ArrayList<BranchesJson>> call = gitHubEndpointInterface.getUserBranches(
                 intentValues[0], intentValues[1]);
-        call.enqueue(new Callback<ArrayList<BranchesJson>>() {
-            @Override
-            public void onResponse(Call<ArrayList<BranchesJson>> call, Response<ArrayList<BranchesJson>> response) {
-                ArrayList<BranchesJson> item = response.body();
-                //branchRecyclerAdapter.clear();
-                for (BranchesJson elem : item) {
-                    branchRecyclerAdapter.addItem(elem);
+        if(Utility.hasConnection(this)) {
+            //avLoadingIndicatorView.show();
+            call.enqueue(new Callback<ArrayList<BranchesJson>>() {
+                @Override
+                public void onResponse(Call<ArrayList<BranchesJson>> call, Response<ArrayList<BranchesJson>> response) {
+                    ArrayList<BranchesJson> item = response.body();
+                    //branchRecyclerAdapter.clear();
+                    for (BranchesJson elem : item) {
+                        branchRecyclerAdapter.addItem(elem);
+                    }
+                    branchRecyclerAdapter.notifyDataSetChanged();
+                    //avLoadingIndicatorView.hide();
                 }
-                branchRecyclerAdapter.notifyDataSetChanged();
-                Log.v(TAG, "response: " + branchRecyclerAdapter.getItemCount());
-            }
 
-            @Override
-            public void onFailure(Call<ArrayList<BranchesJson>> call, Throwable t) {
-
-            }
-        });
+                @Override
+                public void onFailure(Call<ArrayList<BranchesJson>> call, Throwable t) {
+                    //avLoadingIndicatorView.hide();
+                }
+            });
+        }else
+            Toast.makeText(BranchDialogActivity.this, R.string.notOnline, Toast.LENGTH_SHORT).show();
     }
 
     @Override
