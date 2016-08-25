@@ -35,8 +35,8 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static CatLoadingView catView;
     private Unbinder unbinder;
-    private final String clientId = "";
-    private final String clientSecret = "";
+    private final String clientId = "158a0d1c5f2352735a22";
+    private final String clientSecret = "add98d28020b075d669e76a799deb67b110dbc96";
     private final String redirectUri = "welcome://com.project.github";
     private String userNameField = null;
     private String passwordField = null;
@@ -64,8 +64,8 @@ public class MainActivityFragment extends Fragment {
     }
 
     @OnClick(R.id.loginbutton) void submit(){
-        userNameField = userEmail.getText().toString();
-        passwordField = userPassword.getText().toString();
+        userNameField = "codeahead14"; //userEmail.getText().toString();
+        passwordField = "Gaurav14"; //userPassword.getText().toString();
         if(userNameField.matches("") || passwordField.matches("")){
             Toast.makeText(getActivity(), "Cannot Leave UserName/Password Blank",
                     Toast.LENGTH_SHORT).show();

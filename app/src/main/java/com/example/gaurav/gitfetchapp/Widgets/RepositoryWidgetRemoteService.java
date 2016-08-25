@@ -92,9 +92,6 @@ public class RepositoryWidgetRemoteService extends RemoteViewsService {
                 view.setTextViewText(R.id.forkText,Integer.toString(forks));
                 view.setTextViewText(R.id.pushedText,pushedAt);
 
-                final Intent intent = new Intent();
-                view.setOnClickFillInIntent(R.id.widget_list_item, intent);
-
                 return view;
             }
 
