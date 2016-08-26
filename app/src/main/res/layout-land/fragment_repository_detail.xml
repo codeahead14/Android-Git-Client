@@ -113,6 +113,7 @@
                         android:id="@+id/starImg"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/stars_img"
                         android:src="@drawable/star_white_22x24dp" />
 
                     <TextView
@@ -132,6 +133,7 @@
                         android:id="@+id/fork_Img"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/forks_img"
                         android:src="@drawable/repo_forked_white_18x24dp" />
 
                     <TextView
@@ -151,6 +153,7 @@
                         android:id="@+id/watch_Img"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/watchers_img"
                         android:src="@drawable/eye_white_24x24dp" />
 
                     <TextView
@@ -195,7 +198,8 @@
         android:visibility="gone"
         app:backgroundTint="@color/red300"
         app:layout_anchor="@id/viewpager"
-        app:layout_anchorGravity="end|right" />
+        app:layout_anchorGravity="end|right"
+        android:contentDescription="@string/repo_fab"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -216,12 +220,14 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_star_black_24dp" />
+            android:src="@drawable/ic_star_black_24dp"
+            android:contentDescription="@string/stars_img"/>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/gitbranch" />
+            android:src="@drawable/gitbranch"
+            android:contentDescription="@string/repo_fab"/>
 
     </LinearLayout>
 

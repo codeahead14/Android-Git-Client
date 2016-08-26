@@ -108,5 +108,16 @@
     <string name="IssueIcon_desc">This is the Issues Icon</string>
     <string name="title_activity_search_git">SearchGitActivity</string>
     <string name="title_activity_public_user_repo">PublicUserRepoActivity</string>
+    <string name="cancel_button">Cancel Button</string>
+    <string name="fab_placeholder">Placeholder fab not being used right now</string>
+    <string name="fab_search">Search Floating Action Button</string>
+    <string name="repo_fab">Repositories FAB</string>
+    <string name="network_settings_button">Open Network Settings</string>
+    <string name="login_button">Press to Login</string>
+    <string name="stars_img">Stars</string>
+    <string name="forks_img">Forks</string>
+    <string name="watchers_img">Watchers</string>
+    <string name="files_img">Files Icon</string>
+    <string name="branch_expand">Expand Branch for Details</string>
 
 </resources>

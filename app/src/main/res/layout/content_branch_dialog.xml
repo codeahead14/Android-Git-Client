@@ -24,6 +24,7 @@
         android:textColor="@color/green700"
         android:textSize="16sp"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:contentDescription="@string/cancel_button"/>
 
 </RelativeLayout>

@@ -36,7 +36,8 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_expand_more_black_24dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:contentDescription="@string/branch_expand"/>
 
     <TextView
         android:id="@+id/branch_details_text"

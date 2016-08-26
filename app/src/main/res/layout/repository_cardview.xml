@@ -47,6 +47,7 @@
             android:id="@+id/stargazerImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/stars_img"
             android:src="@drawable/ic_star_black_18dp"/>
 
         <TextView
@@ -64,7 +65,8 @@
             android:id="@+id/forkImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/repoforked"/>
+            android:src="@drawable/repoforked"
+            android:contentDescription="@string/forks_img"/>
 
         <TextView
             android:id="@+id/forkText"

@@ -30,7 +30,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:visibility="gone"
-        android:src="@android:drawable/ic_dialog_email" />
+        android:src="@android:drawable/ic_dialog_email"
+        android:contentDescription="@string/fab_placeholder"/>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"

@@ -21,7 +21,8 @@
         android:clickable="true"
         android:tint="@color/white"
         android:src="@drawable/ic_search_black_24dp"
-        android:transitionName="@string/searchIconTransition"/>
+        android:transitionName="@string/searchIconTransition"
+        android:contentDescription="@string/fab_search"/>
 
 </FrameLayout>
 

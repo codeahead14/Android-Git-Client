@@ -34,6 +34,7 @@
         android:src="@drawable/repo_12x16"
         android:tint="@color/white"
         app:backgroundTint="@color/red300"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:contentDescription="@string/repo_fab"/>
 
 </android.support.design.widget.CoordinatorLayout>

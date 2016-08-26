@@ -34,6 +34,7 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_centerInParent="true"
+            android:contentDescription="@string/network_settings_button"
             android:src="@drawable/ic_signal_wifi_off_black_36dp"/>
 
         <Button
@@ -42,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/signalConnectivity"
             android:layout_centerHorizontal="true"
+            android:contentDescription="@string/network_settings_button"
             android:text="CHECK SETTINGS"/>
     </RelativeLayout>
 

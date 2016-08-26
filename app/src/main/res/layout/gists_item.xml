@@ -32,7 +32,8 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:background="@drawable/border_image_view"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:contentDescription="@string/userIcon_desc"/>
 
             <TextView
                 android:id="@+id/login_filename_button"

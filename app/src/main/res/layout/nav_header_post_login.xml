@@ -17,6 +17,7 @@
         android:layout_height="48dp"
         android:layout_gravity="start"
         android:transitionName="@string/userAvatarTransition"
+        android:contentDescription="@string/userIcon_desc"
         android:background="@drawable/border_image_view" />
 
     <TextView
