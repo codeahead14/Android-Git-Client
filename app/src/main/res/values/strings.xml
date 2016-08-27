@@ -30,6 +30,7 @@
     <string name="commit_title">Commits</string>
     <string name="collaborators_title">Collaborators</string>
     <string name="issues_title">Issues</string>
+    <string name="readme_title">ReadMe.md</string>
 
     <string name="no_issues">No Issues opened/closed yet by You.</string>
 
@@ -119,5 +120,6 @@
     <string name="watchers_img">Watchers</string>
     <string name="files_img">Files Icon</string>
     <string name="branch_expand">Expand Branch for Details</string>
+    <string name="title_activity_markdown_view">MarkdownViewActivity</string>
 
 </resources>

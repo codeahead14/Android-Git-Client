@@ -1,6 +1,7 @@
 package com.example.gaurav.gitfetchapp;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -148,6 +149,15 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void setUpViews(User item){
+        Typeface tf_1 = Typeface.createFromAsset(getResources().getAssets(),"font/RobotoCondensed-Regular.ttf");
+        Typeface tf_2 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Light.ttf");
+        Typeface tf_3 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Medium.ttf");
+        user_bio_textView.setTypeface(tf_2);
+        user_login_textView.setTypeface(tf_1);
+        user_company_textView.setTypeface(tf_3);
+        user_location_textView.setTypeface(tf_3);
+        user_joined_textView.setTypeface(tf_3);
+
         user_login_textView.setText(item.getLogin());
         if(item.getBio() != null)
             user_bio_textView.setText(item.getBio());
@@ -170,7 +180,7 @@ public class UserInfoActivity extends AppCompatActivity {
         else
             user_blog_textView.setVisibility(View.GONE);
 
-        Spanned joinedText = Html.fromHtml("Joined on "+"<b>"+item.getCreatedAt()+"</b>");
+        Spanned joinedText = Html.fromHtml("Joined on "+"<b>"+Utility.formatDateString(item.getCreatedAt())+"</b>");
         user_joined_textView.setText(joinedText);
         //Log.v(TAG,"joined on "+item.getFollowers());
         //TextView user_followers_textView = (TextView) findViewById(R.id.user_followers);

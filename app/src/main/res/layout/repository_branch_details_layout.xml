@@ -150,6 +150,23 @@
             android:layout_height="wrap_content"
             android:scrollbars="vertical"/>
 
+        <TextView
+            android:id="@+id/readme_title_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/item_horizontal_margin_small"
+            android:text="@string/readme_title"
+            android:textColor="@color/teal900"
+            android:textSize="22sp"
+            android:textStyle="normal"
+            android:fontFamily="sans-serif-condensed"
+            android:visibility="visible"/>
+
+        <us.feras.mdv.MarkdownView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/markdownView" />
+
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

@@ -104,7 +104,7 @@ public class PostLoginActivity extends AppCompatActivity
         GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                                     GitHubEndpointInterface.class);
         if(Utility.hasConnection(context)) {
-            Call<User> call = gitHubEndpointInterface.getUserDetails(owner);//PreLoginDeciderActivity.getLoginName());//intentData[0]);
+            Call<User> call = gitHubEndpointInterface.getUserDetails("hemanth"); //owner);//PreLoginDeciderActivity.getLoginName());//intentData[0]);
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
@@ -241,6 +241,9 @@ public class PostLoginActivity extends AppCompatActivity
                 break;
             case R.id.nav_public_events:
                 fragmentClass = PublicEventsFragment.class;
+                break;
+            case R.id.nav_feeds:
+                fragmentClass = FeedsFragment.class;
                 break;
             case R.id.nav_share:
                 fragmentClass = RepositoriesFragment.class;

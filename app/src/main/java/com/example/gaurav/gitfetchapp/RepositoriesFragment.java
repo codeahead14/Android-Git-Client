@@ -334,7 +334,8 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         getLoaderManager().initLoader(REPOSITORIES_LOADER, null, this);
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
-                new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+               getResources().getDrawable(R.drawable.app_bar_gradient));
+                //new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Repositories");
 
         Window window = getActivity().getWindow();

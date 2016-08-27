@@ -27,6 +27,7 @@ import com.example.gaurav.gitfetchapp.CircleTransform;
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.BranchDetails.BranchDetailJson;
+import com.example.gaurav.gitfetchapp.Repositories.ReadMe.ReadMeJson;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
 import com.example.gaurav.gitfetchapp.Utility;
 import com.squareup.picasso.Picasso;
@@ -39,6 +40,7 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import us.feras.mdv.MarkdownView;
 
 /**
  * Created by GAURAV on 17-08-2016.
@@ -65,6 +67,7 @@ public class RepositoryBranchPagerFragment extends Fragment {
     ImageView branch_committer_imageView;
     @BindView(R.id.collaborators_list)
     ListView collaboratorsList;
+    @BindView(R.id.markdownView) MarkdownView markdownView;
 
     public static RepositoryBranchPagerFragment newInstance(int page, UserRepoJson item) {
         Log.v(TAG, "creating branch instance");
@@ -105,6 +108,30 @@ public class RepositoryBranchPagerFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         fetchBranchDetails();
         fetchRepoCollaborators();
+        fetchReadme();
+    }
+
+    public void fetchReadme(){
+        Call<ReadMeJson> call = gitHubEndpointInterface.getReadMe(
+                userRepoJson.getOwner().getLogin(),userRepoJson.getName());
+        call.enqueue(new Callback<ReadMeJson>(){
+            @Override
+            public void onFailure(Call<ReadMeJson> call, Throwable t) {
+
+            }
+
+            @Override
+            public void onResponse(Call<ReadMeJson> call, Response<ReadMeJson> response) {
+                if(response.isSuccessful()){
+                    ReadMeJson item = response.body();
+                    setUpReadme(item);
+                }
+            }
+        });
+    }
+
+    private void setUpReadme(ReadMeJson item){
+        markdownView.loadMarkdownFile(item.getDownloadUrl());
     }
 
     public void fetchBranchDetails(){

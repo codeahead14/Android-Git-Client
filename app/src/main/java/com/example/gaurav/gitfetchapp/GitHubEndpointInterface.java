@@ -9,6 +9,7 @@ import com.example.gaurav.gitfetchapp.Repositories.BranchesJson;
 import com.example.gaurav.gitfetchapp.Events.EventsJson;
 import com.example.gaurav.gitfetchapp.Repositories.CollaboratorsJson;
 import com.example.gaurav.gitfetchapp.Repositories.Commits.CommitsRepoJson;
+import com.example.gaurav.gitfetchapp.Repositories.ReadMe.ReadMeJson;
 import com.example.gaurav.gitfetchapp.Repositories.StarredRepoJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.RepoContentsJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.TreeDetailsJson;
@@ -61,6 +62,10 @@ public interface GitHubEndpointInterface {
     Call<BranchDetailJson> getBranchDetails(@Path("owner") String owner,
                                             @Path("repo") String repo,
                                             @Path("branch") String branch);
+
+    @GET("/repos/{owner}/{repo}/readme")
+    Call<ReadMeJson> getReadMe(@Path("owner") String owner,
+                               @Path("repo") String repo);
 
     @GET("/repos/{owner}/{repo}/git/{type}/{sha}")
     Call<TreeDetailsJson> getRepoTree(@Path("owner") String owner,
