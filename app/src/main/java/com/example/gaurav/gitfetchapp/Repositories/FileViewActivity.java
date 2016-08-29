@@ -18,6 +18,7 @@ import com.example.gaurav.gitfetchapp.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import us.feras.mdv.MarkdownView;
 
 public class FileViewActivity extends AppCompatActivity {
     private static final String TAG = FileViewActivity.class.getName();
@@ -29,6 +30,9 @@ public class FileViewActivity extends AppCompatActivity {
     @BindView(R.id.src_recyclerview)
     RecyclerView sourceRecyclerView;
 
+    @BindView(R.id.markdown_view)
+    MarkdownView markdownView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,7 @@ public class FileViewActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String fileContent = intent.getStringExtra(Intent.EXTRA_TEXT);
+        markdownView.loadMarkdown(fileContent);
         String[] source_lines = fileContent.split("\\n");
         //Log.v(TAG,"data: "+fileContent.split("\\n").length);
         //String fileContent = intent.getExtras().getString(Intent.EXTRA_TEXT);
@@ -57,7 +62,7 @@ public class FileViewActivity extends AppCompatActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         sourceRecyclerView.setLayoutManager(layoutManager);
         SourceContentsAdapter sourceContentsAdapter = new SourceContentsAdapter(this, source_lines);
-        sourceRecyclerView.setAdapter(sourceContentsAdapter);
+        //sourceRecyclerView.setAdapter(sourceContentsAdapter);
 
     }
 }

@@ -66,6 +66,8 @@ public class MainActivityFragment extends Fragment {
     @OnClick(R.id.loginbutton) void submit(){
         userNameField = "codeahead14"; //userEmail.getText().toString();
         passwordField = "Gaurav14"; //userPassword.getText().toString();
+        String[] scopes = {"user","public_repo","repo","delete_repo","gist"};
+
         if(userNameField.matches("") || passwordField.matches("")){
             Toast.makeText(getActivity(), "Cannot Leave UserName/Password Blank",
                     Toast.LENGTH_SHORT).show();
@@ -73,7 +75,7 @@ public class MainActivityFragment extends Fragment {
             GitHubEndpointInterface gitInterface = ServiceGenerator.createService(
                     GitHubEndpointInterface.class, userNameField, passwordField);
             LoginPost loginPost = new LoginPost();
-            loginPost.setScopes(null);
+            loginPost.setScopes(scopes);
             loginPost.setNote("myapp");
             loginPost.setNote_url(null);
             loginPost.setClient_id(clientId);
@@ -86,6 +88,7 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
                         LoginJson item = response.body();
+                        Log.v(TAG,"response: "+item.getScopes());
                         if (item.getToken() != null) {
                             AccessToken.getInstance().setAccessToken(item.getToken());
                             prefs = PreferenceManager.getDefaultSharedPreferences(getContext());

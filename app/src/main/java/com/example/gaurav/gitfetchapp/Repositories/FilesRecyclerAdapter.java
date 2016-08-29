@@ -117,7 +117,8 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdap
             if(Utility.hasConnection(mContext)) {
                 //avLoadingIndicatorView.show();
                 if (type.compareTo("file") == 0) {
-                    String download_url = files.get(clickPos).getDownloadUrl().toString();
+                    String download_url = files.get(clickPos).getHtmlUrl().toString();
+                    Log.v(TAG,"readme HTML: "+files.get(clickPos).getHtmlUrl().toString());
                     Call<ResponseBody> call = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override

@@ -144,8 +144,10 @@ public class PublicEventsRecyclerAdapter extends
         } else if (payload instanceof PushEventPayload) {
             //description = String.format(res.getString(R.string.push_event),
             //      actor, ((PushEventPayload) payload).getRef());
+            String[] arr = ((PushEventPayload)payload).getRef().split("/");
+            String branch = arr[arr.length-1];
             description2 = android.text.Html.fromHtml("pushed to " + "<b>" +
-                    ((PushEventPayload) payload).getRef() + "</b>");
+                    branch + "</b>" + " at " + "<b>" + eventsJsonArrayList.get(position).getRepo().getName());
             //Log.v(TAG," string text "+ description);
         } else if (payload instanceof WatchEventPayload) {
             description = String.format(res.getString(R.string.watch_event),
