@@ -189,6 +189,15 @@
 
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/repository_details_progress_bar"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:mpb_progressStyle="horizontal"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
+
     <android.support.design.widget.FloatingActionButton
         android:layout_width="56dp"
         android:layout_height="56dp"

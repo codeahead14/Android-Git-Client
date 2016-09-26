@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,10 +14,8 @@ import android.widget.Toast;
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.*;
-import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.Tree;
 import com.example.gaurav.gitfetchapp.ServiceGenerator;
 import com.example.gaurav.gitfetchapp.Utility;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,57 +26,78 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Url;
 
 /**
  * Created by GAURAV on 07-08-2016.
  */
-public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdapter.FilesViewHolder> {
+//public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdapter.FilesViewHolder> {
+public class FilesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = FilesRecyclerAdapter.class.getName();
     private Context mContext;
-    //private TreeDetailsJson files;
     private ArrayList<RepoContentsJson> files;
+    private HorizontalListRecyclerAdapter listAdapter;
     private String mOwner;
     private String mRepoName;
     private String mBranch;
+    private static final int HEADER = 0, CONTENT = 1;
 
     //public FilesRecyclerAdapter(Context context, TreeDetailsJson item, String owner, String repo){
     public FilesRecyclerAdapter(Context context, ArrayList<RepoContentsJson> item, String owner,
-                                String repo, String branch){
+                                String repo, String branch, HorizontalListRecyclerAdapter listArray){
         this.mContext = context;
         files = item;
         this.mOwner = owner;
         this.mRepoName = repo;
         this.mBranch = branch;
+        this.listAdapter = listArray;
+
+        listAdapter.setItemListener(new HorizontalListRecyclerAdapter.OnItemClick() {
+            @Override
+            public void OnItemClickListener(String path) {
+                Log.v(TAG,"path "+path);
+                fetchContents("dir",0,path.substring(0,path.length()-1), false);
+            }
+        });
     }
 
     @Override
-    public FilesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final View view = layoutInflater.inflate(R.layout.repository_files_layout,
-                parent,false);
-        FilesViewHolder filesViewHolder = new FilesViewHolder(view);
-        return filesViewHolder;
+
+        switch (viewType){
+            case CONTENT:
+                final View view = layoutInflater.inflate(R.layout.repository_files_layout,
+                        parent,false);
+                FilesViewHolder filesViewHolder = new FilesViewHolder(view);
+                return filesViewHolder;
+        }
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(FilesViewHolder holder, int position) {
-        Log.v(TAG,"position: "+position);
-        if(files.get(position).getType().compareTo("file") == 0)
-            holder.files_type_imageview.setImageResource(R.drawable.file_text_24x28dp);
-        else
-            holder.files_type_imageview.setImageResource(R.drawable.file_dir_24x26dp);
-        holder.file_name_textview.setText(files.get(position).getName());
-        //holder.file_name_textview.setText(files.getTree().get(position).getPath());
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        switch (holder.getItemViewType()) {
+            case CONTENT:
+                if(holder instanceof FilesViewHolder) {
+                    FilesViewHolder fh = (FilesViewHolder) holder;
+                    if (files.get(position).getType().compareTo("file") == 0)
+                        fh.files_type_imageview.setImageResource(R.drawable.file_text_24x28dp);
+                    else
+                        fh.files_type_imageview.setImageResource(R.drawable.file_dir_24x26dp);
+                    fh.file_name_textview.setText(files.get(position).getName());
+                }
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return CONTENT;
     }
 
     //public void addItem(com.example.gaurav.gitfetchapp.Repositories.TreeDetails.Tree item){
     public void addItem(RepoContentsJson item){
         files.add(item);
         notifyItemInserted(files.size()-1);
-        /*files.getTree().add(item);
-        Log.v(TAG,"size: "+files.getTree().size());
-        notifyItemInserted(files.getTree().size()-1);*/
     }
 
     public void clear(){
@@ -93,6 +111,55 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdap
             return files.size();
           //  return files.getTree().size();
         return 0;
+    }
+
+    public void fetchContents(String type, final int clickPos, String path,final boolean flag){
+        GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
+                GitHubEndpointInterface.class);
+
+        if(Utility.hasConnection(mContext)) {
+            //avLoadingIndicatorView.show();
+            if (type.compareTo("file") == 0) {
+                String download_url = files.get(clickPos).getDownloadUrl().toString();
+                Intent intent = new Intent(mContext, FileViewActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, download_url);
+                mContext.startActivity(intent);
+            } else {
+                //String path = files.get(clickPos).getPath();
+                Log.v(TAG,path);
+                final String endPoint = path.split("/")[path.split("/").length-1];
+                if(endPoint.compareTo(mBranch) == 0)
+                    path = "";
+                Call<ArrayList<RepoContentsJson>> call = gitHubEndpointInterface.getRepoContents(
+                        mOwner, mRepoName, path, mBranch);
+                call.enqueue(new Callback<ArrayList<RepoContentsJson>>() {
+                    @Override
+                    public void onResponse(Call<ArrayList<RepoContentsJson>> call,
+                                           Response<ArrayList<RepoContentsJson>> response) {
+                        if(response.isSuccessful()) {
+                            Log.v(TAG, "response successful");
+                            clear();
+                            ArrayList<RepoContentsJson> item = response.body();
+                            for (RepoContentsJson elem : item)
+                                addItem(elem);
+                            notifyDataSetChanged();
+                            if(flag)
+                                listAdapter.addItem(endPoint);
+                            else
+                                listAdapter.removeItem(endPoint);
+                            listAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ArrayList<RepoContentsJson>> call, Throwable t) {
+                    }
+                });
+
+            }
+        }else
+            Toast.makeText(mContext, mContext.getResources().getString(R.string.notOnline), Toast.LENGTH_SHORT).show();
+
     }
 
     public class FilesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -111,106 +178,8 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<FilesRecyclerAdap
         public void onClick(View view) {
             int clickPos = getAdapterPosition();
             String type = files.get(clickPos).getType();
-            GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
-                    GitHubEndpointInterface.class);
-
-            if(Utility.hasConnection(mContext)) {
-                //avLoadingIndicatorView.show();
-                if (type.compareTo("file") == 0) {
-                    String download_url = files.get(clickPos).getHtmlUrl().toString();
-                    Log.v(TAG,"readme HTML: "+files.get(clickPos).getHtmlUrl().toString());
-                    Call<ResponseBody> call = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
-                    call.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            if (response.isSuccessful()) {
-                                Log.d(TAG, "server contacted and has file");
-                                BufferedReader reader = null;
-                                StringBuilder sb = new StringBuilder();
-                                try {
-                                    reader = new BufferedReader(new InputStreamReader(
-                                            response.body().byteStream()));
-                                    String line;
-                                    try {
-                                        while ((line = reader.readLine()) != null) {
-                                            sb.append(line);
-                                            sb.append("\n");
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    ;
-                                } finally {
-
-                                }
-                                Log.v(TAG, sb.toString());
-                                //avLoadingIndicatorView.hide();
-                                //file_name_textview.setText(sb.toString());
-                                Intent intent = new Intent(mContext, FileViewActivity.class);
-                                intent.putExtra(Intent.EXTRA_TEXT, sb.toString());
-                                Log.v(TAG, "intent string: " + sb.toString());
-                                mContext.startActivity(intent);
-                                //boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-                                //Log.d(TAG, "file download was a success? " + writtenToDisk);
-                            } else {
-                                Log.d(TAG, "server contact failed");
-                                //avLoadingIndicatorView.hide();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Log.e(TAG, "error");
-                           // avLoadingIndicatorView.hide();
-                        }
-                    });
-                } else {
-                    //avLoadingIndicatorView.show();
-                    String path = files.get(clickPos).getPath();
-                    Call<ArrayList<RepoContentsJson>> call = gitHubEndpointInterface.getRepoContents(
-                            mOwner, mRepoName, path, mBranch);
-                    call.enqueue(new Callback<ArrayList<RepoContentsJson>>() {
-                        @Override
-                        public void onResponse(Call<ArrayList<RepoContentsJson>> call,
-                                               Response<ArrayList<RepoContentsJson>> response) {
-                            clear();
-                            ArrayList<RepoContentsJson> item = response.body();
-                            for (RepoContentsJson elem : item)
-                                addItem(elem);
-                            notifyDataSetChanged();
-                            //avLoadingIndicatorView.hide();
-                        }
-
-                        @Override
-                        public void onFailure(Call<ArrayList<RepoContentsJson>> call, Throwable t) {
-                            //avLoadingIndicatorView.hide();
-                        }
-                    });
-
-                }
-                //Call<TreeDetailsJson> call = gitHubEndpointInterface.getRepoTree(mOwner,mRepoName,
-                //      files.getTree().get(clickPos).getType()+"s",files.getTree().get(clickPos).getSha());
-            /*call.enqueue(new Callback<TreeDetailsJson>() {
-                @Override
-                public void onResponse(Call<TreeDetailsJson> call, Response<TreeDetailsJson> response) {
-                    TreeDetailsJson item = response.body();
-                    if(item != null){
-                        Log.v(TAG,"response Received + item not null ");
-                        files.getTree().clear();
-                        for (Tree elem : item.getTree())
-                            addItem(elem);
-                        notifyDataSetChanged();
-                    }else
-                        Log.v(TAG,"response Received + item null ");
-                }
-
-                @Override
-                public void onFailure(Call<TreeDetailsJson> call, Throwable t) {
-                    Log.v(TAG,"Failure response");
-                }
-            });*/
-            }else
-                Toast.makeText(mContext, mContext.getResources().getString(R.string.notOnline), Toast.LENGTH_SHORT).show();
+            String path = files.get(clickPos).getPath();
+            fetchContents(type,clickPos,path,true);
         }
     }
 }

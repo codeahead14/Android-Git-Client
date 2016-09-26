@@ -3,6 +3,8 @@ package com.example.gaurav.gitfetchapp.Events;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.gaurav.gitfetchapp.Events.CreateEventPayload.CreateEventPayload;
 import com.example.gaurav.gitfetchapp.Events.DeleteEventPayload.DeleteEventPayload;
@@ -11,9 +13,12 @@ import com.example.gaurav.gitfetchapp.Events.ForkEventPayload.ForkPayload;
 import com.example.gaurav.gitfetchapp.Events.GollumEventPayload.GollumEventPayload;
 import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.IssueCommentPayload;
 import com.example.gaurav.gitfetchapp.Events.IssueEventPayload.IssueEventPayload;
+import com.example.gaurav.gitfetchapp.Events.MemberEventsPayload.MemberEventPayload;
 import com.example.gaurav.gitfetchapp.Events.PullRequestPayload.PullRequestPayload;
 import com.example.gaurav.gitfetchapp.Events.PushEventPayload.PushEventPayload;
 import com.example.gaurav.gitfetchapp.Events.WatchEventPayload.WatchEventPayload;
+import com.example.gaurav.gitfetchapp.OnDataFetchFinished;
+import com.example.gaurav.gitfetchapp.PublicEventsFragment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -36,15 +41,18 @@ import java.util.ArrayList;
 /**
  * Created by GAURAV on 14-08-2016.
  */
-public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>> {
+public class EventsAsyncTask extends AsyncTask<String, Void, ArrayList<EventsJson>>{
 
     private static final String TAG = EventsAsyncTask.class.getName();
     private String responseJSONStr;
     private PublicEventsRecyclerAdapter adapter;
     private AVLoadingIndicatorView avLoadingIndicatorView;
+    private ProgressBar progressBar;
+    private OnDataFetchFinished onDataFetchFinished;
 
-    public EventsAsyncTask(PublicEventsRecyclerAdapter adapter){
+    public EventsAsyncTask(PublicEventsRecyclerAdapter adapter, OnDataFetchFinished callback){
         this.adapter = adapter;
+        this.onDataFetchFinished = callback;
     }
 
     @Override
@@ -54,15 +62,16 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>
     }
 
     @Override
-    protected ArrayList<EventsJson> doInBackground(Void... voids) {
+    protected ArrayList<EventsJson> doInBackground(String... params) {
         Log.v(TAG, "in background");
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
                 .authority("api.github.com")
                 .appendPath("events");
 
-        String events_url = builder.toString();
-        Log.v(TAG, "url: " + events_url);
+        //String events_url = builder.toString();
+        String events_url = params[0];
+        Log.v(TAG,"Url: "+events_url);
         try {
             URL url = new URL(events_url);
             try {
@@ -109,16 +118,15 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>
             Gson gson = builder.create();
 
             JSONArray jsonArray = new JSONArray(result);
-            Log.v(TAG, "parsing result " + jsonArray.length());
             ArrayList<EventsJson> items = new ArrayList<>();
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject post = jsonArray.getJSONObject(i);
                 EventsJson item = new EventsJson();
                 String type = post.getString("type");
+                Log.v(TAG,"type: "+type);
                 String id = post.getString("id");
                 Actor actor = gson.fromJson(post.get("actor").toString(),Actor.class);
                 Repo repo = gson.fromJson(post.get("repo").toString(), Repo.class);
-                //Org org = gson.fromJson(post.get("org").toString(), Org.class);
                 Boolean isPublic = (post.getString("public").compareTo("true")==0) ? true : false;
                 String created_at = post.getString("created_at");
 
@@ -173,10 +181,15 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>
                                 WatchEventPayload.class);
                         item.setPayload(payload10);
                         break;
-                    default:
-                        Payload payload11 = gson.fromJson(post.get("payload").toString(),
-                                Payload.class);
+                    case "MemberEvent":
+                        MemberEventPayload payload11 = gson.fromJson(post.get("payload").toString(),
+                                MemberEventPayload.class);
                         item.setPayload(payload11);
+                        break;
+                    default:
+                        Payload payload12 = gson.fromJson(post.get("payload").toString(),
+                                Payload.class);
+                        item.setPayload(payload12);
                         break;
                 }
 
@@ -202,6 +215,7 @@ public class EventsAsyncTask extends AsyncTask<Void, Void, ArrayList<EventsJson>
     protected void onPostExecute(ArrayList<EventsJson> eventsJsons) {
         super.onPostExecute(eventsJsons);
         //avLoadingIndicatorView.hide();
+        onDataFetchFinished.onDataFetchFinishedCallback();
         if(eventsJsons != null) {
             for (EventsJson elem : eventsJsons) {
                 adapter.addItem(elem);

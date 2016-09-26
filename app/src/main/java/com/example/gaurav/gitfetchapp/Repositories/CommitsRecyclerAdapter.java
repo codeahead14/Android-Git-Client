@@ -56,8 +56,10 @@ public class CommitsRecyclerAdapter extends RecyclerView.Adapter<CommitsRecycler
         holder.commit_msg_textView.setTypeface(tf_1);
         holder.committer_name_text.setTypeface(tf_2);
 
+
         Picasso.with(mContext)
                 .load(commitsList.get(position).getCommitter().getAvatarUrl())
+                .placeholder(R.drawable.ic_account_box_black_24dp)
                 .transform(new CircleTransform())
                 .into(holder.committer_avatar_imageView);
     }

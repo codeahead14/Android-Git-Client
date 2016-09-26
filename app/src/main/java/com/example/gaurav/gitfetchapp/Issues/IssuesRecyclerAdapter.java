@@ -5,56 +5,97 @@ import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.Issue;
+import com.example.gaurav.gitfetchapp.IssuesFragment;
 import com.example.gaurav.gitfetchapp.R;
+import com.example.gaurav.gitfetchapp.RecyclerViewParentAdapter;
+import com.example.gaurav.gitfetchapp.Utility;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by GAURAV on 25-08-2016.
  */
-public class IssuesRecyclerAdapter extends RecyclerView.Adapter<IssuesRecyclerAdapter.IssuesViewHolder>  {
-    private ArrayList<IssuesJson> issuesList;
+public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //RecyclerView.Adapter<IssuesRecyclerAdapter.IssuesViewHolder>  {
+    private static final String TAG = IssuesRecyclerAdapter.class.getName();
+    private List<IssueItem> issuesList;
     private Context mContext;
 
-    public IssuesRecyclerAdapter(Context context, ArrayList<IssuesJson> items){
+    public interface OnLoadFinished{
+        void OnLoadingFinished();
+    }
+
+    public IssuesRecyclerAdapter(Context context, List<IssueItem> items){
         this.mContext = context;
         this.issuesList = items;
     }
 
 
     @Override
-    public IssuesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.issues_layout_item, parent, false);
-        IssuesViewHolder holder = new IssuesViewHolder(view);
-        return holder;
+    //public IssuesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerView.ViewHolder vh;
+        if (viewType == VIEW_ITEM) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View v = inflater.inflate(R.layout.issues_layout_item, parent, false);
+            vh = new IssuesViewHolder(v);
+        } else {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.progressbar_viewholder, parent, false);
+            vh = new ProgressBarViewHolder(v);
+        }
+        return vh;
     }
 
     @Override
-    public void onBindViewHolder(IssuesViewHolder holder, int position) {
+    public int getItemViewType(int position) {
+        Log.v(TAG,"scrollstate "+ IssuesFragment.loadingIndicator);
+        if(position == issuesList.size()-1 && IssuesFragment.loadingIndicator != 1) {
+            //Log.v(TAG, "loading indicator: " + IssuesFragment.loadingIndicator);
+            return VIEW_PROG;
+        }else {
+            //Log.v(TAG, "loading indicator in ITEM VIEW: " + IssuesFragment.loadingIndicator);
+            return VIEW_ITEM;
+        }
+        //Log.v(TAG,"position "+position);
+        //return position != (issuesList.size()) ? VIEW_ITEM : VIEW_PROG;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Typeface tf_1 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/RobotoCondensed-Regular.ttf");
         Typeface tf_2 = Typeface.createFromAsset(mContext.getResources().getAssets(),"font/Roboto-Light.ttf");
-        holder.issues_title.setText(issuesList.get(position).getTitle());
-        String action = "open";
 
-        if(issuesList.get(position).getState().compareTo("open") == 0) {
-            action = "opened";
-            holder.issues_image_icon.setImageResource(R.drawable.issue_opened_14x16);
-        }else if(issuesList.get(position).getState().compareTo("close")==0) {
-            action = "closed";
-            holder.issues_image_icon.setImageResource(R.drawable.issue_closed_16x16);
+        if(viewHolder instanceof IssuesViewHolder) {
+            IssuesViewHolder holder = (IssuesViewHolder) viewHolder;
+            holder.issues_title.setText(issuesList.get(position).getTitle());
+            String action = "open";
+
+            if (issuesList.get(position).getState().compareTo("open") == 0 ||
+                    issuesList.get(position).getState().compareTo("opened") == 0) {
+                action = "opened";
+                holder.issues_image_icon.setImageResource(R.drawable.issue_opened_14x16);
+            } else if (issuesList.get(position).getState().compareTo("close") == 0 ||
+                    issuesList.get(position).getState().compareTo("closed") == 0) {
+                action = "closed";
+                holder.issues_image_icon.setImageResource(R.drawable.issue_closed_16x16);
+            }
+            Spanned str = Html.fromHtml("<b>#" + issuesList.get(position).getNumber() + "</b> " +
+                    action + " by <b>" + issuesList.get(position).getUser().getLogin() + "</b> on <b>" +
+                    Utility.formatDateString(issuesList.get(position).getCreatedAt()) + "</b>");
+            holder.issues_updated_desc.setText(str);
+        }else if(viewHolder instanceof ProgressBarViewHolder){
+            ((ProgressBarViewHolder) viewHolder).materialProgressBar.setIndeterminate(true);
         }
-        Spanned str = Html.fromHtml("<b>#"+issuesList.get(position).getNumber()+"</b> "+
-        action + " by <b>" + issuesList.get(position).getUser().getLogin() + "</b> on <b>"+
-                issuesList.get(position).getCreatedAt() + "</b>");
-        holder.issues_updated_desc.setText(str);
     }
 
     @Override
@@ -64,9 +105,13 @@ public class IssuesRecyclerAdapter extends RecyclerView.Adapter<IssuesRecyclerAd
         return 0;
     }
 
-    public void addItem(IssuesJson item){
+    public void addItem(IssueItem item){
         issuesList.add(item);
         notifyItemInserted(issuesList.size()-1);
+    }
+
+    public void clear(){
+        issuesList.clear();
     }
 
     public class IssuesViewHolder extends RecyclerView.ViewHolder{

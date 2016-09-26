@@ -43,6 +43,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,9 +68,12 @@ public class RepositoryBranchPagerFragment extends Fragment {
     private static final String BRANCH_DETAILS_KEY = "BRANCH_DETAILS";
     private BranchDetailJson branchDetails;
 
-    @BindView(R.id.branch_detail_commit_text) TextView branch_commit_textView;
-    @BindView(R.id.branch_detail_committer_text) TextView branch_committer_textView;
-    @BindView(R.id.branch_detail_name_text) TextView branch_detail_name_textView;
+    @BindView(R.id.branch_detail_commit_text)
+    TextView branch_commit_textView;
+    @BindView(R.id.branch_detail_committer_text)
+    TextView branch_committer_textView;
+    @BindView(R.id.branch_detail_name_text)
+    TextView branch_detail_name_textView;
     @BindView(R.id.branch_committer_img)
     ImageView branch_committer_imageView;
     @BindView(R.id.collaborators_list)
@@ -78,6 +82,9 @@ public class RepositoryBranchPagerFragment extends Fragment {
     MarkdownView markdownView;
     @BindView(R.id.readme_text)
     TextView readme_textView;
+    @BindView(R.id.branch_details_progress_bar)
+    MaterialProgressBar materialProgressBar;
+
 
     public static RepositoryBranchPagerFragment newInstance(int page, UserRepoJson item) {
         Log.v(TAG, "creating branch instance");
@@ -100,17 +107,16 @@ public class RepositoryBranchPagerFragment extends Fragment {
                 GitHubEndpointInterface.class);
 
         //if (savedInstanceState != null){
-          //  branchDetails = savedInstanceState.getParcelable(BRANCH_DETAILS_KEY);
-          //  setUpView(branchDetails);
+        //  branchDetails = savedInstanceState.getParcelable(BRANCH_DETAILS_KEY);
+        //  setUpView(branchDetails);
         //}else
-            //fetchBranchDetails();
+        //fetchBranchDetails();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.v(TAG,"saving state");
-        outState.putParcelable(BRANCH_DETAILS_KEY,branchDetails);
+        outState.putParcelable(BRANCH_DETAILS_KEY, branchDetails);
     }
 
     @Override
@@ -121,12 +127,10 @@ public class RepositoryBranchPagerFragment extends Fragment {
         fetchReadme();
     }
 
-    public void fetchReadme(){
-
-
+    public void fetchReadme() {
         Call<ReadMeJson> call = gitHubEndpointInterface.getReadMe(
-                userRepoJson.getOwner().getLogin(),userRepoJson.getName());
-        call.enqueue(new Callback<ReadMeJson>(){
+                userRepoJson.getOwner().getLogin(), userRepoJson.getName());
+        call.enqueue(new Callback<ReadMeJson>() {
             @Override
             public void onFailure(Call<ReadMeJson> call, Throwable t) {
 
@@ -134,69 +138,69 @@ public class RepositoryBranchPagerFragment extends Fragment {
 
             @Override
             public void onResponse(Call<ReadMeJson> call, Response<ReadMeJson> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     ReadMeJson item = response.body();
                     //setUpReadme(item);
-        String download_url = item.getDownloadUrl().toString();
-        Call<ResponseBody> call1 = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
-        call1.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    BufferedReader reader = null;
-                    StringBuilder sb = new StringBuilder();
-                    try {
-                        reader = new BufferedReader(new InputStreamReader(
-                                response.body().byteStream()));
-                        String line;
-                        try {
-                            while ((line = reader.readLine()) != null) {
-                                sb.append(line);
-                                sb.append("\n");
+                    String download_url = item.getDownloadUrl();
+                    Call<ResponseBody> call1 = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
+                    call1.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.isSuccessful()) {
+                                Log.v(TAG,"in Successful Response");
+                                BufferedReader reader = null;
+                                StringBuilder sb = new StringBuilder();
+                                try {
+                                    reader = new BufferedReader(new InputStreamReader(
+                                            response.body().byteStream()));
+                                    String line;
+                                    try {
+                                        while ((line = reader.readLine()) != null) {
+                                            sb.append(line);
+                                            sb.append("\n");
+                                        }
+                                        Log.v(TAG, Processor.process(sb.toString()));
+                                        setUpReadme(Processor.process(sb.toString()));
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    ;
+                                } finally {
+                                }
+                            } else {
+                                Log.d(TAG, "server contact failed");
                             }
-                            Log.v(TAG, Processor.process(sb.toString()));
-                            setUpReadme( Processor.process(sb.toString()));
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
-                        ;
-                    } finally {
 
-                    }
-                } else {
-                    Log.d(TAG, "server contact failed");
-                    //avLoadingIndicatorView.hide();
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Log.e(TAG, "error");
+                        }
+                    });
                 }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(TAG, "error");
-                // avLoadingIndicatorView.hide();
-            }
-        });
-                }
+                materialProgressBar.setVisibility(View.GONE);
             }
         });
     }
 
     //private void setUpReadme(ReadMeJson item){
-      //  markdownView.loadMarkdownFile(item.getDownloadUrl(),"file://assets/foghorn.css");
-    private void setUpReadme(String text){
-        readme_textView.setText(text);
+    //  markdownView.loadMarkdownFile(item.getDownloadUrl(),"file://assets/foghorn.css");
+    private void setUpReadme(String text) {
+        //readme_textView.setText(text);
         //Log.v(TAG,text);
         //markdownView.setMarkDownText("# Hello World\nThis is a simple markdown");
         //markdownView.loadMarkdownFromAssets("github-markdown-css.css");
         //markdownView.setMarkDownText(text);
+        markdownView.loadMarkdown(text);
     }
 
-    public void fetchBranchDetails(){
+    public void fetchBranchDetails() {
         Call<BranchDetailJson> call = gitHubEndpointInterface.getBranchDetails(
-                userRepoJson.getOwner().getLogin(),userRepoJson.getName(),repo_branch);
+                userRepoJson.getOwner().getLogin(), userRepoJson.getName(), repo_branch);
         call.enqueue(new Callback<BranchDetailJson>() {
             @Override
             public void onResponse(Call<BranchDetailJson> call, Response<BranchDetailJson> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     branchDetails = response.body();
                     setUpView(branchDetails);
                 }
@@ -209,22 +213,24 @@ public class RepositoryBranchPagerFragment extends Fragment {
         });
     }
 
-    public void fetchRepoCollaborators(){
+    public void fetchRepoCollaborators() {
         GitHubEndpointInterface endpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class, AccessToken.getInstance());
         Call<ArrayList<CollaboratorsJson>> call = endpointInterface.getRepoCollaborators(
-                userRepoJson.getOwner().getLogin(),userRepoJson.getName());
+                userRepoJson.getOwner().getLogin(), userRepoJson.getName());
         call.enqueue(new Callback<ArrayList<CollaboratorsJson>>() {
             @Override
             public void onResponse(Call<ArrayList<CollaboratorsJson>> call, Response<ArrayList<CollaboratorsJson>> response) {
-                if (response.isSuccessful()){
+                if (response.isSuccessful()) {
                     List<String> items = new ArrayList<String>();
-                    for(CollaboratorsJson elem: response.body())
-                        items.add(elem.getLogin());
-                    ArrayAdapter<String> itemsAdapter =
-                            new ArrayAdapter<String>(getContext(),R.layout.repository_files_layout,items);
-                    Log.v(TAG,"item count list: " + itemsAdapter.getCount());
-                    collaboratorsList.setAdapter(itemsAdapter);
+                    if(items.size() > 0 ) {
+                        for (CollaboratorsJson elem : response.body())
+                            items.add(elem.getLogin());
+                        ArrayAdapter<String> itemsAdapter =
+                                new ArrayAdapter<String>(getContext(), R.layout.repository_files_layout, items);
+                        Log.v(TAG, "item count list: " + itemsAdapter.getCount());
+                        collaboratorsList.setAdapter(itemsAdapter);
+                    }
                 }
             }
 
@@ -239,9 +245,10 @@ public class RepositoryBranchPagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.repository_branch_details_layout, container, false);
-        ButterKnife.bind(this,view);
-        Typeface tf_1 = Typeface.createFromAsset(getContext().getResources().getAssets(),"font/RobotoCondensed-Regular.ttf");
-        Typeface tf_2 = Typeface.createFromAsset(getContext().getResources().getAssets(),"font/Roboto-Light.ttf");
+        ButterKnife.bind(this, view);
+        materialProgressBar.setVisibility(View.VISIBLE);
+        Typeface tf_1 = Typeface.createFromAsset(getContext().getResources().getAssets(), "font/RobotoCondensed-Regular.ttf");
+        Typeface tf_2 = Typeface.createFromAsset(getContext().getResources().getAssets(), "font/Roboto-Light.ttf");
         branch_commit_textView.setTypeface(tf_1);
         branch_detail_name_textView.setTypeface(tf_2);
         branch_committer_textView.setTypeface(tf_2);
@@ -264,21 +271,21 @@ public class RepositoryBranchPagerFragment extends Fragment {
         return view;
     }
 
-    public void setUpView(BranchDetailJson item){
+    public void setUpView(BranchDetailJson item) {
         String committer = item.getCommit().getCommit().getCommitter().getName();
         branch_commit_textView.setText(item.getCommit().getCommit().getMessage());
         branch_detail_name_textView.setText(item.getName());
-        Log.v(TAG,"detail name: "+item.getName());
+        Log.v(TAG, "detail name: " + item.getName());
 
         Spanned commit_action = Html.fromHtml("<b>" + committer + "</b>" + " committed on " + "<b>" +
                 Utility.formatDateString(item.getCommit().getCommit().getAuthor().getDate()) + " </b>");
-               // item.getCommit().getCommit().getCommitter().getDate() + "</b>");
+        // item.getCommit().getCommit().getCommitter().getDate() + "</b>");
         branch_committer_textView.setText(commit_action);
 
-        Log.v(TAG,"avatar url "+item.getCommit().getCommitter().getAvatarUrl());
+        Log.v(TAG, "avatar url " + item.getCommit().getCommitter().getAvatarUrl());
         Picasso.with(getContext())
                 .load(item.getCommit().getCommitter().getAvatarUrl())
-                .resize(14,14)
+                .resize(14, 14)
                 .transform(new CircleTransform())
                 .into(branch_committer_imageView);
     }

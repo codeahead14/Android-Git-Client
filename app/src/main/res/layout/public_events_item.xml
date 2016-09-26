@@ -34,7 +34,8 @@
 
             <TextView
                 android:id="@+id/git_participant_text"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/item_horizontal_margin_small"
                 android:paddingLeft="@dimen/item_horizontal_margin_small"
@@ -43,6 +44,18 @@
                 android:textSize="18sp"
                 android:textColor="@color/teal700"
                 android:background="?android:attr/selectableItemBackground"/>
+
+            <TextView
+                android:id="@+id/git_time_stamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingStart="@dimen/item_horizontal_margin_small"
+                android:paddingLeft="@dimen/item_horizontal_margin_small"
+                android:paddingEnd="@dimen/item_horizontal_margin_small"
+                android:paddingRight="@dimen/item_horizontal_margin_small"
+                android:textSize="14sp"
+                android:textColor="@color/grey700"/>
 
         </LinearLayout>
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="#EDD4A8"
+    android:background="#EDE2BD"
     tools:context="com.example.gaurav.gitfetchapp.UserInfoActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -26,16 +26,32 @@
 
     <include layout="@layout/content_user_info" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
+   <!-- <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/repo_12x16"
-        android:tint="@color/white"
-        app:backgroundTint="@color/red300"
-        android:visibility="visible"
-        android:contentDescription="@string/repo_fab"/>
+        android:layout_gravity="bottom|end">-->
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/repo_12x16"
+            android:tint="@color/white"
+            app:backgroundTint="@color/red300"
+            android:visibility="visible"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="@string/repo_fab"/>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/bottom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#A0616161"
+        android:visibility="gone"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <!--</RelativeLayout>-->
 
 </android.support.design.widget.CoordinatorLayout>

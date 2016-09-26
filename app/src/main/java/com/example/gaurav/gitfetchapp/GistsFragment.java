@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,7 +73,8 @@ public class GistsFragment extends Fragment {
     RelativeLayout networkLayout;
     @BindView(R.id.networkButton)
     Button networkSettings;
-    @BindView(R.id.avi_gists) AVLoadingIndicatorView avLoadingIndicatorView;
+    @BindView(R.id.gists_progress_bar)
+    MaterialProgressBar materialProgressBar;
 
     public GistsFragment() {
         // Required empty public constructor
@@ -131,7 +134,6 @@ public class GistsFragment extends Fragment {
         gistsRecyclerAdapter = new GistsRecyclerAdapter(getContext(), new ArrayList<GistsJson>());
 
         if(Utility.hasConnection(getContext())) {
-            //avLoadingIndicatorView.show();
             GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                     GitHubEndpointInterface.class);
             Call<ArrayList<GistsJson>> call = gitHubEndpointInterface.getPrivateGists(owner);
@@ -144,13 +146,12 @@ public class GistsFragment extends Fragment {
                     for (GistsJson elem : gists)
                         gistsRecyclerAdapter.addItem(elem);
                     gistsRecyclerAdapter.notifyDataSetChanged();
-                    //avLoadingIndicatorView.hide();
+                    materialProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onFailure(Call<ArrayList<GistsJson>> call, Throwable t) {
                     Log.v(TAG, "Failed Miserably in Gists" + t.getMessage());
-                    //avLoadingIndicatorView.hide();
                 }
             });
         }else
@@ -166,8 +167,11 @@ public class GistsFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Gists");
 
         Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         //window.setStatusBarColor(getResources().getColor(R.color.red900));
         //window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
     }

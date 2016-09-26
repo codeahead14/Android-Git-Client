@@ -7,7 +7,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
 
+import com.example.gaurav.gitfetchapp.DividerItemDecoration;
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryAdapter;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,8 +30,9 @@ public class PublicUserRepoActivity extends AppCompatActivity {
 
     @BindView(R.id.public_user_repo_recycler)
     RecyclerView repo_RecyclerView;
-
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.repo_progress_bar)
+    MaterialProgressBar materialProgressBar;
 
     private RepositoryAdapter repositoryAdapter;
     private GitHubEndpointInterface githubEndpointInterface;
@@ -36,6 +40,7 @@ public class PublicUserRepoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_public_user_repo);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -49,9 +54,6 @@ public class PublicUserRepoActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         repo_RecyclerView.setLayoutManager(layoutManager);
-        //RecyclerView.ItemDecoration itemDecoration = new
-          //      DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST);
-        //repo_RecyclerView.addItemDecoration(itemDecoration);
         repo_RecyclerView.setAdapter(repositoryAdapter);
 
         githubEndpointInterface = ServiceGenerator.createService(GitHubEndpointInterface.class);
@@ -65,6 +67,7 @@ public class PublicUserRepoActivity extends AppCompatActivity {
                     for (UserRepoJson elem : item){
                         repositoryAdapter.addItem(elem);
                     }
+                    materialProgressBar.setVisibility(View.GONE);
                     repositoryAdapter.notifyDataSetChanged();
                 }
             }

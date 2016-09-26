@@ -1,19 +1,25 @@
 package com.example.gaurav.gitfetchapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
 import com.example.gaurav.gitfetchapp.Repositories.StarredRepoJson;
@@ -27,15 +33,17 @@ import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UserInfoActivity extends AppCompatActivity {
+public class UserInfoActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     private static final String TAG = UserInfoActivity.class.getName();
     private User userItem;
     private final static String BASE_API_URL = "https://api.github.com/";
@@ -43,7 +51,12 @@ public class UserInfoActivity extends AppCompatActivity {
     public final static String REPO_URL = "repo_url";
     private static int num_starred = 0;
     private Tracker mTracker;
+    private GitHubEndpointInterface gitHubEndpointInterface;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
     private InterstitialAd mInterstitialAd;
+    private Set<String> following;
+    private String userName;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.user_login_name) TextView user_login_textView;
@@ -57,18 +70,78 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.user_followers) TextView user_followers_textView;
     @BindView(R.id.user_starred) TextView user_starred_textView;
     @BindView(R.id.user_following) TextView user_following_textView;
+    //@BindView(R.menu.user_info_menu) Menu menu;
 
     @OnClick(R.id.fab) void onClick(View view){
         if(mInterstitialAd.isLoaded()){
             Log.v(TAG,"Interstitial Ready");
-            mInterstitialAd.show();
         }
         Intent intent = new Intent(this, PublicUserRepoActivity.class);
         intent.putExtra(REPO_URL,userItem.getReposUrl());
         startActivity(intent);
     }
 
+    @OnClick(R.id.more_vert_button) void showPopUp(View v){
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        Menu menu = popup.getMenu();
+        inflater.inflate(R.menu.user_info_menu, menu);
+        MenuItem item1 = menu.findItem(R.id.action_follow);
+        MenuItem item2 = menu.findItem(R.id.action_unfollow);
+        if(following.contains(userName)){
+            item1.setVisible(false);
+        }else if(!following.contains(userName))
+            item2.setVisible(false);
+        popup.setOnMenuItemClickListener(this);
+        popup.show();
+    }
+
     @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        editor = preferences.edit();
+        switch (item.getItemId()) {
+            case R.id.action_follow:
+                Call<ResponseBody> call = gitHubEndpointInterface.putFollowing(userName);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        following.add(userName);
+                        Toast.makeText(UserInfoActivity.this, "Following "+userName, Toast.LENGTH_SHORT).show();
+                        editor.remove(PostLoginActivity.USER_FOLLOWING);
+                        editor.putStringSet(PostLoginActivity.USER_FOLLOWING,following);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+                return true;
+            case R.id.action_unfollow:
+                Call<ResponseBody> unfollowCall = gitHubEndpointInterface.deleteFollowing(userName);
+                unfollowCall.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        Toast.makeText(UserInfoActivity.this, "Unfollowed "+userName, Toast.LENGTH_SHORT).show();
+                        following.remove(userName);
+                        editor.remove(PostLoginActivity.USER_FOLLOWING);
+                        editor.putStringSet(PostLoginActivity.USER_FOLLOWING,following);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+                return true;
+            default:
+                return false;
+        }
+    }
+
+        @Override
     protected void onResume() {
         super.onResume();
         mTracker.setScreenName("Screen"+TAG);
@@ -96,13 +169,18 @@ public class UserInfoActivity extends AppCompatActivity {
         });
         requestNewInterstitial();
 
-        GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(preferences.contains(PostLoginActivity.USER_FOLLOWING)) {
+            following = preferences.getStringSet(PostLoginActivity.USER_FOLLOWING, null);
+        }
+
+        gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
 
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra(PostLoginActivity.USER_DETAILS)) {
             userItem = intent.getParcelableExtra(PostLoginActivity.USER_DETAILS);
-
+            userName = userItem.getLogin();
             if(savedInstanceState != null) {
                 num_starred = savedInstanceState.getInt(SAVE_STARRED);
                 user_starred_textView.setText(Integer.toString(num_starred));
@@ -152,11 +230,12 @@ public class UserInfoActivity extends AppCompatActivity {
         Typeface tf_1 = Typeface.createFromAsset(getResources().getAssets(),"font/RobotoCondensed-Regular.ttf");
         Typeface tf_2 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Light.ttf");
         Typeface tf_3 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Medium.ttf");
+        Typeface tf_4 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Regular.ttf");
         user_bio_textView.setTypeface(tf_2);
-        user_login_textView.setTypeface(tf_1);
-        user_company_textView.setTypeface(tf_3);
-        user_location_textView.setTypeface(tf_3);
-        user_joined_textView.setTypeface(tf_3);
+        user_login_textView.setTypeface(tf_4);
+        user_company_textView.setTypeface(tf_4);
+        user_location_textView.setTypeface(tf_4);
+        user_joined_textView.setTypeface(tf_4);
 
         user_login_textView.setText(item.getLogin());
         if(item.getBio() != null)
@@ -189,12 +268,6 @@ public class UserInfoActivity extends AppCompatActivity {
         user_followers_textView.setText(item.getFollowers().toString());
         user_following_textView.setText(item.getFollowing().toString());
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        super.onCreateOptionsMenu(menu);
-        return true;
     }
 
 }

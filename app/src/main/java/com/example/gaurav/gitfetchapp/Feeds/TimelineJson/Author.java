@@ -12,11 +12,11 @@ public class Author {
     @Element(name="name")
     private String name;
 
-    @Element(name="uri")
-    private String uri;
-
     @Element(name="email",required=false)
     private String email;
+
+    @Element(name="uri")
+    private String uri;
 
     public String getName(){
         return this.name;

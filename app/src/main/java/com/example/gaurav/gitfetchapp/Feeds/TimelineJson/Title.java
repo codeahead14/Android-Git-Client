@@ -10,14 +10,14 @@ import org.simpleframework.xml.Text;
 @Root(name="title",strict=false)
 public class Title {
 
-    @Attribute(name="html")
-    private String html;
+    @Attribute(name="type")
+    private String type;
 
     @Text
     private String titleValue;
 
-    public String getHtml(){
-        return this.html;
+    public String getType(){
+        return this.type;
     }
 
     public String getTitleValue(){

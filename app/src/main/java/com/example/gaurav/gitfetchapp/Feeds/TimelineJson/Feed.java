@@ -15,23 +15,17 @@ import java.util.List;
  * Created by GAURAV on 09-08-2016.
  */
 
-@Root(name="feed")
+@Root(name="feed", strict = false)
 @NamespaceList({
-@Namespace(reference="http://www.w3.org/2005/Atom")})
+@Namespace(reference="http://www.w3.org/2005/Atom"),
+        @Namespace(reference="http://search.yahoo.com/mrss/",prefix="media"),
+        @Namespace(reference="en-US",prefix="xml:lang")})
 public class Feed {
-
-    @Attribute(name = "media", required = false)
-    @Namespace(prefix = "xml", reference = "")
-    private String xmlns_media;
-
-    @Attribute(name = "lang", required = false)
-    @Namespace(prefix = "xml", reference = "")
-    private String xml_lang;
 
     @Element(name="id")
     private String id;
 
-    @ElementList(name="link",inline=true)
+    @ElementList(name="links",inline=true, required = false)
     private List<Link> links;
 
     @Element(name="title")
@@ -40,24 +34,8 @@ public class Feed {
     @Element(name="updated")
     private String updated;
 
-    @ElementList(name="Entry",inline=true)
+    @ElementList(name="entry",inline=true, required = false)
     private List<Entry> entry;
-
-    public String getXmlns_media(){
-        return this.xmlns_media;
-    }
-
-    public void setXmlns_media(){
-        this.xmlns_media = xmlns_media;
-    }
-
-    public String getXml_lang(){
-        return this.xml_lang;
-    }
-
-    public void setXml_lang(String xml_lang){
-        this.xml_lang = xml_lang;
-    }
 
     public String getId(){
         return this.id;

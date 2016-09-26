@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -49,6 +50,7 @@ import java.util.Vector;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,19 +76,14 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     private String[] intentData;
     private Parcelable state;
     private Tracker mTracker;
-
     Vector<ContentValues> cVVector;
-    //@BindView(R.id.repository_recycler) RecyclerView repoRecyclerView;
+
     @BindView(R.id.repository_recycler)
     ListView repoRecyclerView;
+    @BindView(R.id.repositories_progress_bar)
+    MaterialProgressBar materialProgressBar;
 
     public static final String[] REPOSITORY_COLUMNS_ALL = {
-            // In this case the id needs to be fully qualified with a table name, since
-            // the content provider joins the location & weather tables in the background
-            // (both have an _id column)
-            // On the one hand, that's annoying.  On the other, you can search the weather table
-            // using the location set by the user, which is only in the Location table.
-            // So the convenience is worth it.
             RepositoryContract.RepositoryEntry.TABLE_NAME + "." + RepositoryContract.RepositoryEntry._ID,
             RepositoryContract.RepositoryEntry.TABLE_NAME + "." + RepositoryContract.RepositoryEntry.COLUMN_ID,
             RepositoryContract.RepositoryEntry.COLUMN_OWNER_KEY,
@@ -238,7 +235,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onResume() {
         super.onResume();
-        Log.v(TAG,"On resume");
         Log.i(TAG, "Setting screen name: " + TAG);
         mTracker.setScreenName("Image~" + TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -255,9 +251,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         super.onCreate(savedInstanceState);
         Log.v(TAG,"on Create");
         intent = getActivity().getIntent();
-        //String token = intent.getExtras().getString(Intent.EXTRA_TEXT);
-        //intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
-        //String token = intentData[1];
         userRepoList = null;
         mRepositoryAdapter = new RepositoryAdapter(getContext(), R.layout.repository_cardview,
                 new ArrayList<UserRepoJson>());
@@ -268,7 +261,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         if(userRepoList == null)
             fetchRepositories();
         else{
-            Log.v(TAG,"requesting data from database");
             mRepoListAdapter.updateValues(userRepoList);
         }
 
@@ -288,14 +280,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
 
         if(!Utility.hasConnection(getContext()))
             Toast.makeText(getActivity(),R.string.notOnline, Toast.LENGTH_SHORT).show();
-        /*LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        repoRecyclerView.setLayoutManager(layoutManager);
-        RecyclerView.ItemDecoration itemDecoration = new
-                DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL_LIST);
-        repoRecyclerView.addItemDecoration(itemDecoration);
-        repoRecyclerView.setAdapter(mRepositoryAdapter);*/
-        //}
         return rootView;
     }
 
@@ -339,9 +323,11 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Repositories");
 
         Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
     }
 
     @Override
@@ -418,6 +404,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
             }while(data.moveToNext());
             mRepoListAdapter.updateValues(items);
         }
+        materialProgressBar.setVisibility(View.GONE);
     }
 
     @Override

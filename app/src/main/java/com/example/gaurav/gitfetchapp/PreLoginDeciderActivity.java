@@ -2,15 +2,21 @@ package com.example.gaurav.gitfetchapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.BinderThread;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by GAURAV on 23-08-2016.
@@ -26,7 +32,6 @@ public class PreLoginDeciderActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "Setting screen name: " + TAG);
         mTracker.setScreenName("Screen"+TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
@@ -34,13 +39,18 @@ public class PreLoginDeciderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_pre_login);
+        //ButterKnife.bind(this);
+
+        Typeface tf_1 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Medium.ttf");
+        Typeface tf_2 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Light.ttf");
+        //appNameText.setTypeface(tf_1);
+
         TrackerApplication application = (TrackerApplication) getApplication();
         mTracker = application.getDefaultTracker();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPreferences.contains(ACCESS_TOKEN_KEY) && sharedPreferences.contains(USERNAME_KEY)) {
             AccessToken.getInstance().setAccessToken(sharedPreferences.getString(ACCESS_TOKEN_KEY, null));
-            Log.v(TAG, sharedPreferences.getString(ACCESS_TOKEN_KEY, null));
-            Log.v(TAG, sharedPreferences.getString(USERNAME_KEY, null));
             setLoginName(sharedPreferences.getString(USERNAME_KEY, null));
 
             Intent intent = new Intent(this, PostLoginActivity.class);

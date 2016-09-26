@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,10 +51,11 @@ import retrofit2.Response;
  * Use the {@link PublicEventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PublicEventsFragment extends Fragment {
+public class PublicEventsFragment extends Fragment implements OnDataFetchFinished {
     private static final String TAG = PublicEventsFragment.class.getName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static int PAGE_NUM = 1;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -65,9 +69,10 @@ public class PublicEventsFragment extends Fragment {
     RelativeLayout networkLayout;
     @BindView(R.id.networkButton)
     Button networkSettings;
-    @BindView(R.id.avi) AVLoadingIndicatorView avLoadingIndicatorView;
     @BindView(R.id.public_events_recyclerview)
     RecyclerView public_events_recyclerview;
+    @BindView(R.id.events_progress_bar)
+    MaterialProgressBar materialProgressBar;
 
     private OnPublicEventsFragmentInteractionListener mListener;
 
@@ -126,8 +131,11 @@ public class PublicEventsFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Public Events");
 
         Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         //window.setStatusBarColor(getResources().getColor(R.color.red900));
         //window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
     }
@@ -139,6 +147,7 @@ public class PublicEventsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        PAGE_NUM = 1;
         publicEventsRecyclerAdapter = new PublicEventsRecyclerAdapter(getContext(),new ArrayList<EventsJson>());
         TrackerApplication application = (TrackerApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
@@ -146,32 +155,12 @@ public class PublicEventsFragment extends Fragment {
             Using HTTP Async Task
          */
         if(Utility.hasConnection(getContext())) {
-            EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter);
-            eventsAsyncTask.execute();
+            String url = "https://api.github.com/events?page="+PAGE_NUM;
+            EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter,this);
+            eventsAsyncTask.execute(url);
+            PAGE_NUM += 1;
         } else
             Toast.makeText(getContext(),R.string.notOnline,Toast.LENGTH_LONG).show();
-
-        /*GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
-                GitHubEndpointInterface.class);
-        Call<ArrayList<EventsJson>> call = gitHubEndpointInterface.getPublicEvents();
-        call.enqueue(new Callback<ArrayList<EventsJson>>() {
-            @Override
-            public void onResponse(Call<ArrayList<EventsJson>> call, Response<ArrayList<EventsJson>> response) {
-                ArrayList<EventsJson> item = response.body();
-                publicEventsRecyclerAdapter.clear();
-                for(EventsJson elem: item) {
-                    publicEventsRecyclerAdapter.addItem(elem);
-                }
-                publicEventsRecyclerAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<EventsJson>> call, Throwable t) {
-
-            }
-        });*/
-        //EventsJson<Payload> payloadEventsJson = new EventsJson<>();
-        //  Payload payload = new Payload();
 
     }
 
@@ -181,10 +170,20 @@ public class PublicEventsFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_public_events,container,false);
         ButterKnife.bind(this,rootView);
-
+        materialProgressBar.setVisibility(View.VISIBLE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         public_events_recyclerview.setLayoutManager(layoutManager);
+        public_events_recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager){
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                String url = "https://api.github.com/events?page="+PAGE_NUM;
+                EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter,
+                        PublicEventsFragment.this);
+                eventsAsyncTask.execute(url);
+                PAGE_NUM += 1;
+            }
+        });
         public_events_recyclerview.setAdapter( publicEventsRecyclerAdapter);
 
         return rootView;
@@ -193,25 +192,30 @@ public class PublicEventsFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.OnPublicEventsFragmentInteractionListener(uri);
+            //mListener.OnPublicEventsFragmentListener(uri);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnPublicEventsFragmentInteractionListener) {
+        /*if (context instanceof OnPublicEventsFragmentInteractionListener) {
             mListener = (OnPublicEventsFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
-        }
+        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDataFetchFinishedCallback() {
+        materialProgressBar.setVisibility(View.GONE);
     }
 
     /**
@@ -226,6 +230,6 @@ public class PublicEventsFragment extends Fragment {
      */
     public interface OnPublicEventsFragmentInteractionListener {
         // TODO: Update argument type and name
-        void OnPublicEventsFragmentInteractionListener(Uri uri);
+        void OnPublicEventsFragmentListener(ProgressBar progressBar);
     }
 }

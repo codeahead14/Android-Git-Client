@@ -8,6 +8,15 @@
     tools:context="com.example.gaurav.gitfetchapp.SearchGitActivity"
     tools:showIn="@layout/activity_search_git">
 
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_progress_bar"
+        android:indeterminate="true"
+        app:mpb_progressStyle="horizontal"
+        android:visibility="gone"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/search_user_recycler"
         android:layout_width="match_parent"

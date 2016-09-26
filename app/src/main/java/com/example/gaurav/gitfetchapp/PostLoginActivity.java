@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
@@ -27,10 +28,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
+import com.example.gaurav.gitfetchapp.Repositories.Owner;
 import com.example.gaurav.gitfetchapp.UserInfo.User;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,14 +48,17 @@ import retrofit2.Response;
 
 public class PostLoginActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        GistsFragment.OnFragmentInteractionListener, PublicEventsFragment.OnPublicEventsFragmentInteractionListener {
+        GistsFragment.OnFragmentInteractionListener {
     private static final String TAG = PostLoginActivity.class.getName();
     public static final String USER_DETAILS = "user_details";
+    public static final String USER_FOLLOWING = "user_following";
     private Unbinder unbinder;
     private static User userDetails;
     private Tracker mTracker;
     private int screenType;
     private boolean tabletSize;
+    private Runnable mRunnable;
+    private Handler mHandler;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
@@ -75,12 +84,22 @@ public class PostLoginActivity extends AppCompatActivity
         tabletSize = getResources().getBoolean(R.bool.isTablet);
         setSupportActionBar(toolbar);
         final Context context = this;
+        mHandler = new Handler();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                if(mRunnable != null){
+                    mHandler.post(mRunnable);
+                    mRunnable = null;
+                }
+            }
+        };
 
         if(tabletSize){//screenType == 0) {
-            Log.v(TAG," In tablet");
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
         }else {
@@ -91,8 +110,8 @@ public class PostLoginActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
 
         Intent intent = getIntent();
         //String[] intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
@@ -101,17 +120,16 @@ public class PostLoginActivity extends AppCompatActivity
         header_userName_textView.setText(owner);//PreLoginDeciderActivity.getLoginName());//intentData[0]);
         final TextView header_userEmail_textView = (TextView) headerView.findViewById(R.id.header_user_email_text);
         final ImageView header_icon = (ImageView) headerView.findViewById(R.id.header_icon);
-        GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
+        final GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                                     GitHubEndpointInterface.class);
         if(Utility.hasConnection(context)) {
-            Call<User> call = gitHubEndpointInterface.getUserDetails("hemanth"); //owner);//PreLoginDeciderActivity.getLoginName());//intentData[0]);
+            Call<User> call = gitHubEndpointInterface.getUserDetails(owner);//"hemanth");//PreLoginDeciderActivity.getLoginName());//intentData[0]);
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
                         User item = response.body();
                         userDetails = item;
-                        Log.v(TAG, "userDetails: " + userDetails.getHtmlUrl());
                         if (item.getEmail() == null) {
                             header_userEmail_textView.setText(item.getHtmlUrl());
                             Log.v(TAG, "html url: " + item.getHtmlUrl());
@@ -122,6 +140,32 @@ public class PostLoginActivity extends AppCompatActivity
                                 .load(item.getAvatarUrl())
                                 .transform(new CircleTransform())
                                 .into(header_icon);
+
+                        final SharedPreferences.Editor editor = prefs.edit();
+                        if(!prefs.contains(USER_FOLLOWING)){
+                            Call<List<Owner>> followersCall =
+                                    gitHubEndpointInterface.getFollowers(owner);
+                            followersCall.enqueue(new Callback<List<Owner>>() {
+                                @Override
+                                public void onResponse(Call<List<Owner>> call, Response<List<Owner>> response) {
+                                    if(response.isSuccessful()){
+                                        Log.v(TAG,"response successful");
+                                        Set<String> set = new HashSet<String>();
+                                        for(Owner elem : response.body())
+                                            set.add(elem.getLogin());
+                                        editor.putStringSet(USER_FOLLOWING,set);
+                                        editor.apply();
+                                        //editor.
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<Owner>> call, Throwable t) {
+
+                                }
+                            });
+                        }
+
                     }
                 }
 
@@ -179,7 +223,6 @@ public class PostLoginActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "Setting screen name: " + TAG);
         mTracker.setScreenName("Screen"+TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
@@ -193,8 +236,7 @@ public class PostLoginActivity extends AppCompatActivity
             } else {
                 super.onBackPressed();
             }
-        }else
-            Log.v(TAG," In tablet");
+        }
     }
 
     @Override
@@ -224,9 +266,6 @@ public class PostLoginActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Log.v("PostLoginActivity","id: "+id);
-
-        Fragment fragment = null;
         Class fragmentClass;
 
         switch(id) {
@@ -243,7 +282,8 @@ public class PostLoginActivity extends AppCompatActivity
                 fragmentClass = PublicEventsFragment.class;
                 break;
             case R.id.nav_feeds:
-                fragmentClass = FeedsFragment.class;
+                fragmentClass = PrivateFeedsFragment.class;
+                //fragmentClass = FeedsFragment.class;
                 break;
             case R.id.nav_share:
                 fragmentClass = RepositoriesFragment.class;
@@ -254,22 +294,29 @@ public class PostLoginActivity extends AppCompatActivity
             default:
                 fragmentClass = RepositoriesFragment.class;
         }
+        if(!tabletSize) {// screenType == 1 || screenType == 2)
+            drawer.closeDrawer(GravityCompat.START);
+        }
+
         try {
-            fragment = (Fragment) fragmentClass.newInstance();
+            /*
+            Using Runnable for smooth Navigation Drawer Animation
+            http://stackoverflow.com/questions/18871725/how-to-create-smooth-navigation-drawer
+            https://developer.android.com/training/implementing-navigation/nav-drawer.html
+             */
+            final Fragment fragment = (Fragment) fragmentClass.newInstance();
+            mRunnable = new Runnable() {
+                @Override
+               public void run() {
+                    // Insert the fragment by replacing any existing fragment
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.popBackStack();
+                    fragmentManager.beginTransaction().replace(R.id.container_repo,fragment,null).commit();
+                }
+            };
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if(!tabletSize)// screenType == 1 || screenType == 2)
-            drawer.closeDrawer(GravityCompat.START);
-        else
-            Log.v(TAG," In tablet");
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.popBackStack();
-        fragmentManager.beginTransaction().replace(R.id.container_repo,fragment,null).commit();
 
         return true;
     }
@@ -277,10 +324,5 @@ public class PostLoginActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         Toast.makeText(PostLoginActivity.this, "GistsFragment Callback", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void OnPublicEventsFragmentInteractionListener(Uri uri){
-
     }
 }

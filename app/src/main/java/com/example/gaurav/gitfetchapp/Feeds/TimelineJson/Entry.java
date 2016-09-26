@@ -1,6 +1,7 @@
 package com.example.gaurav.gitfetchapp.Feeds.TimelineJson;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 
 /**
@@ -9,28 +10,29 @@ import org.simpleframework.xml.Root;
 @Root(name="entry",strict=false)
 public class Entry {
 
-    @Element(name="id")
+    @Element(name="id",required = false)
     private String id;
 
-    @Element(name="published")
+    @Element(name="published",required = false)
     private String published;
 
-    @Element(name="updated")
+    @Element(name="updated",required = false)
     private String updated;
 
-    @Element(name="link")
+    @Element(name="link", required = false)
     private Link link;
 
-    @Element(name="title")
+    @Element(name="title", required = false)
     private Title title;
 
-    @Element(name="author")
+    @Element(name="author",required = false)
     private Author author;
 
-    @Element(name="media:thumbnail")
-    private Thumbnail media;
+    @Element(name="thumbnail", required = false)
+    @Namespace(reference="http://search.yahoo.com/mrss/")
+    private Thumbnail thumbnail;
 
-    @Element(name="content")
+    @Element(name="content",required = false)
     private Content content;
 
     public String getId(){
@@ -89,12 +91,12 @@ public class Entry {
         this.author = author;
     }
 
-    public Thumbnail getMedia(){
-        return this.media;
+    public Thumbnail getThumbnail(){
+        return this.thumbnail;
     }
 
-    public void setMedia(Thumbnail media){
-        this.media = media;
+    public void setThumbnail(Thumbnail thumbnail){
+        this.thumbnail = thumbnail;
     }
 }
 

@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/avi"
-        style="@style/AVLoadingIndicatorView"
-        android:layout_width="wrap_content"
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/repository_progress_bar"
+        android:indeterminate="true"
+        app:mpb_progressStyle="horizontal"
+        android:padding="@dimen/item_horizontal_margin_small"
         android:visibility="gone"
-        app:indicatorColor="@color/grey500"
-        app:indicatorName="BallSpinFadeLoaderIndicator" />
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/branches_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:scrollbarAlwaysDrawVerticalTrack="true"/>
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:visibility="visible"/>
 
-</LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/hierarchy_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/teal100"
+        android:layout_gravity="bottom"/>
+
+</FrameLayout>

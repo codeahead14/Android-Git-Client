@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.gaurav.gitfetchapp.R;
+import com.example.gaurav.gitfetchapp.Repositories.FileViewActivity;
 
 import java.util.ArrayList;
 
@@ -70,7 +71,7 @@ public class GistsFileRecyclerAdapter extends
         public void onClick(View view){
             Log.v(TAG, "Inside onClick");
             int clickPos = getAdapterPosition();
-            Intent intent = new Intent(mContext,GistsFileSourceActivity.class);
+            Intent intent = new Intent(mContext,FileViewActivity.class);
             intent.putExtra(Intent.EXTRA_TEXT, fileNameList.get(clickPos).getRawUrl());
             mContext.startActivity(intent);
         }

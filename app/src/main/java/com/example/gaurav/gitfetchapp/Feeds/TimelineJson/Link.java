@@ -1,5 +1,6 @@
 package com.example.gaurav.gitfetchapp.Feeds.TimelineJson;
 
+import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -9,13 +10,13 @@ import org.simpleframework.xml.Root;
 @Root(name="link",strict=false)
 public class Link {
 
-    @Element(name = "type")
+    @Attribute(name = "type")
     private String type;
 
-    @Element(name = "ref")
-    private String ref;
+    @Attribute(name = "rel")
+    private String rel;
 
-    @Element(name = "href")
+    @Attribute(name = "href")
     private String href;
 
     public String getType() {
@@ -26,12 +27,12 @@ public class Link {
         this.type = type;
     }
 
-    public String getRef(){
-        return this.ref;
+    public String getRel(){
+        return this.rel;
     }
 
-    public void setRef(String ref){
-        this.ref = ref;
+    public void setRel(String rel){
+        this.rel = rel;
     }
 
     public String getHref(){

@@ -6,20 +6,19 @@
     android:background="@color/grey100"
     tools:context="com.example.gaurav.gitfetchapp.GistsFragment">
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/avi_gists"
-        style="@style/AVLoadingIndicatorView"
-        android:layout_width="wrap_content"
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:indicatorColor="@color/grey500"
-        app:indicatorName="BallSpinFadeLoaderIndicator" />
+        android:id="@+id/gists_progress_bar"
+        android:indeterminate="true"
+        app:mpb_progressStyle="circular"
+        android:layout_gravity="center" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/gists_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingTop="@dimen/item_horizontal_margin_small"
         android:scrollbars="vertical"
         android:scrollbarAlwaysDrawVerticalTrack="true"/>
 

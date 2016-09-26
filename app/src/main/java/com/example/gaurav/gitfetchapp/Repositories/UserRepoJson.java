@@ -2,6 +2,7 @@ package com.example.gaurav.gitfetchapp.Repositories;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -243,6 +244,7 @@ public class UserRepoJson implements Parcelable {
      * @return
      * The name
      */
+    @NonNull
     public String getName() {
         return name;
     }

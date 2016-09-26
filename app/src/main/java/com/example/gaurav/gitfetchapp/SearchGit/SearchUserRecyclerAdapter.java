@@ -75,6 +75,10 @@ public class SearchUserRecyclerAdapter extends RecyclerView.Adapter<SearchUserRe
         Log.v(TAG,"added item: "+items.size());
     }
 
+    public void clear(){
+        items.clear();
+    }
+
     public class SearchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView search_result_textView;
         private ImageView search_result_ImageView;

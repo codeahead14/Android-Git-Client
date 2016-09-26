@@ -25,6 +25,7 @@
         <activity
             android:name=".MainActivity"
             android:label="MainActivity"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".PostLoginActivity"
@@ -80,6 +81,10 @@
         <service
             android:name=".Widgets.RepositoryWidgetRemoteService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service
+            android:name=".IntentServices.RepositoryDetailsService"
+            android:exported="false"/>
 
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"

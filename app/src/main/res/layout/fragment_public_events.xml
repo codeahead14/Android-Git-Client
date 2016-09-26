@@ -5,14 +5,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.gaurav.gitfetchapp.PublicEventsFragment">
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/avi"
-        style="@style/AVLoadingIndicatorView"
-        android:layout_width="wrap_content"
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:indicatorColor="@color/grey500"
-        app:indicatorName="BallSpinFadeLoaderIndicator" />
+        android:id="@+id/events_progress_bar"
+        android:indeterminate="true"
+        app:mpb_progressStyle="circular"
+        android:layout_gravity="center"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/public_events_recyclerview"

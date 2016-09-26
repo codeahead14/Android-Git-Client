@@ -8,6 +8,14 @@
     tools:context="com.example.gaurav.gitfetchapp.UserInfo.PublicUserRepoActivity"
     tools:showIn="@layout/activity_public_user_repo">
 
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/repo_progress_bar"
+        android:indeterminate="true"
+        android:gravity="center"
+        app:mpb_progressStyle="circular" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/public_user_repo_recycler"
         android:scrollbars="vertical"

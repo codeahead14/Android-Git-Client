@@ -9,6 +9,7 @@ import com.example.gaurav.gitfetchapp.Repositories.BranchesJson;
 import com.example.gaurav.gitfetchapp.Events.EventsJson;
 import com.example.gaurav.gitfetchapp.Repositories.CollaboratorsJson;
 import com.example.gaurav.gitfetchapp.Repositories.Commits.CommitsRepoJson;
+import com.example.gaurav.gitfetchapp.Repositories.Owner;
 import com.example.gaurav.gitfetchapp.Repositories.ReadMe.ReadMeJson;
 import com.example.gaurav.gitfetchapp.Repositories.StarredRepoJson;
 import com.example.gaurav.gitfetchapp.Repositories.TreeDetails.RepoContentsJson;
@@ -18,15 +19,22 @@ import com.example.gaurav.gitfetchapp.SearchGit.SearchGitJson;
 import com.example.gaurav.gitfetchapp.UserInfo.User;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
 
 /**
@@ -42,6 +50,15 @@ public interface GitHubEndpointInterface {
 
     @GET("/users/{username}")
     Call<User> getUserDetails(@Path("username") String username);
+
+    @GET("users/{username}/following")
+    Call<List<Owner>> getFollowers(@Path("username") String userName);
+
+    @PUT("user/following/{username}")
+    Call<ResponseBody> putFollowing(@Path("username") String userName);
+
+    @DELETE("user/following/{username}")
+    Call<ResponseBody> deleteFollowing(@Path("username") String userName);
 
     @GET("/user/repos")
     Call<ArrayList<UserRepoJson>> getUserRepositories();
@@ -73,6 +90,9 @@ public interface GitHubEndpointInterface {
                                       @Path("type") String type,
                                       @Path("sha") String sha);
 
+    @GET
+    Call<UserRepoJson> getRepoContentsWithUrl(@Url String dynamicUrl);
+
     @GET("/repos/{owner}/{repo}/contents/{path}")
     Call<ArrayList<RepoContentsJson>> getRepoContents(@Path("owner") String owner,
                                                       @Path("repo") String repo,
@@ -87,6 +107,7 @@ public interface GitHubEndpointInterface {
     Call<ArrayList<EventsJson>> getPublicEvents();
 
     // For downloading file contents from the server
+    @Headers("Accept: application/vnd.github.VERSION.html")
     @GET
     Call<ResponseBody> downloadFileWithDynamicUrlSync(@Url String fileUrl);
 
@@ -95,13 +116,19 @@ public interface GitHubEndpointInterface {
     Call<ArrayList<IssuesJson>> getRepoIssues(@Path("owner") String owner,
                                    @Path("repo") String repo);
 
-    // Fore fetching public issues
-    @GET ("/user/issues")
-    Call<ArrayList<IssuesJson>> getPublicIssues();
+    // Fetching issues.- Using QueryMap to map optional queries
+    @GET ("/search/issues")
+    Call<IssuesJson> getIssues(@Query("q") String options,
+                               @Query("page") int pageNumber,
+                               @Query("per_page") int numberPerAge);
 
-    // For accessing Private User Feeds
+    // For accessing Public User Feeds
     @GET("/feeds")
     Call<FeedsJson> getUserFeeds();
+
+    // For accessing Personal User Events
+    @GET ("users/{user}/received_events")
+    Call<ArrayList<EventsJson>> getPrivateEvents(@Path("user") String userName);
 
     // For accessing Timeline
     @GET

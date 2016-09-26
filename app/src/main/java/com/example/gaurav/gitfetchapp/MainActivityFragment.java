@@ -65,7 +65,7 @@ public class MainActivityFragment extends Fragment {
 
     @OnClick(R.id.loginbutton) void submit(){
         userNameField = "codeahead14"; //userEmail.getText().toString();
-        passwordField = "Gaurav14"; //userPassword.getText().toString();
+        passwordField = "IFailedMyself2204"; //userPassword.getText().toString();
         String[] scopes = {"user","public_repo","repo","delete_repo","gist"};
 
         if(userNameField.matches("") || passwordField.matches("")){

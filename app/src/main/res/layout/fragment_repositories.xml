@@ -7,12 +7,15 @@
     tools:context=".RepositoriesFragment"
     android:padding="0dp">
 
-    <!--<android.support.v7.widget.RecyclerView
-        android:id="@+id/repository_recycler"
-        android:scrollbars="vertical"
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbarAlwaysDrawVerticalTrack="true"/>-->
+        android:layout_height="wrap_content"
+        android:id="@+id/repositories_progress_bar"
+        android:indeterminate="true"
+        android:visibility="visible"
+        app:mpb_progressStyle="circular"
+        android:layout_gravity="center"/>
+
     <ListView
         android:id="@+id/repository_recycler"
         android:layout_width="match_parent"

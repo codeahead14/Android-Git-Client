@@ -1,5 +1,6 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.net.Credentials;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,8 +18,11 @@ import com.google.gson.annotations.SerializedName;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.ResponseBody;
+import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,6 +58,13 @@ public class FeedsFragment extends Fragment {
                     interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                     OkHttpClient client = new OkHttpClient.Builder()
                             .addInterceptor(interceptor)
+                            .authenticator(new Authenticator() {
+                                @Override
+                                public Request authenticate(Route route, okhttp3.Response response) throws IOException {
+                                    String credentials  = okhttp3.Credentials.basic("","");
+                                    return null;
+                                }
+                            })
                             .build();
 
                     Retrofit retrofit = new Retrofit.Builder()
@@ -71,7 +82,7 @@ public class FeedsFragment extends Fragment {
                         @Override
                         public void onResponse(Call<Feed> call, Response<Feed> response) {
                             Feed item = response.body();
-                            Log.v(TAG,"feed: "+ item.getTitle());
+                            Log.v(TAG,"feed: "+ item.getEntry().get(0).getAuthor().getName());
                         }
 
                         @Override

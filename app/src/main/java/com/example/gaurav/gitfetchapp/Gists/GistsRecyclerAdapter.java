@@ -93,7 +93,6 @@ public class GistsRecyclerAdapter extends
             count++;
         }
         firstFileUrl = objects[0].getRawUrl();
-        Log.v(TAG,gistsJsons.get(position).getOwner().getAvatarUrl());
 
         Picasso.with(mContext)
                 .load(gistsJsons.get(position).getOwner().getAvatarUrl())
@@ -193,7 +192,7 @@ public class GistsRecyclerAdapter extends
             login_filename_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.v(TAG,"button click");
+                    Log.v(TAG,"login filename button: "+firstFileUrl);
                     fetchFileContents(firstFileUrl);
                 }
             });
@@ -212,10 +211,6 @@ public class GistsRecyclerAdapter extends
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             gist_file_recyclerview.setLayoutManager(layoutManager);
             gist_file_recyclerview.setOnClickListener(this);
-            //RecyclerView.ItemDecoration itemDecoration = new
-              //      DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST);
-            //  gist_file_recyclerview.addItemDecoration(itemDecoration);
-
             gist_file_textView.setOnClickListener(this);
         }
 
@@ -229,10 +224,6 @@ public class GistsRecyclerAdapter extends
                 fileListExpanded = true;
                 gist_file_recyclerview.setVisibility(View.VISIBLE);
             }
-
-            /*Intent intent = new Intent(mContext,FileListViewActivity.class);
-            intent.putExtra(Intent.EXTRA_TEXT, objects[getAdapterPosition()]);
-            mContext.startActivity(intent);*/
         }
     }
 }

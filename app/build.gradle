@@ -76,6 +76,9 @@ dependencies {
     compile 'us.feras.mdv:markdownview:1.1.0'
     compile 'com.mukesh:markdownview:1.0.0'
     compile files('libs/txtmark-0.13.jar')
+
+    // Libraries for progress bar
+    compile 'me.zhanghai.android.materialprogressbar:library:1.1.7'
 }
 
 apply plugin: 'com.google.gms.google-services'

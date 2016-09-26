@@ -23,6 +23,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +33,8 @@ public class SearchGitActivity extends AppCompatActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.search_edit) EditText searchEdit;
     @BindView(R.id.search_user_recycler) RecyclerView searchRecyclerView;
+    @BindView(R.id.search_progress_bar)
+    MaterialProgressBar materialProgressBar;
 
     private static final String TAG = SearchGitActivity.class.getName();
     private SearchUserRecyclerAdapter searchUserRecyclerAdapter;
@@ -54,6 +57,7 @@ public class SearchGitActivity extends AppCompatActivity {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     Log.v(TAG,"hitting Enter");
                     String searchQuery = searchEdit.getText().toString();
+                    materialProgressBar.setVisibility(View.VISIBLE);
                     fetchSearchResults(searchQuery);
                     return true;
                 }
@@ -85,10 +89,11 @@ public class SearchGitActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     SearchGitJson item = response.body();
                     List<Item> searchItems = item.getItems();
-                    Log.v(TAG,"responsesuccessful: "+searchItems.size());
+                    searchUserRecyclerAdapter.clear();
                     for(Item elem: searchItems)
                         searchUserRecyclerAdapter.addItem(elem);
                     searchUserRecyclerAdapter.notifyDataSetChanged();
+                    materialProgressBar.setVisibility(View.GONE);
                 }
             }
 

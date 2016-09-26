@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -50,6 +52,8 @@ public class RepositoryDetailActivityFragment extends Fragment {
     @BindView(R.id.repolanguageText) TextView repo_language_textview;
     @BindView(R.id.watch_Img) ImageView watch_count_imageview;
     @BindView(R.id.filter_menu_button) ImageButton filter_menu_button;
+    @BindView(R.id.repository_details_progress_bar)
+    MaterialProgressBar materialProgressBar;
 
     private static final String TAG = RepositoryDetailActivityFragment.class.getName();
     public static final String ARG_PAGE = "ARG_PAGE";
@@ -78,14 +82,10 @@ public class RepositoryDetailActivityFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        Log.v(TAG,"on stop called");
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor ed = mPrefs.edit();
-        //branchMap.put(repoName,repoBranch);
         ed.putString(repoName, repoBranch);
-
         ed.apply();
-        Log.v(TAG,"stopping with repoBranch: "+repoBranch);
     }
 
     @Override
@@ -99,7 +99,6 @@ public class RepositoryDetailActivityFragment extends Fragment {
 
             SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             repoBranch = mPrefs.getString(repoName,item.getDefaultBranch());
-            Log.v(TAG,"getting shared preferences: "+repoBranch);
         }
     }
 
@@ -110,7 +109,6 @@ public class RepositoryDetailActivityFragment extends Fragment {
     }
 
     @OnClick(R.id.filter_menu_button) public void showMenu(View v) {
-        Log.v(TAG,"show Menu");
         PopupMenu popup = new PopupMenu(getContext(), v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_repository_detail_actions, popup.getMenu());
@@ -140,7 +138,6 @@ public class RepositoryDetailActivityFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            Log.v(TAG,"result received: "+data.getExtras().getString(Intent.EXTRA_TEXT));
             repoBranch = data.getExtras().getString(Intent.EXTRA_TEXT);
         }
     }
@@ -165,6 +162,7 @@ public class RepositoryDetailActivityFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_repository_detail, container, false);
         ButterKnife.bind(this,rootView);
 
+        materialProgressBar.setVisibility(View.GONE);
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -175,15 +173,17 @@ public class RepositoryDetailActivityFragment extends Fragment {
         //toolbar.setTitleTextColor(getResources().getColor(R.color.indigo700));
 
         Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
+
+            final Drawable upArrow = getResources().getDrawable(R.drawable.abc_ic_ab_back_material);
+            upArrow.setColorFilter(getResources().getColor(R.color.grey50), PorterDuff.Mode.SRC_ATOP);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(upArrow);
+        }
         //window.setStatusBarColor(getResources().getColor(R.color.teal700));
-        window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
-
-
-        final Drawable upArrow = getResources().getDrawable(R.drawable.abc_ic_ab_back_material);
-        upArrow.setColorFilter(getResources().getColor(R.color.grey50), PorterDuff.Mode.SRC_ATOP);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(upArrow);
         return rootView;
     }
 
