@@ -37,6 +37,7 @@ import com.example.gaurav.gitfetchapp.Issues.IssuesJson;
 import com.example.gaurav.gitfetchapp.Issues.IssuesRecyclerAdapter;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.mikepenz.fastadapter.adapters.FastItemAdapter;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
@@ -82,6 +83,10 @@ public class IssuesFragment extends Fragment implements RecyclerViewScrollListen
     private FrameLayout.LayoutParams layoutParams;
 
     public static int loadingIndicator = 0;
+
+    // FastAdapter Library usage
+    //private FastItemAdapter<IssuesJson> fastItemAdapter;
+    //private FooterAdapter<ProgressItem> footerAdapter;
 
     public IssuesFragment() {
 
@@ -176,6 +181,12 @@ public class IssuesFragment extends Fragment implements RecyclerViewScrollListen
         };
 
         getActivity().registerReceiver(broadcastReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
     }
 
     @Nullable

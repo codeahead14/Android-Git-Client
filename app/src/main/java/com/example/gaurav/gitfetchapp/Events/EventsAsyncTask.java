@@ -63,7 +63,6 @@ public class EventsAsyncTask extends AsyncTask<String, Void, ArrayList<EventsJso
 
     @Override
     protected ArrayList<EventsJson> doInBackground(String... params) {
-        Log.v(TAG, "in background");
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
                 .authority("api.github.com")
@@ -123,7 +122,6 @@ public class EventsAsyncTask extends AsyncTask<String, Void, ArrayList<EventsJso
                 JSONObject post = jsonArray.getJSONObject(i);
                 EventsJson item = new EventsJson();
                 String type = post.getString("type");
-                Log.v(TAG,"type: "+type);
                 String id = post.getString("id");
                 Actor actor = gson.fromJson(post.get("actor").toString(),Actor.class);
                 Repo repo = gson.fromJson(post.get("repo").toString(), Repo.class);
@@ -215,8 +213,11 @@ public class EventsAsyncTask extends AsyncTask<String, Void, ArrayList<EventsJso
     protected void onPostExecute(ArrayList<EventsJson> eventsJsons) {
         super.onPostExecute(eventsJsons);
         //avLoadingIndicatorView.hide();
+        Log.v(TAG,"items added" + eventsJsons.size());
         onDataFetchFinished.onDataFetchFinishedCallback();
-        if(eventsJsons != null) {
+        if(eventsJsons.size() == 0)
+            adapter.notifyDataSetChanged();
+        else{
             for (EventsJson elem : eventsJsons) {
                 adapter.addItem(elem);
             }

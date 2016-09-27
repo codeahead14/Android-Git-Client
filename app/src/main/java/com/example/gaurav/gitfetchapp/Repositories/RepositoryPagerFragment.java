@@ -196,10 +196,7 @@ public class RepositoryPagerFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_repository_content, container, false);
         ButterKnife.bind(this, view);
-        //fetchPagerData();
         materialProgressBar = (MaterialProgressBar) view.findViewById(R.id.repository_progress_bar);
-        //if(mPage == 1){
-        //} else {
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         branchesRecyclerView.setLayoutManager(layoutManager);
@@ -218,15 +215,6 @@ public class RepositoryPagerFragment extends Fragment {
         LinearLayoutManager listManager = new LinearLayoutManager(getActivity());
         listManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         fileHierarchyList.setLayoutManager(listManager);
-
-        //if(mPage == 1)
-        //  branchesRecyclerView.setAdapter(branchRecyclerAdapter);
-/*            if (mPage == 2)
-                branchesRecyclerView.setAdapter(filesRecyclerAdapter);
-            else if (mPage == 3)
-                //branchesRecyclerView.setAdapter(eventsRecyclerAdapter);
-                branchesRecyclerView.setAdapter(commitsRecyclerAdapter);*/
-        //}
         return view;
     }
 

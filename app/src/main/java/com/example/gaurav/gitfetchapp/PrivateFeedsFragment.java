@@ -57,6 +57,7 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
     private PublicEventsRecyclerAdapter eventsRecyclerAdapter;
     private static int PAGE_NUM = 1;
     private String userName;
+    private boolean loading = false;
 
     @BindView(R.id.privatefeeds_recyclerview)
     RecyclerView recyclerView;
@@ -111,15 +112,34 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                //super.onScrolled(recyclerView, dx, dy);
-                Log.v(TAG,"scroll y: "+dy);
+                super.onScrolled(recyclerView, dx, dy);
+                int lastVisibleItemPosition, itemCount, threshold = 5, previousCount;
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition();
+                itemCount = linearLayoutManager.getItemCount();
+                if(dy > 0 && itemCount - lastVisibleItemPosition < threshold) {
+                    Log.v(TAG,"itemcount and lastVisibleItemPosition"+itemCount+" "+lastVisibleItemPosition);
+                    if(!loading) {
+                        loading = true;
+                        String url = "https://api.github.com/users/"+userName+"/received_events?page="+PAGE_NUM;
+                        EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(eventsRecyclerAdapter,PrivateFeedsFragment.this);
+                        eventsAsyncTask.execute(url);
+                        PAGE_NUM += 1;
+                        Toast.makeText(getContext(), "Approaching end", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
-        });*/
 
-        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager){
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
+
+        /*recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager){
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 Log.v(TAG,"On Load More");
@@ -128,7 +148,7 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
                 eventsAsyncTask.execute(url);
                 PAGE_NUM += 1;
             }
-        });
+        });*/
 
         recyclerView.setAdapter( eventsRecyclerAdapter);
 
@@ -137,6 +157,7 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
 
     @Override
     public void onDataFetchFinishedCallback() {
+        loading = false;
         materialProgressBar.setVisibility(View.GONE);
     }
 }

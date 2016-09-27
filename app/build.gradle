@@ -79,6 +79,9 @@ dependencies {
 
     // Libraries for progress bar
     compile 'me.zhanghai.android.materialprogressbar:library:1.1.7'
+    compile('com.mikepenz:fastadapter:1.8.2@aar') {
+        transitive = true
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

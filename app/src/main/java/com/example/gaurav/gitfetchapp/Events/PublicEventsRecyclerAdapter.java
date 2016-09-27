@@ -32,7 +32,9 @@ import com.example.gaurav.gitfetchapp.Events.WatchEventPayload.WatchEventPayload
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.IntentServices.RepositoryDetailsReceiver;
 import com.example.gaurav.gitfetchapp.IntentServices.RepositoryDetailsService;
+import com.example.gaurav.gitfetchapp.IssuesFragment;
 import com.example.gaurav.gitfetchapp.PostLoginActivity;
+import com.example.gaurav.gitfetchapp.PrivateFeedsFragment;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.RecyclerViewParentAdapter;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryDetailActivity;
@@ -86,7 +88,11 @@ public class PublicEventsRecyclerAdapter extends RecyclerViewParentAdapter{
 
     @Override
     public int getItemViewType(int position) {
-        return position != (eventsJsonArrayList.size()-1) ? VIEW_ITEM : VIEW_PROG;
+        if(position == eventsJsonArrayList.size()-1 && IssuesFragment.loadingIndicator != 1) {
+            return VIEW_PROG;
+        }else {;
+            return VIEW_ITEM;
+        }
     }
 
     @Override
