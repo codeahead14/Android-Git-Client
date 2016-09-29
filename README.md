@@ -34,7 +34,6 @@ Will update this list.
 
 **This is the landing page if the user is already logged in.**
 
-<img src="https://github.com/codeahead14/Android-Git-Client/blob/Native_Recycler_View/App-Screenshots/Repositories%20Overview.png" width="200" alt="Repositories>
-
+<img src="https://github.com/codeahead14/Android-Git-Client/blob/Native_Recycler_View/App-Screenshots/Repositories%20Overview.png" width="200" alt="Repositories">
 
 `For more screeenshots visit [here](https://github.com/codeahead14/Android-Git-Client/tree/Native_Recycler_View/App-Screenshots)`
