@@ -36,4 +36,4 @@ Will update this list.
 
 <img src="https://github.com/codeahead14/Android-Git-Client/blob/Native_Recycler_View/App-Screenshots/Repositories%20Overview.png" width="200" alt="Repositories">
 
-`For more screeenshots visit [here](https://github.com/codeahead14/Android-Git-Client/tree/Native_Recycler_View/App-Screenshots)`
+For more screeenshots visit [here](https://github.com/codeahead14/Android-Git-Client/tree/Native_Recycler_View/App-Screenshots).
