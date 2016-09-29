@@ -36,8 +36,7 @@ public class MainActivityFragment extends Fragment {
     private static CatLoadingView catView;
     private Unbinder unbinder;
     private final String clientId = "";
-    private final String clientSecret = "" +
-            "Revoke all user tokens";
+    private final String clientSecret = "";
     private final String redirectUri = "welcome://com.project.github";
     private String userNameField = null;
     private String passwordField = null;
