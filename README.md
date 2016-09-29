@@ -28,4 +28,12 @@ Will update this list.
 
 ## Screenshots
 
+**This is the landing page if the user is not logged in.**
 
+<img src="https://github.com/codeahead14/Android-Git-Client/blob/Native_Recycler_View/App-Screenshots/Login%20Screen.png" width="200" alt="Login Screen">
+
+**This is the landing page if the user is already logged in.**
+
+<img src="https://github.com/codeahead14/Android-Git-Client/blob/Native_Recycler_View/App-Screenshots/Repositories%20Overview.png" width="200" alt="Repositories">
+
+For more screeenshots visit [here](https://github.com/codeahead14/Android-Git-Client/tree/Native_Recycler_View/App-Screenshots).

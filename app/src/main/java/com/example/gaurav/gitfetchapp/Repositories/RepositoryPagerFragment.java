@@ -207,7 +207,7 @@ public class RepositoryPagerFragment extends Fragment {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 //materialProgressBar.setVisibility(View.VISIBLE);
-                loadingIndicator = 0;
+                loadingIndicator = 1;
                 fetchPagerData();
             }
         });
