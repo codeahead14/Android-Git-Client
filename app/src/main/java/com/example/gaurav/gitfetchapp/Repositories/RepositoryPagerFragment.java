@@ -163,7 +163,7 @@ public class RepositoryPagerFragment extends Fragment {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                 String AUTHOR = "author";
                 String AUTHOR_NAME = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY, null);
-                String author_params = String.format("%s:%s", AUTHOR, "wasabeef");
+                String author_params = String.format("%s:%s", AUTHOR, AUTHOR_NAME);
                 GitHubEndpointInterface endpointInterface = ServiceGenerator.createService(
                         GitHubEndpointInterface.class, AccessToken.getInstance());
                 Call<IssuesJson> call = endpointInterface.getIssues(author_params, PAGE_COUNT, 30);

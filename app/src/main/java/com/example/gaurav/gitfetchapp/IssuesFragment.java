@@ -106,7 +106,7 @@ public class IssuesFragment extends Fragment implements RecyclerViewScrollListen
          */
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         AUTHOR_NAME = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
-        String author_params = String.format("%s:%s",AUTHOR,"hemanth");
+        String author_params = String.format("%s:%s",AUTHOR,AUTHOR_NAME);
 
         if (Utility.hasConnection(getContext())) {
             //avLoadingIndicatorView.show();
