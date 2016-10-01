@@ -3,16 +3,14 @@ package com.example.gaurav.gitfetchapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.roger.catloadinglibrary.CatLoadingView;
@@ -44,31 +42,34 @@ public class MainActivityFragment extends Fragment {
 
     public static String loginName = null;
 
-    @BindView(R.id.email) EditText userEmail;
-    @BindView(R.id.pass) EditText userPassword;
+    @BindView(R.id.email)
+    EditText userEmail;
+    @BindView(R.id.pass)
+    EditText userPassword;
 
     public MainActivityFragment() {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         catView = new CatLoadingView();
     }
 
     @Override
-    public void onDestroyView(){
+    public void onDestroyView() {
         super.onDestroyView();
-        if(unbinder!=null)
+        if (unbinder != null)
             unbinder.unbind();
     }
 
-    @OnClick(R.id.loginbutton) void submit(){
-        userNameField = "";
-        passwordField = ""; 
-        String[] scopes = {"user","public_repo","repo","delete_repo","gist"};
+    @OnClick(R.id.loginbutton)
+    void submit() {
+        userNameField = userEmail.getText().toString();
+        passwordField = userPassword.getText().toString();
+        String[] scopes = {"user", "public_repo", "repo", "delete_repo", "gist"};
 
-        if(userNameField.matches("") || passwordField.matches("")){
+        if (userNameField.isEmpty() || passwordField.isEmpty()) {
             Toast.makeText(getActivity(), "Cannot Leave UserName/Password Blank",
                     Toast.LENGTH_SHORT).show();
         } else {
@@ -82,13 +83,13 @@ public class MainActivityFragment extends Fragment {
             loginPost.setClient_secret(clientSecret);
             Call<LoginJson> call = gitInterface.getLoginCode(loginPost);
 
-            if(Utility.hasConnection(getContext())) {
-                catView.show(getFragmentManager(),TAG);
+            if (Utility.hasConnection(getContext())) {
+                catView.show(getFragmentManager(), TAG);
                 call.enqueue(new Callback<LoginJson>() {
                     @Override
                     public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
                         LoginJson item = response.body();
-                        Log.v(TAG,"response: "+item.getScopes());
+                        Log.v(TAG, "response: " + item.getScopes());
                         if (item.getToken() != null) {
                             AccessToken.getInstance().setAccessToken(item.getToken());
                             prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -110,7 +111,7 @@ public class MainActivityFragment extends Fragment {
 
                     }
                 });
-            }else
+            } else
                 Toast.makeText(getContext(), getContext().getResources().getString(R.string.notOnline), Toast.LENGTH_LONG).show();
         }
     }
@@ -119,7 +120,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
 
         return rootView;
     }
@@ -138,11 +139,11 @@ public class MainActivityFragment extends Fragment {
                 // get access token
                 GitHubEndpointInterface loginService =
                         ServiceGenerator.createService(GitHubEndpointInterface.class, clientId, clientSecret);
-                Call<AccessToken> call = loginService.getAccessToken(clientId, clientSecret,code);
+                Call<AccessToken> call = loginService.getAccessToken(clientId, clientSecret, code);
 
                 try {
                     AccessToken accessToken = call.execute().body();
-                } catch (IOException e ){
+                } catch (IOException e) {
                     // handle error
                 }
             } else if (uri.getQueryParameter("error") != null) {
