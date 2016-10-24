@@ -33,8 +33,8 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static CatLoadingView catView;
     private Unbinder unbinder;
-    private final String clientId = "158a0d1c5f2352735a22";
-    private final String clientSecret = "6284df152b0cfdc33bb6118474a3f77188f86dd9";
+    private final String clientId = "";
+    private final String clientSecret = "";
     private final String redirectUri = "welcome://com.project.github";
     private String userNameField = null;
     private String passwordField = null;
@@ -65,8 +65,8 @@ public class MainActivityFragment extends Fragment {
 
     @OnClick(R.id.loginbutton)
     void submit() {
-        userNameField = "codeahead14"; // userEmail.getText().toString();
-        passwordField = "IFailedMyself2204"; // userPassword.getText().toString();
+        userNameField = ""; // userEmail.getText().toString();
+        passwordField = ""; // userPassword.getText().toString();
 //        userNameField = userEmail.getText().toString();
 //        passwordField = userPassword.getText().toString();
 
