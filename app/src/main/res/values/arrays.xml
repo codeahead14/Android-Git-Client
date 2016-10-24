@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Repositories Sort-List-->
+    <string-array name="pref_repositories_sort_entries">
+        <item>Created</item>
+        <item>Updated</item>
+        <item>Pushed</item>
+        <item>Full Name</item>
+    </string-array>
+
+    <string-array name="pref_repositories_sort_values">
+        <item>created</item>
+        <item>updated</item>
+        <item>pushed</item>
+        <item>full_name</item>
+    </string-array>
+
+    <!-- Repositories Type-List-->
+    <string-array name="pref_repositories_type_entries">
+        <item>All</item>
+        <item>Owner</item>
+        <item>Public</item>
+        <item>Private</item>
+        <item>Member</item>
+    </string-array>
+
+    <string-array name="pref_repositories_type_values">
+        <item>all</item>
+        <item>owner</item>
+        <item>public</item>
+        <item>private</item>
+        <item>member</item>
+    </string-array>
+
+    <!-- Repositories Direction-List-->
+    <string-array name="pref_repositories_direction_entries">
+        <item>Ascending</item>
+        <item>Descending</item>
+    </string-array>
+
+    <string-array name="pref_repositories_direction_values">
+        <item>ascending</item>
+        <item>descending</item>
+    </string-array>
+
+    <!-- Repositories Visibility-List-->
+    <string-array name="pref_repositories_visibility_entries">
+        <item>All</item>
+        <item>Public</item>
+        <item>Private</item>
+    </string-array>
+
+    <string-array name="pref_repositories_visibility_values">
+        <item>all</item>
+        <item>public</item>
+        <item>private</item>
+    </string-array>
+
+</resources>

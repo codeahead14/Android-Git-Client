@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="@string/pref_repositories_sort"
+        android:title="@string/pref_repositories_sort"
+        android:entries="@array/pref_repositories_sort_entries"
+        android:entryValues="@array/pref_repositories_sort_values"
+        android:defaultValue="@string/pref_repositories_sort_default"/>
+
+    <ListPreference
+        android:key="@string/pref_repositories_type"
+        android:title="@string/pref_repositories_type"
+        android:entries="@array/pref_repositories_type_entries"
+        android:entryValues="@array/pref_repositories_type_values"
+        android:defaultValue="@string/pref_repositories_type_default"/>
+
+    <ListPreference
+        android:key="@string/pref_repositories_direction"
+        android:title="@string/pref_repositories_direction"
+        android:entries="@array/pref_repositories_direction_entries"
+        android:entryValues="@array/pref_repositories_direction_values"
+        android:defaultValue="@string/pref_repositories_direction_default"/>
+
+    <ListPreference
+        android:key="@string/pref_repositories_visibility"
+        android:title="@string/pref_repositories_visibility"
+        android:entries="@array/pref_repositories_visibility_entries"
+        android:entryValues="@array/pref_repositories_visibility_values"
+        android:defaultValue="@string/pref_repositories_visibility_default"/>
+</PreferenceScreen>

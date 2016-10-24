@@ -88,7 +88,8 @@ public class PublicEventsRecyclerAdapter extends RecyclerViewParentAdapter{
 
     @Override
     public int getItemViewType(int position) {
-        if(position == eventsJsonArrayList.size()-1 && IssuesFragment.loadingIndicator != 1) {
+        if(position == eventsJsonArrayList.size()-1 && PrivateFeedsFragment.loadingEvents != 1) {
+            Log.v(TAG,"View PROG");
             return VIEW_PROG;
         }else {;
             return VIEW_ITEM;
@@ -168,6 +169,7 @@ public class PublicEventsRecyclerAdapter extends RecyclerViewParentAdapter{
                 description = String.format(res.getString(R.string.fork_event),
                         ((ForkPayload) payload).getForkee().getFullName());
                 description2 = android.text.Html.fromHtml("forked " + "<b>" +
+                         eventsJsonArrayList.get(position).getRepo().getName() + "</b>" + " to " + "<b>" +
                         ((ForkPayload) payload).getForkee().getFullName() + "</b>");
             } else if (payload instanceof GollumEventPayload) {
                 description = String.format(res.getString(R.string.gollum_event),

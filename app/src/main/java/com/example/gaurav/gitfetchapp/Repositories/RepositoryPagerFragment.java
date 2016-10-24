@@ -44,7 +44,7 @@ public class RepositoryPagerFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final String USER_REPO = "USER_REPO";
     private static final String REPOSITORY_PAGER_STATE = "repo_pager_state";
-    private static final String TAG = RepositoryPagerFragment.class.getName();
+    public static final String TAG = RepositoryPagerFragment.class.getName();
     private int mPage;
     private UserRepoJson userRepoJson;
     private BranchRecyclerAdapter branchRecyclerAdapter;
@@ -95,9 +95,10 @@ public class RepositoryPagerFragment extends Fragment {
         else if(mPage == 3)
             commitsRecyclerAdapter = new CommitsRecyclerAdapter(getContext(), new ArrayList<CommitsRepoJson>());
         else if(mPage == 4) {
-            Log.v(TAG,"pager fragment");
             PAGE_COUNT = 1;
-            issuesRecyclerAdapter = new IssuesRecyclerAdapter(getContext(), new ArrayList<IssueItem>());
+            loadingIndicator = 1;
+            issuesRecyclerAdapter = new IssuesRecyclerAdapter(getContext(), new ArrayList<IssueItem>(),
+                    TAG);
             issuesRecyclerAdapter.clear();
         }
         fetchPagerData();
@@ -163,7 +164,7 @@ public class RepositoryPagerFragment extends Fragment {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                 String AUTHOR = "author";
                 String AUTHOR_NAME = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY, null);
-                String author_params = String.format("%s:%s", AUTHOR, AUTHOR_NAME);
+                String author_params = String.format("%s:%s", AUTHOR, "wasabeef");
                 GitHubEndpointInterface endpointInterface = ServiceGenerator.createService(
                         GitHubEndpointInterface.class, AccessToken.getInstance());
                 Call<IssuesJson> call = endpointInterface.getIssues(author_params, PAGE_COUNT, 30);
@@ -205,10 +206,11 @@ public class RepositoryPagerFragment extends Fragment {
         branchesRecyclerView.addItemDecoration(itemDecoration);
         branchesRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
-            public void onLoadMore(int page, int totalItemsCount) {
+            public void onLoadMore(int page, int totalItemsCount, boolean loading) {
                 //materialProgressBar.setVisibility(View.VISIBLE);
-                loadingIndicator = 1;
-                fetchPagerData();
+                loadingIndicator = 0;
+                if (mPage != 2)
+                    fetchPagerData();
             }
         });
 

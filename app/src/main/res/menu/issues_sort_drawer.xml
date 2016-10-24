@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/right_category_sort" android:checkable="true">
+        <menu>
+            <item
+                android:id="@+id/nav_created_issues"
+                android:title="@string/category_created" />
+            <item
+                android:id="@+id/nav_comments_issues"
+                android:title="@string/category_comments" />
+            <item
+                android:id="@+id/nav_updated_issues"
+                android:title="@string/category_updated" />
+        </menu>
+    </item>
+
+    <item android:title="@string/right_category_order" android:checkable="true">
+        <menu>
+            <item
+                android:id="@+id/nav_ascending_issues"
+                android:title="@string/category_ascending" />
+            <item
+                android:id="@+id/nav_descending_issues"
+                android:title="@string/category_descending" />
+        </menu>
+    </item>
+
+</menu>

@@ -16,6 +16,7 @@ import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.Issue;
 import com.example.gaurav.gitfetchapp.IssuesFragment;
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.RecyclerViewParentAdapter;
+import com.example.gaurav.gitfetchapp.Repositories.RepositoryPagerFragment;
 import com.example.gaurav.gitfetchapp.Utility;
 
 import java.lang.reflect.Array;
@@ -29,14 +30,13 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //Recycler
     private static final String TAG = IssuesRecyclerAdapter.class.getName();
     private List<IssueItem> issuesList;
     private Context mContext;
+    private String callFragment;
+    private int loadingIndicator;
 
-    public interface OnLoadFinished{
-        void OnLoadingFinished();
-    }
-
-    public IssuesRecyclerAdapter(Context context, List<IssueItem> items){
+    public IssuesRecyclerAdapter(Context context, List<IssueItem> items, String callFragment){
         this.mContext = context;
         this.issuesList = items;
+        this.callFragment = callFragment;
     }
 
 
@@ -58,16 +58,15 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //Recycler
 
     @Override
     public int getItemViewType(int position) {
-        Log.v(TAG,"scrollstate "+ IssuesFragment.loadingIndicator);
-        if(position == issuesList.size()-1 && IssuesFragment.loadingIndicator != 1) {
-            //Log.v(TAG, "loading indicator: " + IssuesFragment.loadingIndicator);
+        if (callFragment.equals(IssuesFragment.TAG))
+            loadingIndicator = IssuesFragment.loadingIndicator;
+        else if(callFragment.equals(RepositoryPagerFragment.TAG))
+            loadingIndicator = RepositoryPagerFragment.loadingIndicator;
+        if(position == issuesList.size()-1 && loadingIndicator != 1) {
             return VIEW_PROG;
         }else {
-            //Log.v(TAG, "loading indicator in ITEM VIEW: " + IssuesFragment.loadingIndicator);
             return VIEW_ITEM;
         }
-        //Log.v(TAG,"position "+position);
-        //return position != (issuesList.size()) ? VIEW_ITEM : VIEW_PROG;
     }
 
     @Override

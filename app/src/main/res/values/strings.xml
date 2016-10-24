@@ -2,7 +2,7 @@
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
     <string name="app_name">GitFetchApp</string>
-    <string name="app_display_name">Track git</string>
+    <string name="app_display_name">trackGit</string>
     <string name="action_settings">Settings</string>
     <string name="action_follow">Follow</string>
     <string name="action_unfollow">Unfollow</string>
@@ -22,10 +22,12 @@
 
     <!-- Navigation Drawer Fragments Name Menu -->
     <string name="respositories">Repostiories</string>
+    <string name="respositories_settings">Repostiories Settings</string>
     <string name="gists">Gists</string>
     <string name="issues">Issues</string>
     <string name="feeds">Feeds</string>
     <string name="public_events">Public Events</string>
+    <string name="public_gist">Public Gists</string>
     <string name="sub_category_misc">Miscellaneous</string>
     <string name="sub_category_public">Public</string>
     <string name="share">Share</string>
@@ -37,6 +39,15 @@
     <string name="readme_title">ReadMe.md</string>
 
     <string name="no_issues">No Issues opened/closed yet by You.</string>
+
+    <!-- Right Drawer String Constants-->
+    <string name="right_category_sort">Sort</string>
+    <string name="right_category_order">Order</string>
+    <string name="category_created">Created</string>
+    <string name="category_comments">Comments</string>
+    <string name="category_updated">Updated</string>
+    <string name="category_ascending">Ascending</string>
+    <string name="category_descending">Descending</string>
 
     <!-- Language-specific constants -->
     <string name="today">Today</string>
@@ -104,6 +115,23 @@
     <!-- Transition Names below this -->
     <string name="userAvatarTransition">user_avatar_transition</string>
     <string name="searchIconTransition">search_icon_transition</string>
+
+    <!-- Settings Preferences key strings -->
+    <string name="pref_repositories">Settings</string>
+    <string name="pref_repositories_sort_default">updated</string>
+    <string name="pref_repositories_sort">Sort By</string>
+    <string name="pref_repositories_type_default">all</string>
+    <string name="pref_repositories_type">Type</string>
+    <string name="pref_repositories_direction_default">descending</string>
+    <string name="pref_repositories_direction">Order</string>
+    <string name="pref_repositories_visibility_default">all</string>
+    <string name="pref_repositories_visibility">Visibility</string>
+
+    <!-- Issues Menu -->
+    <string name="issues_menu_sort">SORT</string>
+    <string name="issues_sort_comments">COMMENTS</string>
+    <string name="issues_sort_created">CREATED</string>
+    <string name="issues_sort_updated">UPDATED</string>
 
     <!-- Add all Content Descriptions below this line -->
     <string name="branch_committer_img_desc">This is the committer\'s avatar</string>

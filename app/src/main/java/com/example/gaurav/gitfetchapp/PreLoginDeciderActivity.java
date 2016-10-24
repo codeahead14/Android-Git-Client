@@ -2,6 +2,7 @@ package com.example.gaurav.gitfetchapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -17,19 +18,28 @@ import com.google.android.gms.analytics.Tracker;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Optional;
 
 /**
  * Created by GAURAV on 23-08-2016.
  */
 public class PreLoginDeciderActivity extends AppCompatActivity {
-    private static final String TAG = PreLoginDeciderActivity.class.getName();
     public static final String ACCESS_TOKEN_KEY = "access_token";
     public static final String USERNAME_KEY = "username";
-    SharedPreferences sharedPreferences;
-    private Tracker mTracker;
+    private static final String TAG = PreLoginDeciderActivity.class.getName();
     public static String loginName = null;
+    SharedPreferences sharedPreferences;
 
-    @BindView(R.id.app_name_text) TextView appNameText;
+    @Nullable @BindView(R.id.app_name_text) TextView appNameText;
+    private Tracker mTracker;
+
+    public static String getLoginName() {
+        return loginName;
+    }
+
+    public static void setLoginName(String username) {
+        loginName = username;
+    }
 
     @Override
     protected void onResume() {
@@ -44,6 +54,8 @@ public class PreLoginDeciderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pre_login);
         ButterKnife.bind(this);
 
+        Typeface tf_1 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Light.ttf");
+        appNameText.setTypeface(tf_1);
         TrackerApplication application = (TrackerApplication) getApplication();
         mTracker = application.getDefaultTracker();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -86,13 +98,5 @@ public class PreLoginDeciderActivity extends AppCompatActivity {
 //        Typeface tf_1 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Medium.ttf");
 //        Typeface tf_2 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Light.ttf");
         //appNameText.setTypeface(tf_1);
-    }
-
-    public static void setLoginName(String username) {
-        loginName = username;
-    }
-
-    public static String getLoginName() {
-        return loginName;
     }
 }

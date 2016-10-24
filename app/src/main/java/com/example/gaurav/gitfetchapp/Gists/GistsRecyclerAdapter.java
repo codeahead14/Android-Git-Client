@@ -94,14 +94,17 @@ public class GistsRecyclerAdapter extends
         }
         firstFileUrl = objects[0].getRawUrl();
 
-        Picasso.with(mContext)
-                .load(gistsJsons.get(position).getOwner().getAvatarUrl())
-                .transform(new CircleTransform())
-                .into(holder.login_avatar_imageView);
+        if(gistsJsons.get(position).getOwner() != null) {
 
-        holder.login_filename_button.setText(String.format(mContext.getResources().getString(
-                R.string.login_filename),gistsJsons.get(position).getOwner().getLogin(),
-                fileNames[0]));
+            Picasso.with(mContext)
+                    .load(gistsJsons.get(position).getOwner().getAvatarUrl())
+                    .transform(new CircleTransform())
+                    .into(holder.login_avatar_imageView);
+
+            holder.login_filename_button.setText(String.format(mContext.getResources().getString(
+                    R.string.login_filename), gistsJsons.get(position).getOwner().getLogin(),
+                    fileNames[0]));
+        }
         holder.login_filename_button.setTypeface(tf_1);
         Spanned text = Html.fromHtml("created on "+"<b>"+ Utility.formatDateString(
                 gistsJsons.get(position).getCreatedAt())+"</b>");

@@ -61,7 +61,9 @@ public interface GitHubEndpointInterface {
     Call<ResponseBody> deleteFollowing(@Path("username") String userName);
 
     @GET("/user/repos")
-    Call<ArrayList<UserRepoJson>> getUserRepositories();
+    Call<ArrayList<UserRepoJson>> getUserRepositories(@Query("sort") String sort,
+                                                      @Query("type") String type,
+                                                      @Query("direction") String direction);
 
     @GET("/repos/{owner}/{repo}/branches")
     Call<ArrayList<BranchesJson>> getUserBranches(@Path("owner") String owner,
@@ -141,9 +143,13 @@ public interface GitHubEndpointInterface {
     @GET
     Call<ArrayList<StarredRepoJson>> getUserStarredRepos(@Url String url);
 
-    // For accessing Gists
+    // For accessing Private Gists
     @GET("/users/{username}/gists")
     Call<ArrayList<GistsJson>> getPrivateGists(@Path("username") String username);
+
+    // For accessing Public Gists
+    @GET("/gists/public")
+    Call<ArrayList<GistsJson>> getPublicGists();
 
     @FormUrlEncoded
     @POST("login/oauth/access_token")

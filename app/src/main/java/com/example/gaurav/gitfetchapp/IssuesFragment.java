@@ -14,18 +14,25 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.SubMenuBuilder;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -57,6 +64,8 @@ import retrofit2.Response;
  * Created by GAURAV on 25-08-2016.
  */
 public class IssuesFragment extends Fragment implements RecyclerViewScrollListener {
+    private static final String ARG_LIST = "nav_list";
+
     @BindView(R.id.fragment_issues_recyclerview)
     RecyclerView issuesRecyclerView;
     //@BindView(R.id.issues_empty_cardView)
@@ -69,7 +78,7 @@ public class IssuesFragment extends Fragment implements RecyclerViewScrollListen
     MaterialProgressBar materialProgressBar;
 
     private CardView empty_cardView;
-    private static final String TAG = IssuesFragment.class.getName();
+    public static final String TAG = IssuesFragment.class.getName();
     private LinearLayoutManager layoutManager;
     private IssuesRecyclerAdapter issuesRecyclerAdapter;
     Tracker mTracker;
@@ -92,12 +101,33 @@ public class IssuesFragment extends Fragment implements RecyclerViewScrollListen
 
     }
 
+    public static IssuesFragment newInstance(ArrayAdapter<String> arrayAdapter) {
+        IssuesFragment fragment = new IssuesFragment();
+        Bundle args = new Bundle();
+        //args(ARG_LIST,arrayAdapter);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         PAGE_COUNT=1;
-        issuesRecyclerAdapter = new IssuesRecyclerAdapter(getContext(), new ArrayList<IssueItem>());
+        issuesRecyclerAdapter = new IssuesRecyclerAdapter(getContext(),new ArrayList<IssueItem>(),TAG);
         fetchIssues();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.issues_menu,menu);
     }
 
     void fetchIssues(){
@@ -218,7 +248,7 @@ public class IssuesFragment extends Fragment implements RecyclerViewScrollListen
         issuesRecyclerView.setAdapter(issuesRecyclerAdapter);
         issuesRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
-            public void onLoadMore(int page, int totalItemsCount) {
+            public void onLoadMore(int page, int totalItemsCount, boolean loading) {
                 //materialProgressBar.setVisibility(View.VISIBLE);
                 loadingIndicator = 0;
                 fetchIssues();

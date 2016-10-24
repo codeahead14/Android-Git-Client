@@ -82,7 +82,6 @@ public class FeedsFragment extends Fragment {
                         @Override
                         public void onResponse(Call<Feed> call, Response<Feed> response) {
                             Feed item = response.body();
-                            Log.v(TAG,"feed: "+ item.getEntry().get(0).getAuthor().getName());
                         }
 
                         @Override

@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,13 +171,15 @@ public class PublicEventsFragment extends Fragment implements OnDataFetchFinishe
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_public_events,container,false);
         ButterKnife.bind(this,rootView);
+        Log.v(TAG,"on Create View");
+
         materialProgressBar.setVisibility(View.VISIBLE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         public_events_recyclerview.setLayoutManager(layoutManager);
         public_events_recyclerview.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager){
             @Override
-            public void onLoadMore(int page, int totalItemsCount) {
+            public void onLoadMore(int page, int totalItemsCount, boolean loading) {
                 String url = "https://api.github.com/events?page="+PAGE_NUM;
                 EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter,
                         PublicEventsFragment.this);

@@ -58,16 +58,8 @@ public class GistsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     Tracker mTracker;
     BroadcastReceiver broadcastReceiver;
-    private boolean connectionLostFlag;
-    private OnFragmentInteractionListener mListener;
-    private GistsRecyclerAdapter gistsRecyclerAdapter;
-
     @BindView(R.id.gists_recycler_view) RecyclerView recyclerView;
     @BindView(R.id.networkLayout)
     RelativeLayout networkLayout;
@@ -75,6 +67,12 @@ public class GistsFragment extends Fragment {
     Button networkSettings;
     @BindView(R.id.gists_progress_bar)
     MaterialProgressBar materialProgressBar;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+    private boolean connectionLostFlag;
+    private OnFragmentInteractionListener mListener;
+    private GistsRecyclerAdapter gistsRecyclerAdapter;
 
     public GistsFragment() {
         // Required empty public constructor
@@ -94,6 +92,8 @@ public class GistsFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+
+        Log.v(TAG,"param1 "+param1);
         fragment.setArguments(args);
         return fragment;
     }

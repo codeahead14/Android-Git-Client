@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/issues_menu"
+        android:title="@string/issues_menu_sort">
+        <!-- "file" submenu -->
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/sort_comments"
+                    android:title="@string/issues_sort_comments"
+                    android:checkable="true"/>
+                <item android:id="@+id/sort_created"
+                    android:title="@string/issues_sort_created"
+                    android:checkable="true"/>
+                <item android:id="@+id/sort_updated"
+                    android:title="@string/issues_sort_updated"
+                    android:checkable="true"/>
+            </group>
+        </menu>
+    </item>
+</menu>

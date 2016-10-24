@@ -23,6 +23,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -35,6 +38,7 @@ import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.User;
 import com.example.gaurav.gitfetchapp.Events.Repo;
 import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
 import com.example.gaurav.gitfetchapp.Repositories.Owner;
+import com.example.gaurav.gitfetchapp.Repositories.RepositoriesSettingsActivity;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryAdapter;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryDetailActivity;
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryListAdapter;
@@ -195,13 +199,13 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
             RepositoryContract.OwnerEntry.COLUMN_SITE_ADMIN
     };
 
-    public static final int COLUMN_REPOSITORY_TABLE_ID =  0;
+    public static final int COLUMN_REPOSITORY_TABLE_ID = 0;
     public static final int COLUMN_OWNER_KEY = 1;
     public static final int COLUMN_ID = 2;
     public static final int COLUMN_NAME = 3;
     public static final int COLUMN_FULL_NAME = 4;
     public static final int COLUMN_HTML_URL = 5;
-    public static final int COLUMN_CREATED_AT =6;
+    public static final int COLUMN_CREATED_AT = 6;
     public static final int COLUMN_PUSHED_AT = 7;
     public static final int COLUMN_SIZE = 8;
     public static final int COLUMN_STARGAZERS_COUNT = 9;
@@ -228,58 +232,61 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onStart() {
         super.onStart();
-        Log.v(TAG,"on start");
-        //fetchRepositories();
+        Log.v(TAG, "on start");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String sort = prefs.getString(mContext.getString(R.string.pref_repositories_sort),
+                mContext.getString(R.string.pref_repositories_sort_default));
+        String visibility = prefs.getString(mContext.getString(R.string.pref_repositories_visibility),
+                mContext.getString(R.string.pref_repositories_visibility_default));
+        String type = prefs.getString(mContext.getString(R.string.pref_repositories_type),
+                mContext.getString(R.string.pref_repositories_type_default));
+        String direction = prefs.getString(mContext.getString(R.string.pref_repositories_direction),
+                mContext.getString(R.string.pref_repositories_direction_default));
+
+        if (userRepoList == null)
+            fetchRepositories(sort,visibility,type,direction);
+        else {
+            mRepoListAdapter.updateValues(userRepoList);
+        }
+
+
+        Log.v(TAG,"prefs ");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.i(TAG, "Setting screen name: " + TAG);
         mTracker.setScreenName("Image~" + TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState){
+    public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(REPO_TAG, mRepoListAdapter.getRepositories());
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(TAG,"on Create");
+        setHasOptionsMenu(true);
         intent = getActivity().getIntent();
         userRepoList = null;
         mRepositoryAdapter = new RepositoryAdapter(getContext(), R.layout.repository_cardview,
                 new ArrayList<UserRepoJson>());
-        mRepoListAdapter = new RepositoryListAdapter(getContext(),null);
-        if(savedInstanceState != null)
+        mRepoListAdapter = new RepositoryListAdapter(getContext(), null);
+        if (savedInstanceState != null)
             userRepoList = savedInstanceState.getParcelableArrayList(REPO_TAG);
-
-        if(userRepoList == null)
-            fetchRepositories();
-        else{
-            mRepoListAdapter.updateValues(userRepoList);
-        }
-
-    }
-
-    public void updateList(ArrayList<UserRepoJson> list){
-        userRepoList = list;
-        for(UserRepoJson elem: userRepoList)
-            Log.v(TAG,"elem: "+elem.getName());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup containter,
-                             Bundle savedInstanceState){
+                             Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_repositories, containter, false);
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
 
-        if(!Utility.hasConnection(getContext()))
-            Toast.makeText(getActivity(),R.string.notOnline, Toast.LENGTH_SHORT).show();
+        if (!Utility.hasConnection(getContext()))
+            Toast.makeText(getActivity(), R.string.notOnline, Toast.LENGTH_SHORT).show();
         return rootView;
     }
 
@@ -287,6 +294,28 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     public void onPause() {
         state = repoRecyclerView.onSaveInstanceState();
         super.onPause();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(getActivity(), RepositoriesSettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -299,7 +328,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         repoRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Log.v(TAG,"OnItem Click "+position);
                 Intent intent = new Intent(mContext, RepositoryDetailActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, mRepoListAdapter.getItem(position)); //userRepoList.get(position));
                 mContext.startActivity(intent);
@@ -307,7 +335,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         });
 
         // Restore previous state (including selected item index and scroll position)
-        if(state != null) {
+        if (state != null) {
             repoRecyclerView.onRestoreInstanceState(state);
         }
     }
@@ -318,8 +346,8 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         getLoaderManager().initLoader(REPOSITORIES_LOADER, null, this);
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
-               getResources().getDrawable(R.drawable.app_bar_gradient));
-                //new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
+                getResources().getDrawable(R.drawable.app_bar_gradient));
+        //new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Repositories");
 
         Window window = getActivity().getWindow();
@@ -334,10 +362,10 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
+        String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY, null);
         // PreLoginDeciderActivity.getLoginName();// intentData[0];
         Uri repoWithOwnerUri = RepositoryContract.RepositoryEntry.buildRepositoryUriWithOwner(owner);
-        Log.v(TAG,"repo with owner uri: "+repoWithOwnerUri);
+        Log.v(TAG, "repo with owner uri: " + repoWithOwnerUri);
         return new CursorLoader(getActivity(),
                 repoWithOwnerUri,
                 REPOSITORY_COLUMNS,
@@ -351,7 +379,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         mRepoListAdapter.swapCursor(data);
         mRepoListAdapter.clear();
         ArrayList<UserRepoJson> items = new ArrayList<>();
-        if( data != null && data.moveToFirst()) {
+        if (data != null && data.moveToFirst()) {
             int ownerId = data.getInt(COLUMN_OWNER_KEY);
             Owner owner = new Owner();
             Cursor repoCursor = mContext.getContentResolver().query(
@@ -360,8 +388,8 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                     RepositoryContract.OwnerEntry._ID + " = ?",
                     new String[]{Integer.toString(ownerId)},
                     null);
-            if(repoCursor != null && repoCursor.moveToFirst()) {
-                Log.v(TAG,"owner");
+            if (repoCursor != null && repoCursor.moveToFirst()) {
+                Log.v(TAG, "owner");
                 owner.setId(repoCursor.getInt(repoCursor.getColumnIndex(RepositoryContract.OwnerEntry.COLUMN_ID)));
                 owner.setLogin(repoCursor.getString(repoCursor.getColumnIndex(RepositoryContract.OwnerEntry.COLUMN_LOGIN)));
                 owner.setAvatarUrl(repoCursor.getString(repoCursor.getColumnIndex(RepositoryContract.OwnerEntry.COLUMN_AVATAR_URL)));
@@ -380,13 +408,13 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                 owner.setType(repoCursor.getString(repoCursor.getColumnIndex(RepositoryContract.OwnerEntry.COLUMN_TYPE)));
                 owner.setSiteAdmin(false);
             }
-            do{
+            do {
                 UserRepoJson item = new UserRepoJson();
                 item.setId(data.getInt(COLUMN_ID));
                 item.setOwner(owner);
                 item.setName(data.getString(COLUMN_NAME));
                 item.setFullName(data.getString(COLUMN_FULL_NAME));
-                item.setHtmlUrl( data.getString(COLUMN_HTML_URL));
+                item.setHtmlUrl(data.getString(COLUMN_HTML_URL));
                 item.setCreatedAt(Utility.formatDateString(data.getString(COLUMN_CREATED_AT)));
                 item.setPushedAt(Utility.formatDateString(data.getString(COLUMN_PUSHED_AT)));
                 item.setSize(data.getInt(COLUMN_SIZE));
@@ -401,7 +429,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                 item.setDefaultBranch(data.getString(COLUMN_DEFAULT_BRANCH));
 
                 items.add(item);
-            }while(data.moveToNext());
+            } while (data.moveToNext());
             mRepoListAdapter.updateValues(items);
         }
         materialProgressBar.setVisibility(View.GONE);
@@ -412,13 +440,14 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         mRepoListAdapter.swapCursor(null);
     }
 
-    public void fetchRepositories(){
-        Log.v(TAG,"requesting data over network");
+    public void fetchRepositories(String sort, String visibility, String type, String direction) {
         GitHubEndpointInterface gitInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class, mAccessToken);
-        Call<ArrayList<UserRepoJson>> call = gitInterface.getUserRepositories();
+        Call<ArrayList<UserRepoJson>> call = gitInterface.getUserRepositories(sort,
+                type,
+                direction);
 
-        if(Utility.hasConnection(getContext())) {
+        if (Utility.hasConnection(getContext())) {
             call.enqueue(new Callback<ArrayList<UserRepoJson>>() {
                 @Override
                 public void onResponse(Call<ArrayList<UserRepoJson>> call, Response<ArrayList<UserRepoJson>> response) {
@@ -523,7 +552,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                 }
             });
         } else {
-            Toast.makeText(getActivity(),R.string.notOnline, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.notOnline, Toast.LENGTH_SHORT).show();
         }
     }
 }

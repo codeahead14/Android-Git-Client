@@ -33,8 +33,8 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static CatLoadingView catView;
     private Unbinder unbinder;
-    private final String clientId = "";
-    private final String clientSecret = "";
+    private final String clientId = "158a0d1c5f2352735a22";
+    private final String clientSecret = "6284df152b0cfdc33bb6118474a3f77188f86dd9";
     private final String redirectUri = "welcome://com.project.github";
     private String userNameField = null;
     private String passwordField = null;
@@ -65,8 +65,11 @@ public class MainActivityFragment extends Fragment {
 
     @OnClick(R.id.loginbutton)
     void submit() {
-        userNameField = userEmail.getText().toString();
-        passwordField = userPassword.getText().toString();
+        userNameField = "codeahead14"; // userEmail.getText().toString();
+        passwordField = "IFailedMyself2204"; // userPassword.getText().toString();
+//        userNameField = userEmail.getText().toString();
+//        passwordField = userPassword.getText().toString();
+
         String[] scopes = {"user", "public_repo", "repo", "delete_repo", "gist"};
 
         if (userNameField.isEmpty() || passwordField.isEmpty()) {
@@ -88,22 +91,26 @@ public class MainActivityFragment extends Fragment {
                 call.enqueue(new Callback<LoginJson>() {
                     @Override
                     public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
-                        LoginJson item = response.body();
-                        Log.v(TAG, "response: " + item.getScopes());
-                        if (item.getToken() != null) {
-                            AccessToken.getInstance().setAccessToken(item.getToken());
-                            prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putString(PreLoginDeciderActivity.ACCESS_TOKEN_KEY, item.getToken());
-                            editor.putString(PreLoginDeciderActivity.USERNAME_KEY, userNameField);
-                            PreLoginDeciderActivity.setLoginName(userNameField);
-                            editor.apply();
+                        if(response.isSuccessful()) {
+                            LoginJson item = response.body();
+                            if (item.getToken() != null) {
+                                AccessToken.getInstance().setAccessToken(item.getToken());
+                                prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString(PreLoginDeciderActivity.ACCESS_TOKEN_KEY, item.getToken());
+                                editor.putString(PreLoginDeciderActivity.USERNAME_KEY, userNameField);
+                                PreLoginDeciderActivity.setLoginName(userNameField);
+                                editor.apply();
+                            }
+                            catView.dismiss();
+                            Intent intent = new Intent(getActivity(), PostLoginActivity.class);
+                            //intent.putExtra(Intent.EXTRA_TEXT,new String[]{userNameField, item.getToken()});
+                            startActivity(intent);
+                            getActivity().finish();
+                        } else{
+                            Toast.makeText(getActivity(), "Bad Credentials", Toast.LENGTH_LONG).show();
+                            catView.dismiss();
                         }
-                        catView.dismiss();
-                        Intent intent = new Intent(getActivity(), PostLoginActivity.class);
-                        //intent.putExtra(Intent.EXTRA_TEXT,new String[]{userNameField, item.getToken()});
-                        startActivity(intent);
-                        getActivity().finish();
                     }
 
                     @Override

@@ -25,6 +25,10 @@
             android:id="@+id/nav_public_events"
             android:icon="@drawable/ic_event_black_16x16"
             android:title="@string/public_events" />
+        <item
+            android:id="@+id/nav_public_gists"
+            android:icon="@drawable/gist_12x16"
+            android:title="@string/public_gist" />
     </group>
 
     <!--<item android:title="@string/sub_category_public">
