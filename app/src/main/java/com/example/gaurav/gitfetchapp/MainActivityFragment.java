@@ -65,10 +65,10 @@ public class MainActivityFragment extends Fragment {
 
     @OnClick(R.id.loginbutton)
     void submit() {
-        userNameField = ""; // userEmail.getText().toString();
-        passwordField = ""; // userPassword.getText().toString();
-//        userNameField = userEmail.getText().toString();
-//        passwordField = userPassword.getText().toString();
+        //userNameField = ""; // userEmail.getText().toString();
+        //passwordField = ""; // userPassword.getText().toString();
+        userNameField = userEmail.getText().toString();
+        passwordField = userPassword.getText().toString();
 
         String[] scopes = {"user", "public_repo", "repo", "delete_repo", "gist"};
 
