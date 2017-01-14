@@ -1,7 +1,7 @@
 # Android-Git-Client
 
 Android application for GitHub. The application uses [Github Developer API](https://developer.github.com/v3/) to fetch all the relevant
-user information.
+user information (The API requires CLIENT_ID and CLIENT_SECRET for OAuth as explained [here](https://developer.github.com/v3/oauth/)).
 
 The following features are available:
 * Allows OAuth application login.
@@ -37,3 +37,8 @@ Will update this list.
 <img src="https://github.com/codeahead14/Android-Git-Client/blob/Native_Recycler_View/App-Screenshots/Repositories%20Overview.png" width="200" alt="Repositories">
 
 For more screeenshots visit [here](https://github.com/codeahead14/Android-Git-Client/tree/Native_Recycler_View/App-Screenshots).
+
+## CONTRIBUTIONS
+
+Contributions are welcome and highly appreciated. 
+The CLIENT_ID and CLIENT_SECRET obtained from Github have to be entered in the [MainActivityFragment.java file](https://github.com/codeahead14/Android-Git-Client/blob/master/app/src/main/java/com/example/gaurav/gitfetchapp/MainActivityFragment.java);
