@@ -153,5 +153,8 @@
     <string name="files_img">Files Icon</string>
     <string name="branch_expand">Expand Branch for Details</string>
     <string name="title_activity_markdown_view">MarkdownViewActivity</string>
+    <string name="title_activity_issue">IssueActivity</string>
+    <string name="placeholder_desc">Placeholder description</string>
+
 
 </resources>

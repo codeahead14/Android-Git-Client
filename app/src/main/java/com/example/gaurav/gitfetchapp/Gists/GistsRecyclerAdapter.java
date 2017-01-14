@@ -36,6 +36,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.gaurav.gitfetchapp.Repositories.FileViewActivity.FILE_NAME;
+import static com.example.gaurav.gitfetchapp.Repositories.FileViewActivity.FILE_URL;
+
 /**
  * Created by GAURAV on 10-08-2016.
  */
@@ -46,6 +49,7 @@ public class GistsRecyclerAdapter extends
     private GistsFileRecyclerAdapter gistsFileAdapter;
     private Context mContext;
     private String firstFileUrl;
+    private String firstFileName;
     private GitHubEndpointInterface gitHubEndpointInterface;
     private Filename objects[];
     private boolean fileListExpanded;
@@ -92,7 +96,8 @@ public class GistsRecyclerAdapter extends
             Log.v(TAG,"filename: = "+ objects[count].getFilename());
             count++;
         }
-        firstFileUrl = objects[0].getRawUrl();
+//        firstFileUrl = objects[0].getRawUrl();
+//        firstFileName = objects[0].getFilename();
 
         if(gistsJsons.get(position).getOwner() != null) {
 
@@ -128,7 +133,7 @@ public class GistsRecyclerAdapter extends
         return 0;
     }
 
-    private void fetchFileContents(String download_url){
+    private void fetchFileContents(String download_url, final String fileName){
         gitHubEndpointInterface = ServiceGenerator.createService(GitHubEndpointInterface.class);
         Call<ResponseBody> call = gitHubEndpointInterface.downloadFileWithDynamicUrlSync(download_url);
         call.enqueue(new Callback<ResponseBody>() {
@@ -156,7 +161,8 @@ public class GistsRecyclerAdapter extends
                     Log.v(TAG,sb.toString());
                     //file_name_textview.setText(sb.toString());
                     Intent intent = new Intent(mContext,FileViewActivity.class);
-                    intent.putExtra(Intent.EXTRA_TEXT,sb.toString());
+                    intent.putExtra(FILE_NAME,fileName);
+                    intent.putExtra(FILE_URL,sb.toString());
                     mContext.startActivity(intent);
                     //boolean writtenToDisk = writeResponseBodyToDisk(response.body());
                     //Log.d(TAG, "file download was a success? " + writtenToDisk);
@@ -195,8 +201,8 @@ public class GistsRecyclerAdapter extends
             login_filename_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.v(TAG,"login filename button: "+firstFileUrl);
-                    fetchFileContents(firstFileUrl);
+                    Log.v(TAG,"filename "+ firstFileName + firstFileUrl);
+                    fetchFileContents(firstFileUrl,firstFileName);
                 }
             });
             gist_created_textView =  (TextView) view.findViewById(R.id.gist_created_text);

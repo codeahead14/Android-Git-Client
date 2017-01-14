@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 
 import com.example.gaurav.gitfetchapp.Repositories.RepositoryBranchPagerFragment;
@@ -14,18 +16,23 @@ import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
 /**
  * Created by GAURAV on 06-08-2016.
  */
-public class RepositoryPagerAdapter extends FragmentPagerAdapter {
+public class RepositoryPagerAdapter extends FragmentStatePagerAdapter {
     private static final String TAG = RepositoryPagerAdapter.class.getName();
-    final int PAGE_COUNT = 4;
+    private final int PAGE_COUNT = 4;
     private String tabTitles[] = new String[] { "INFO", "FILES", "COMMITS", "ISSUES" };
     private Context context;
     private UserRepoJson userRepoJson;
+    private String selectedBranch;
 
-    public RepositoryPagerAdapter(FragmentManager fm, Context context, UserRepoJson item) {
+    public RepositoryPagerAdapter(FragmentManager fm, Context context, UserRepoJson item, String branch) {
         super(fm);
         this.context = context;
         this.userRepoJson = item;
-        Log.v(TAG,"user repo: "+userRepoJson.getName());
+        this.selectedBranch = branch;
+    }
+
+    public void setSelectedBranch(String branch){
+        this.selectedBranch = branch;
     }
 
     @Override
@@ -37,12 +44,24 @@ public class RepositoryPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         Log.v(TAG, "getting item: "+position);
         switch (position) {
-            case 0: return RepositoryBranchPagerFragment.newInstance(position + 1, userRepoJson);
-            case 1: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson);
-            case 2: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson);
-            case 3: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson);
-            default: return RepositoryBranchPagerFragment.newInstance(position + 1, userRepoJson);
+            case 0: return RepositoryBranchPagerFragment.newInstance(position + 1, userRepoJson,
+                    selectedBranch);
+            case 1: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson,
+                    selectedBranch);
+            case 2: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson,
+                    selectedBranch);
+            case 3: return RepositoryPagerFragment.newInstance(position + 1, userRepoJson,
+                    selectedBranch);
+            default: return RepositoryBranchPagerFragment.newInstance(position + 1, userRepoJson,
+                    selectedBranch);
         }
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        // refresh all fragments when data set changed
+        Log.v(TAG,"changing data set");
+        return PagerAdapter.POSITION_NONE;
     }
 
     @Override

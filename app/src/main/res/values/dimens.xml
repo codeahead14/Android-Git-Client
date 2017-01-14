@@ -8,6 +8,9 @@
     <dimen name="item_verticl_margin_small">4dp</dimen>
     <dimen name="item_horizontal_margin_xlarge">24dp</dimen>
     <dimen name="item_vertical_margin_xlarge">24dp</dimen>
+    <dimen name="item_margin_56dp">56dp</dimen>
+    <dimen name="item_margin_36dp">36dp</dimen>
+    <dimen name="item_margin_24dp">24dp</dimen>
 
     <dimen name="fab_margin">16dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
@@ -21,4 +24,10 @@
     <dimen name="widget_margin_small">4dp</dimen>
     <dimen name="widget_margin_normal">8dp</dimen>
     <dimen name="widget_margin_large">16dp</dimen>
+
+    <!-- Appbar Material Design Margin Guidelines -->
+    <!-- _mp => mobile portrait; _ml => mobile landscape; _td => tablet/desktop -->
+    <dimen name="appbar_title_left_margin_mp">72dp</dimen>
+    <dimen name="appbar_title_bottom_margin_mp">20dp</dimen>
+    <dimen name="appbar_title_top_margin_mp">12dp</dimen>
 </resources>

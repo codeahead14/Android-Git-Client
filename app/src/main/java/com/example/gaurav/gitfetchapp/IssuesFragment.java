@@ -157,11 +157,14 @@ public class IssuesFragment extends Fragment implements RecyclerViewScrollListen
                             issuesRecyclerAdapter.addItem(elem);
                         issuesRecyclerAdapter.notifyDataSetChanged();
                         materialProgressBar.setVisibility(View.GONE);
+                    }else if (response.code() == 408){
+                        Log.v(TAG,"NETWORK TIMEOUT");
                     }
                 }
 
                 @Override
                 public void onFailure(Call<IssuesJson> call, Throwable t) {
+                    loadingIndicator = 1;
                     Log.v(TAG,"Issues Fetch Failed: "+t.getMessage());
                 }
 

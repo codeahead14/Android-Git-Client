@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_margin="@dimen/item_horizontal_margin_small"
+    android:gravity="center"
+    android:id="@+id/issue_label"
+    android:textColor="@android:color/white"
+    android:background="@drawable/rectangel_drawable"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+
+<!--<com.example.gaurav.gitfetchapp.CustomViews.RectShapeView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/issue_label"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:shapeColor="@color/teal500" />-->

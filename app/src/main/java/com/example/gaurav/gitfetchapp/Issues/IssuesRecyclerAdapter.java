@@ -1,6 +1,7 @@
 package com.example.gaurav.gitfetchapp.Issues;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -26,7 +27,7 @@ import java.util.List;
 /**
  * Created by GAURAV on 25-08-2016.
  */
-public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //RecyclerView.Adapter<IssuesRecyclerAdapter.IssuesViewHolder>  {
+public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{
     private static final String TAG = IssuesRecyclerAdapter.class.getName();
     private List<IssueItem> issuesList;
     private Context mContext;
@@ -38,7 +39,6 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //Recycler
         this.issuesList = items;
         this.callFragment = callFragment;
     }
-
 
     @Override
     //public IssuesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -89,7 +89,7 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //Recycler
                 holder.issues_image_icon.setImageResource(R.drawable.issue_closed_16x16);
             }
             Spanned str = Html.fromHtml("<b>#" + issuesList.get(position).getNumber() + "</b> " +
-                    action + " by <b>" + issuesList.get(position).getUser().getLogin() + "</b> on <b>" +
+                    action + " by <b>" + issuesList.get(position).getUser().getLogin() +
                     Utility.formatDateString(issuesList.get(position).getCreatedAt()) + "</b>");
             holder.issues_updated_desc.setText(str);
         }else if(viewHolder instanceof ProgressBarViewHolder){
@@ -113,7 +113,7 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //Recycler
         issuesList.clear();
     }
 
-    public class IssuesViewHolder extends RecyclerView.ViewHolder{
+    public class IssuesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private ImageView issues_image_icon;
         private TextView issues_title;
         private TextView issues_updated_desc;
@@ -123,6 +123,16 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{ //Recycler
             issues_image_icon = (ImageView) view.findViewById(R.id.issues_image_icon);
             issues_title = (TextView) view.findViewById(R.id.issues_title);
             issues_updated_desc = (TextView) view.findViewById(R.id.issues_updated_desc);
+
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view){
+            int clickPos = getAdapterPosition();
+            Intent intent = new Intent(mContext,IssueActivity.class);
+            intent.putExtra(IssueActivity.ISSUE_CONTENTS,issuesList.get(clickPos));
+            mContext.startActivity(intent);
         }
     }
 }

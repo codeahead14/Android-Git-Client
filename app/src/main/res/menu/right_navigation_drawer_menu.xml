@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/sort_group" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_repositories"
+            android:icon="@drawable/repo_12x16"
+            android:title="@string/respositories" />
+        <item
+            android:id="@+id/nav_gists"
+            android:icon="@drawable/gist_12x16"
+            android:title="@string/gists" />
+        <item
+            android:id="@+id/nav_issues"
+            android:icon="@drawable/issue_opened_14x16"
+            android:title="@string/issues" />
+        <item
+            android:id="@+id/nav_feeds"
+            android:icon="@drawable/ic_timeline_black_16x16"
+            android:title="@string/feeds" />
+    </group>
+
+    <group android:id="@+id/group2" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_public_events"
+            android:icon="@drawable/ic_event_black_16x16"
+            android:title="@string/public_events" />
+        <item
+            android:id="@+id/nav_public_gists"
+            android:icon="@drawable/gist_12x16"
+            android:title="@string/public_gist" />
+    </group>
+
+    <item android:title="@string/sub_category_misc">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/share" />
+            <item
+                android:id="@+id/nav_logout"
+                android:title="@string/Logout" />
+        </menu>
+    </item>
+
+</menu>

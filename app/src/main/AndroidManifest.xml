@@ -85,7 +85,6 @@
         <service
             android:name=".Widgets.RepositoryWidgetRemoteService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
-
         <service
             android:name=".IntentServices.RepositoryDetailsService"
             android:exported="false" />
@@ -110,7 +109,11 @@
         <activity
             android:name=".MarkdownViewActivity"
             android:label="@string/title_activity_markdown_view"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Issues.IssueActivity"
+            android:label="@string/title_activity_issue"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

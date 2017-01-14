@@ -26,6 +26,7 @@ public class BranchRecyclerAdapter extends RecyclerView.Adapter<
     private Context mContext;
     private ArrayList<BranchesJson> branches = new ArrayList<>();
     private String selected_branch;
+    private int selectedBranchPosition;
 
     public BranchRecyclerAdapter(Context context, ArrayList<BranchesJson> item, String default_branch){
         this.mContext = context;
@@ -44,7 +45,11 @@ public class BranchRecyclerAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(BranchViewHolder holder, int position) {
-        holder.branch_name_textview.setSelected(selected_branch.compareTo(branches.get(position).getName()) == 0);
+        if(selected_branch.compareTo(branches.get(position).getName()) == 0){
+            holder.branch_name_textview.setSelected(true);
+            selectedBranchPosition = position;
+        }
+        //holder.branch_name_textview.setSelected(selected_branch.compareTo(branches.get(position).getName()) == 0);
         holder.branch_name_textview.setText(branches.get(position).getName());
     }
 
@@ -81,6 +86,11 @@ public class BranchRecyclerAdapter extends RecyclerView.Adapter<
         public void onClick(View view) {
             int clickPos = getAdapterPosition();
             selected_branch = branches.get(clickPos).getName();
+            Log.v(TAG,"selected branch "+selected_branch);
+            selectedBranchPosition = clickPos;
+            //branch_name_textview.setSelected(selected_branch.compareTo(
+              //      branches.get(selectedBranchPosition).getName())==0);
+            //branch_name_textview.setSelected(true);
             BusProvider.getInstance().post(new UserInteractionEvent(true, selected_branch));
         }
     }

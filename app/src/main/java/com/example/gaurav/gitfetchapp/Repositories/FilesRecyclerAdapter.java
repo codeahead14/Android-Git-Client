@@ -27,6 +27,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.gaurav.gitfetchapp.Repositories.FileViewActivity.FILE_NAME;
+import static com.example.gaurav.gitfetchapp.Repositories.FileViewActivity.FILE_URL;
+
 /**
  * Created by GAURAV on 07-08-2016.
  */
@@ -120,9 +123,11 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         if(Utility.hasConnection(mContext)) {
             //avLoadingIndicatorView.show();
             if (type.compareTo("file") == 0) {
+                String fileName = files.get(clickPos).getName();
                 String download_url = files.get(clickPos).getDownloadUrl().toString();
                 Intent intent = new Intent(mContext, FileViewActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, download_url);
+                intent.putExtra(FILE_NAME,fileName);
+                intent.putExtra(FILE_URL, download_url);
                 mContext.startActivity(intent);
             } else {
                 //String path = files.get(clickPos).getPath();

@@ -63,7 +63,6 @@ public class PostLoginActivity extends AppCompatActivity
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.nav_view) NavigationView navigationView;
-    @BindView(R.id.right_nav_view) NavigationView rightNavView;
 
     @OnClick(R.id.search_fab) void onSearchFabClick(View view){
         Intent searchIntent = new Intent(this,SearchGitActivity.class);
@@ -110,7 +109,6 @@ public class PostLoginActivity extends AppCompatActivity
 
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
-        rightNavView.setNavigationItemSelectedListener(this);
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
@@ -295,26 +293,6 @@ public class PostLoginActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 fragmentClass = LogoutFragment.class;
-                break;
-            case R.id.nav_ascending_issues:
-                item.setChecked(true);
-                Toast.makeText(this,"Ascending",Toast.LENGTH_SHORT).show();
-                fragmentClass = RepositoriesFragment.class;
-                break;
-            case R.id.nav_descending_issues:
-                item.setChecked(true);
-                Toast.makeText(this,"Descending",Toast.LENGTH_SHORT).show();
-                fragmentClass = RepositoriesFragment.class;
-                break;
-            case R.id.nav_created_issues:
-                item.setChecked(true);
-                Toast.makeText(this,"Created",Toast.LENGTH_SHORT).show();
-                fragmentClass = RepositoriesFragment.class;
-                break;
-            case R.id.nav_updated_issues:
-                item.setChecked(true);
-                Toast.makeText(this,"Updated",Toast.LENGTH_SHORT).show();
-                fragmentClass = RepositoriesFragment.class;
                 break;
             default:
                 fragmentClass = RepositoriesFragment.class;

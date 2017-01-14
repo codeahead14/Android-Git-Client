@@ -42,8 +42,6 @@ public class RepositoriesSettingFragment extends PreferenceFragment implements
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {
         String value = o.toString();
-        Log.v(TAG,"On preference change");
-
         if(preference instanceof ListPreference) {
             ListPreference listPreference = (ListPreference) preference;
             int prefIndex = listPreference.findIndexOfValue(value);

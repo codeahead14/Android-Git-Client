@@ -182,19 +182,19 @@ public class PublicEventsRecyclerAdapter extends RecyclerViewParentAdapter{
                         " page at " +
                         "<b>" + ((GollumEventPayload) payload).getPages().get(0).getHtmlUrl() + "</b>");
             } else if (payload instanceof IssueEventPayload) {
-                description = String.format(res.getString(R.string.issue_event),
+                /*description = String.format(res.getString(R.string.issue_event),
                         ((IssueEventPayload) payload).getAction(),
                         ((IssueEventPayload) payload).getIssue().getNumber(),
-                        eventsJsonArrayList.get(position).getRepo().getName());
+                        eventsJsonArrayList.get(position).getRepo().getName());*/
                 description2 = android.text.Html.fromHtml("<b>" +
                         ((IssueEventPayload) payload).getAction() + "</b>" + " issue " +
                         "<b>" + ((IssueEventPayload) payload).getIssue().getNumber() + "</b>" +
                         "<b>" + eventsJsonArrayList.get(position).getRepo().getName() + "</b>");
             } else if (payload instanceof PullRequestPayload) {
-                description = String.format(res.getString(R.string.pull_request_event),
+                /*description = String.format(res.getString(R.string.pull_request_event),
                         ((PullRequestPayload) payload).getAction(),
                         ((PullRequestPayload) payload).getNumber(),
-                        eventsJsonArrayList.get(position).getRepo().getName());
+                        eventsJsonArrayList.get(position).getRepo().getName());*/
                 description2 = android.text.Html.fromHtml("<b>" +
                         ((PullRequestPayload) payload).getAction() + "</b>" + " pull request " +
                         "<b>" + ((PullRequestPayload) payload).getNumber() + "</b>" + " at " +

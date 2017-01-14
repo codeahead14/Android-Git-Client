@@ -37,6 +37,8 @@ import us.feras.mdv.MarkdownView;
 
 public class FileViewActivity extends AppCompatActivity {
     private static final String TAG = FileViewActivity.class.getName();
+    public static final String FILE_URL = "file_url";
+    public static final String FILE_NAME = "file_name";
     private static String fileContents;
     private static StringBuilder sb;
 
@@ -44,7 +46,7 @@ public class FileViewActivity extends AppCompatActivity {
     @BindView(R.id.loading_bar)
     MaterialProgressBar circularProgressBar;
     //@BindView(R.id.webview_file)
-    private static WebView webView;
+    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +58,15 @@ public class FileViewActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        String url = intent.getStringExtra(Intent.EXTRA_TEXT);
+        String fileName = intent.getStringExtra(FILE_NAME);
+        String url = intent.getStringExtra(FILE_URL);
+
+        /*Setting the filename as toolbar title*/
+        getSupportActionBar().setTitle(fileName);
 
         sb = new StringBuilder();
         sb.append("<!doctype html><html><head>\n" +
-                " <link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/default.css\"></link>\n" +
+                " <link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/sons_of_obidiah.css\"></link>\n" +
                 "<script type=\"text/javascript\" src=\"file:///android_asset/prettify.js\"></script>\n" +
                 "        </head><body onload=\"prettyPrint()\"><pre id=\"content\" class=\"prettyprint linenums\">");
         fetchFileContents(url);
@@ -106,7 +112,7 @@ public class FileViewActivity extends AppCompatActivity {
         });
     }
 
-    private static void setFileContents(String contents){
+    private void setFileContents(String contents){
         sb.append(TextUtils.htmlEncode(contents));
         sb.append("</pre></body></HTML>");
         WebSettings settings = webView.getSettings();

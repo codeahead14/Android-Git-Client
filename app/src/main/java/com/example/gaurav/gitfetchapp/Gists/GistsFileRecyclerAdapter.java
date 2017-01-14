@@ -14,6 +14,9 @@ import com.example.gaurav.gitfetchapp.Repositories.FileViewActivity;
 
 import java.util.ArrayList;
 
+import static com.example.gaurav.gitfetchapp.Repositories.FileViewActivity.FILE_NAME;
+import static com.example.gaurav.gitfetchapp.Repositories.FileViewActivity.FILE_URL;
+
 /**
  * Created by GAURAV on 11-08-2016.
  */
@@ -69,10 +72,10 @@ public class GistsFileRecyclerAdapter extends
 
         @Override
         public void onClick(View view){
-            Log.v(TAG, "Inside onClick");
             int clickPos = getAdapterPosition();
             Intent intent = new Intent(mContext,FileViewActivity.class);
-            intent.putExtra(Intent.EXTRA_TEXT, fileNameList.get(clickPos).getRawUrl());
+            intent.putExtra(FILE_NAME,fileNameList.get(clickPos).getFilename());
+            intent.putExtra(FILE_URL, fileNameList.get(clickPos).getRawUrl());
             mContext.startActivity(intent);
         }
     }

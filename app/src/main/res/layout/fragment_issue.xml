@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/issue_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/issue_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:background="@color/deepPurple600"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/issue_collapsing_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/deepPurple600"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <LinearLayout
+                android:id="@+id/issue_details_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/appbar_title_top_margin_mp"
+                android:layout_marginLeft="@dimen/item_margin_56dp"
+                android:layout_marginStart="@dimen/item_margin_56dp"
+                android:orientation="vertical"
+                android:visibility="visible"
+                app:layout_collapseMode="none">
+
+                <TextView
+                    android:id="@+id/issue_number_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/issue_author_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/grey300"
+                    android:textSize="14sp"/>
+                <!--<LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/issue_number_text">-->
+                <!--<LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/issue_number_text"
+                    android:orientation="horizontal"
+                    android:baselineAligned="true"
+                    android:paddingTop="@dimen/item_horizontal_margin_small"
+                    android:paddingEnd="@dimen/item_horizontal_margin_normal"
+                    android:paddingLeft="@dimen/item_horizontal_margin_normal"
+                    android:paddingRight="@dimen/item_horizontal_margin_normal"
+                    android:paddingStart="@dimen/item_horizontal_margin_normal">
+
+                    <ImageView
+                        android:id="@+id/issue_avatar"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:visibility="gone"
+                        android:contentDescription="@string/userIcon_desc" />
+
+                    <TextView
+                        android:id="@+id/issue_author_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/grey300"
+                        android:textSize="14sp"
+                        android:paddingLeft="@dimen/item_horizontal_margin_small"
+                        android:paddingStart="@dimen/item_horizontal_margin_small"
+                        android:paddingEnd="@dimen/item_horizontal_margin_small"
+                        android:paddingRight="@dimen/item_horizontal_margin_small" />
+
+                </LinearLayout>-->
+
+                <!--</LinearLayout>-->
+            </LinearLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/issue_fragment_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            <LinearLayout
+                android:id="@+id/issue_title_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_gravity="bottom"
+                app:layout_collapseMode="pin"
+                android:baselineAligned="true"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:background="@android:color/transparent"
+                    android:id="@+id/issue_title_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:lines="2"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/item_margin_36dp"
+                    android:paddingStart="@dimen/item_margin_36dp"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"/>
+
+            </LinearLayout>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        android:src="@drawable/ic_create_black_24dp"
+        app:layout_anchor="@id/issue_appbar"
+        app:layout_anchorGravity="bottom|right|end"
+        app:backgroundTint="@color/teal300"
+        android:layout_margin="@dimen/item_horizontal_margin_normal"/>
+
+    <include layout="@layout/fragment_issue_contents"/>
+
+</android.support.design.widget.CoordinatorLayout>

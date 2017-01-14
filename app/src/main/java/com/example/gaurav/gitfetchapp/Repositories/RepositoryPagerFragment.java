@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.gaurav.gitfetchapp.AccessToken;
 import com.example.gaurav.gitfetchapp.DividerItemDecoration;
 import com.example.gaurav.gitfetchapp.EndlessRecyclerViewScrollListener;
+import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.Issue;
 import com.example.gaurav.gitfetchapp.GitHubEndpointInterface;
 import com.example.gaurav.gitfetchapp.Issues.IssueItem;
 import com.example.gaurav.gitfetchapp.Issues.IssuesJson;
@@ -43,6 +44,8 @@ import retrofit2.Response;
 public class RepositoryPagerFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final String USER_REPO = "USER_REPO";
+    public static final String SELECTED_BRANCH = "SELECTED_BRANCH";
+
     private static final String REPOSITORY_PAGER_STATE = "repo_pager_state";
     public static final String TAG = RepositoryPagerFragment.class.getName();
     private int mPage;
@@ -69,10 +72,13 @@ public class RepositoryPagerFragment extends Fragment {
     //@BindView(R.id.repository_progress_bar)
     //MaterialProgressBar materialProgressBar;
 
-    public static RepositoryPagerFragment newInstance(int page, UserRepoJson item) {
+    public static RepositoryPagerFragment newInstance(int page, UserRepoJson item, String branch) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
         args.putParcelable(USER_REPO, item);
+        args.putString(SELECTED_BRANCH, branch);
+        Log.v(TAG,"branch in instance "+branch);
+
         RepositoryPagerFragment fragment = new RepositoryPagerFragment();
         fragment.setArguments(args);
         return fragment;
@@ -83,8 +89,10 @@ public class RepositoryPagerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
         userRepoJson = getArguments().getParcelable(USER_REPO);
-        default_branch = userRepoJson.getDefaultBranch();
-        repo_branch = RepositoryDetailActivityFragment.repoBranch;
+        //repo_branch = RepositoryDetailActivityFragment.repoBranch;
+        repo_branch = getArguments().getString(SELECTED_BRANCH);
+        Log.v(TAG,"Repo Branch " + repo_branch);
+
         gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
         listItemArray = new HorizontalListRecyclerAdapter(getContext(), new ArrayList<String>());
@@ -167,10 +175,28 @@ public class RepositoryPagerFragment extends Fragment {
                 String author_params = String.format("%s:%s", AUTHOR, "wasabeef");
                 GitHubEndpointInterface endpointInterface = ServiceGenerator.createService(
                         GitHubEndpointInterface.class, AccessToken.getInstance());
-                Call<IssuesJson> call = endpointInterface.getIssues(author_params, PAGE_COUNT, 30);
+                //Call<IssuesJson> call = endpointInterface.getIssues(author_params, PAGE_COUNT, 30);
+                Call<ArrayList<IssueItem>> call = endpointInterface.getRepoIssues(
+                        userRepoJson.getOwner().getLogin(), userRepoJson.getName());
                 PAGE_COUNT++;
                 //userRepoJson.getOwner().getLogin(),userRepoJson.getName());
-                call.enqueue(new Callback<IssuesJson>() {
+                call.enqueue(new Callback<ArrayList<IssueItem>>() {
+                    @Override
+                    public void onResponse(Call<ArrayList<IssueItem>> call, Response<ArrayList<IssueItem>> response) {
+                        if (response.isSuccessful()){
+                            ArrayList<IssueItem> items = response.body();
+                            for (IssueItem elem: items)
+                                issuesRecyclerAdapter.addItem(elem);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ArrayList<IssueItem>> call, Throwable t) {
+
+                    }
+                });
+
+                /*call.enqueue(new Callback<IssuesJson>() {
                     @Override
                     public void onResponse(Call<IssuesJson> call, Response<IssuesJson> response) {
                         if (response.isSuccessful()) {
@@ -187,8 +213,8 @@ public class RepositoryPagerFragment extends Fragment {
                     }
                 });
             } else
-                Toast.makeText(getContext(), R.string.notOnline, Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(getContext(), R.string.notOnline, Toast.LENGTH_SHORT).show();*/
+            }
         }
     }
 

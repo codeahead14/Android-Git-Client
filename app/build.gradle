@@ -38,8 +38,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    apt 'com.jakewharton:butterknife-compiler:8.2.1'
     //Parsing xml/atom feed using retrofit
     compile('com.squareup.retrofit2:converter-simplexml:2.1.0') {
         exclude group: 'xpp3', module: 'xpp3'
@@ -61,6 +59,7 @@ dependencies {
     compile('com.mikepenz:fastadapter:1.8.2@aar') {
         transitive = true
     }
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.google.android.gms:play-services-analytics:9.4.0'
     compile 'com.google.firebase:firebase-ads:9.4.0'
     compile 'com.squareup:otto:1.3.8'
@@ -82,6 +81,9 @@ dependencies {
     compile 'us.feras.mdv:markdownview:1.1.0'
     compile 'com.mukesh:markdownview:1.0.0'
     compile 'me.zhanghai.android.materialprogressbar:library:1.1.7'
+    compile 'com.github.fiskurgit:MarkdownView:1.1.0'
+    testCompile 'junit:junit:4.12'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

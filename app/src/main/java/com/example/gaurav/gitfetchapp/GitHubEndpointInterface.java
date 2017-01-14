@@ -3,6 +3,8 @@ package com.example.gaurav.gitfetchapp;
 import com.example.gaurav.gitfetchapp.Feeds.FeedsJson;
 import com.example.gaurav.gitfetchapp.Feeds.TimelineJson.Feed;
 import com.example.gaurav.gitfetchapp.Gists.GistsJson;
+import com.example.gaurav.gitfetchapp.Issues.IssueEventsJson;
+import com.example.gaurav.gitfetchapp.Issues.IssueItem;
 import com.example.gaurav.gitfetchapp.Issues.IssuesJson;
 import com.example.gaurav.gitfetchapp.Repositories.BranchDetails.BranchDetailJson;
 import com.example.gaurav.gitfetchapp.Repositories.BranchesJson;
@@ -95,6 +97,9 @@ public interface GitHubEndpointInterface {
     @GET
     Call<UserRepoJson> getRepoContentsWithUrl(@Url String dynamicUrl);
 
+    @GET
+    Call<ArrayList<IssueEventsJson>> getIssueEventsWithUrl(@Url String dynamicUrl);
+
     @GET("/repos/{owner}/{repo}/contents/{path}")
     Call<ArrayList<RepoContentsJson>> getRepoContents(@Path("owner") String owner,
                                                       @Path("repo") String repo,
@@ -115,8 +120,8 @@ public interface GitHubEndpointInterface {
 
     // For fetching user repository issues
     @GET ("/repos/{owner}/{repo}/issues")
-    Call<ArrayList<IssuesJson>> getRepoIssues(@Path("owner") String owner,
-                                   @Path("repo") String repo);
+    Call<ArrayList<IssueItem>> getRepoIssues(@Path("owner") String owner,
+                                             @Path("repo") String repo);
 
     // Fetching issues.- Using QueryMap to map optional queries
     @GET ("/search/issues")

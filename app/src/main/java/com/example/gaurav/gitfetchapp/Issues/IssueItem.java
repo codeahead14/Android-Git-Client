@@ -1,5 +1,8 @@
 package com.example.gaurav.gitfetchapp.Issues;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +10,7 @@ import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.User;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class IssueItem {
+public class IssueItem implements Parcelable {
 
     @SerializedName("url")
     @Expose
@@ -41,7 +44,7 @@ public class IssueItem {
     private User user;
     @SerializedName("labels")
     @Expose
-    private List<Object> labels = new ArrayList<Object>();
+    private List<IssueLabel> labels = new ArrayList<IssueLabel>();
     @SerializedName("state")
     @Expose
     private String state;
@@ -264,7 +267,7 @@ public class IssueItem {
      * @return
      * The labels
      */
-    public List<Object> getLabels() {
+    public List<IssueLabel> getLabels() {
         return labels;
     }
 
@@ -273,7 +276,7 @@ public class IssueItem {
      * @param labels
      * The labels
      */
-    public void setLabels(List<Object> labels) {
+    public void setLabels(List<IssueLabel> labels) {
         this.labels = labels;
     }
 
@@ -493,4 +496,121 @@ public class IssueItem {
         this.score = score;
     }
 
+
+
+    protected IssueItem(Parcel in) {
+        url = in.readString();
+        repositoryUrl = in.readString();
+        labelsUrl = in.readString();
+        commentsUrl = in.readString();
+        eventsUrl = in.readString();
+        htmlUrl = in.readString();
+        id = in.readByte() == 0x00 ? null : in.readInt();
+        number = in.readByte() == 0x00 ? null : in.readInt();
+        title = in.readString();
+        user = (User) in.readValue(User.class.getClassLoader());
+        if (in.readByte() == 0x01) {
+            labels = new ArrayList<IssueLabel>();
+            in.readList(labels, IssueLabel.class.getClassLoader());
+        } else {
+            labels = null;
+        }
+        state = in.readString();
+        byte lockedVal = in.readByte();
+        locked = lockedVal == 0x02 ? null : lockedVal != 0x00;
+        assignee = (Object) in.readValue(Object.class.getClassLoader());
+        if (in.readByte() == 0x01) {
+            assignees = new ArrayList<Object>();
+            in.readList(assignees, Object.class.getClassLoader());
+        } else {
+            assignees = null;
+        }
+        milestone = (Object) in.readValue(Object.class.getClassLoader());
+        comments = in.readByte() == 0x00 ? null : in.readInt();
+        createdAt = in.readString();
+        updatedAt = in.readString();
+        closedAt = in.readString();
+        pullRequest = (PullRequest) in.readValue(PullRequest.class.getClassLoader());
+        body = in.readString();
+        score = in.readByte() == 0x00 ? null : in.readDouble();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(url);
+        dest.writeString(repositoryUrl);
+        dest.writeString(labelsUrl);
+        dest.writeString(commentsUrl);
+        dest.writeString(eventsUrl);
+        dest.writeString(htmlUrl);
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
+        if (number == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(number);
+        }
+        dest.writeString(title);
+        dest.writeValue(user);
+        if (labels == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(labels);
+        }
+        dest.writeString(state);
+        if (locked == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (locked ? 0x01 : 0x00));
+        }
+        dest.writeValue(assignee);
+        if (assignees == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(assignees);
+        }
+        dest.writeValue(milestone);
+        if (comments == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(comments);
+        }
+        dest.writeString(createdAt);
+        dest.writeString(updatedAt);
+        dest.writeString(closedAt);
+        dest.writeValue(pullRequest);
+        dest.writeString(body);
+        if (score == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeDouble(score);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<IssueItem> CREATOR = new Parcelable.Creator<IssueItem>() {
+        @Override
+        public IssueItem createFromParcel(Parcel in) {
+            return new IssueItem(in);
+        }
+
+        @Override
+        public IssueItem[] newArray(int size) {
+            return new IssueItem[size];
+        }
+    };
 }

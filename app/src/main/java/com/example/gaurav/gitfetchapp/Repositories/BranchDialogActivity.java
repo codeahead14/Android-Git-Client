@@ -33,6 +33,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * 20th November, 2016
+ * Transporting branchdialogactivity functionalities to a BranchDialogFragment
+ * Refer: https://guides.codepath.com/android/Using-DialogFragment
+ * **/
+
 public class BranchDialogActivity extends AppCompatActivity {
     private static final String TAG = BranchDialogActivity.class.getName();
     private BranchRecyclerAdapter branchRecyclerAdapter;
@@ -90,7 +96,7 @@ public class BranchDialogActivity extends AppCompatActivity {
             Toast.makeText(BranchDialogActivity.this, R.string.notOnline, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
+    /*@Override
     protected void onResume() {
         super.onResume();
         Log.v(TAG,"registering bus");
@@ -102,7 +108,7 @@ public class BranchDialogActivity extends AppCompatActivity {
         super.onPause();
         Log.v(TAG,"unregistering bus");
         BusProvider.getInstance().unregister(this);
-    }
+    }*/
 
     @OnClick(R.id.branch_cancel_button) void cancelActivity(){
         finish();

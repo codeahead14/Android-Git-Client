@@ -6,12 +6,14 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -43,7 +45,7 @@ import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class RepositoryDetailActivityFragment extends Fragment {
+public class RepositoryDetailActivityFragment extends Fragment implements BranchDialogFragment.OnBranchFragmentInteractionListener {
     @BindView(R.id.repoNameText) TextView repo_name_textview;
     @BindView(R.id.repoUrlText) TextView repo_url_textview;
     @BindView(R.id.starCountText) TextView star_count_textview;
@@ -63,7 +65,8 @@ public class RepositoryDetailActivityFragment extends Fragment {
     private UserRepoJson item;
     private String repoLogin;
     private String repoName;
-    private HashMap<String, String> branchMap = new HashMap<>();
+    private ViewPager viewPager;
+    private RepositoryPagerAdapter repositoryPagerAdapter;
 
     // Public to allow pager fragments to access the updated value;
     public static String repoBranch;
@@ -120,9 +123,21 @@ public class RepositoryDetailActivityFragment extends Fragment {
                 Log.v(TAG,"inside menu "+item.getItemId());
                 switch (item.getItemId()){
                     case R.id.action_branch:
-                        Intent intent = new Intent(getContext(), BranchDialogActivity.class);
+
+                        /*
+                        20th November, 2016
+                        Replacing BranchDialog Actiivty Call by BranchDialogFragment Transaction
+                         */
+                        /*Intent intent = new Intent(getContext(), BranchDialogActivity.class);
                         intent.putExtra(Intent.EXTRA_TEXT, new String[] { repoLogin,repoName,repoBranch});
-                        startActivityForResult(intent,1);
+                        startActivityForResult(intent,1);*/
+                        FragmentManager fm = getFragmentManager();
+                        BranchDialogFragment branchDialogFragment = BranchDialogFragment.newInstance(
+                                new String[] { repoLogin,repoName,repoBranch});
+                        branchDialogFragment.setTargetFragment(RepositoryDetailActivityFragment.this,
+                                1);
+                        branchDialogFragment.show(fm,TAG);
+
                         return true;
                     case R.id.action_settings:
                         return true;
@@ -134,20 +149,21 @@ public class RepositoryDetailActivityFragment extends Fragment {
         popup.show();
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
             repoBranch = data.getExtras().getString(Intent.EXTRA_TEXT);
         }
-    }
+    }*/
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
-        viewPager.setAdapter(new RepositoryPagerAdapter(getChildFragmentManager(),
-                getActivity(),item));
+        viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
+        repositoryPagerAdapter = new RepositoryPagerAdapter(getChildFragmentManager(),
+                getActivity(),item,repoBranch);
+        viewPager.setAdapter(repositoryPagerAdapter);
 
         // Give the TabLayout the ViewPager
         TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.sliding_tabs);
@@ -231,5 +247,14 @@ public class RepositoryDetailActivityFragment extends Fragment {
         star_count_textview.setTypeface(tf_2);
         fork_count_textview.setText(item.getForksCount().toString());
         fork_count_textview.setTypeface(tf_2);
+    }
+
+    @Override
+    public void branchFragmentInteractionListener(String branchName) {
+        repoBranch = branchName;
+        repositoryPagerAdapter.setSelectedBranch(repoBranch);
+        repositoryPagerAdapter.notifyDataSetChanged();
+//        viewPager.setAdapter(new RepositoryPagerAdapter(getChildFragmentManager(),
+  //              getActivity(),item,repoBranch));
     }
 }

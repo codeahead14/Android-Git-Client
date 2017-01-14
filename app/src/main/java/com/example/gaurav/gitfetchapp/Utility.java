@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -17,31 +18,44 @@ import java.util.Locale;
 public class Utility {
     private static final String TAG = Utility.class.getName();
     public static final String DATE_FORMAT = "yyyyMMdd";
-    public static final String dateFormat_1 = "EEE, MMM d, ''yy";
+    public static final String dateFormat_1 = "MMM d, ''yy";
     public static final String dateFormat_2 = "dd-MMM-yyyy";
 
-    public static String formatDateString(String input){
+    public static String dateFormatConversion(String input){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+        SimpleDateFormat outputFormat = new SimpleDateFormat(dateFormat_1, Locale.ENGLISH);
+
+        try {
+            return outputFormat.format(sdf.parse(input));
+        } catch (ParseException e) {
+            return input;
+        }
+    }
+
+    public static String formatDateString(String input) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
         SimpleDateFormat outputFormat = new SimpleDateFormat(dateFormat_2, Locale.ENGLISH);
 
-        try{
-            return outputFormat.format(sdf.parse(input));
-        }catch(ParseException e){
+        try {
+            Date date = sdf.parse(input);
+            return getTimeAgo(date.getTime());
+            //return outputFormat.format(sdf.parse(input));
+        } catch (ParseException e) {
             return input;
         }
     }
 
     public static boolean hasConnection(Context context) {
         ConnectivityManager cm =
-                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
     }
 
 
-    private void alert(Context context)
-    {   String title = "No Internet Connection";
+    private void alert(Context context) {
+        String title = "No Internet Connection";
         String message = Integer.toString(R.string.notOnline);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -53,98 +67,61 @@ public class Utility {
         builder.show();
     }
 
-    public static String getFriendlyDayString(Context context, long dateInMillis) {
-        // The day string for forecast uses the following logic:
-        // For today: "Today, June 8"
-        // For tomorrow:  "Tomorrow"
-        // For the next 5 days: "Wednesday" (just the day name)
-        // For all days after that: "Mon Jun 8"
+/*
+ * Copyright 2012 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-        Time time = new Time();
-        time.setToNow();
-        long currentTime = System.currentTimeMillis();
-        int julianDay = Time.getJulianDay(dateInMillis, time.gmtoff);
-        int currentJulianDay = Time.getJulianDay(currentTime, time.gmtoff);
+    private static final long SECOND_MILLIS = 1000;
+    private static final long MINUTE_MILLIS = 60 * SECOND_MILLIS;
+    private static final long HOUR_MILLIS = 60 * MINUTE_MILLIS;
+    private static final long DAY_MILLIS = 24 * HOUR_MILLIS;
+    private static final long MONTH_MILLIS = 30 * DAY_MILLIS;
 
-        // If the date we're building the String for is today's date, the format
-        // is "Today, June 24"
-        if (julianDay == currentJulianDay) {
-            String today = context.getString(R.string.today);
-            int formatId = R.string.format_full_friendly_date;
-            return String.format(context.getString(
-                    formatId,
-                    today,
-                    getFormattedMonthDay(context, dateInMillis)));
-        } else if ( julianDay < currentJulianDay + 7 ) {
-            // If the input date is less than a week in the future, just return the day name.
-            return getDayName(context, dateInMillis);
-        } else {
-            // Otherwise, use the form "Mon Jun 3"
-            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
-            return shortenedDateFormat.format(dateInMillis);
+
+    public static String getTimeAgo(long time) {
+        if (time < 1000000000000L) {
+            // if timestamp given in seconds, convert to millis
+            time *= 1000;
         }
-    }
 
-    /**
-     * Helper method to convert the database representation of the date into something to display
-     * to users.  As classy and polished a user experience as "20140102" is, we can do better.
-     *
-     * @param context Context to use for resource localization
-     * @param dateInMillis The date in milliseconds
-     * @return a user-friendly representation of the date.
-     */
-    public static String getFullFriendlyDayString(Context context, long dateInMillis) {
-
-        String day = getDayName(context, dateInMillis);
-        int formatId = R.string.format_full_friendly_date;
-        return String.format(context.getString(
-                formatId,
-                day,
-                getFormattedMonthDay(context, dateInMillis)));
-    }
-
-    /**
-     * Given a day, returns just the name to use for that day.
-     * E.g "today", "tomorrow", "wednesday".
-     *
-     * @param context Context to use for resource localization
-     * @param dateInMillis The date in milliseconds
-     * @return
-     */
-    public static String getDayName(Context context, long dateInMillis) {
-        // If the date is today, return the localized version of "Today" instead of the actual
-        // day name.
-
-        Time t = new Time();
-        t.setToNow();
-        int julianDay = Time.getJulianDay(dateInMillis, t.gmtoff);
-        int currentJulianDay = Time.getJulianDay(System.currentTimeMillis(), t.gmtoff);
-        if (julianDay == currentJulianDay) {
-            return context.getString(R.string.today);
-        } else if ( julianDay == currentJulianDay -1 ) {
-            return context.getString(R.string.yesterday);
-        } else {
-            Time time = new Time();
-            time.setToNow();
-            // Otherwise, the format is just the day of the week (e.g "Wednesday".
-            SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
-            return dayFormat.format(dateInMillis);
+        long now = System.currentTimeMillis();
+        if (time > now || time <= 0) {
+            return null;
         }
-    }
 
-    /**
-     * Converts db date format to the format "Month day", e.g "June 24".
-     * @param context Context to use for resource localization
-     * @param dateInMillis The db formatted date string, expected to be of the form specified
-     *                in Utility.DATE_FORMAT
-     * @return The day in the form of a string formatted "December 6"
-     */
-    public static String getFormattedMonthDay(Context context, long dateInMillis ) {
-        Time time = new Time();
-        time.setToNow();
-        SimpleDateFormat dbDateFormat = new SimpleDateFormat(Utility.DATE_FORMAT);
-        SimpleDateFormat monthDayFormat = new SimpleDateFormat("MMMM dd");
-        String monthDayString = monthDayFormat.format(dateInMillis);
-        return monthDayString;
+        // TODO: localize
+        final long diff = now - time;
+        if (diff < MINUTE_MILLIS) {
+            return "just now";
+        } else if (diff < 2 * MINUTE_MILLIS) {
+            return "a minute ago";
+        } else if (diff < 50 * MINUTE_MILLIS) {
+            return diff / MINUTE_MILLIS + " minutes ago";
+        } else if (diff < 90 * MINUTE_MILLIS) {
+            return "an hour ago";
+        } else if (diff < 24 * HOUR_MILLIS) {
+            return diff / HOUR_MILLIS + " hours ago";
+        } else if (diff < 48 * HOUR_MILLIS) {
+            return "yesterday";
+        } else if (diff < 30 * DAY_MILLIS) {
+            return diff / DAY_MILLIS + " days ago";
+        } else{
+            if(diff/MONTH_MILLIS < 1)
+                return diff / MONTH_MILLIS + " month ago";
+            else
+                return diff / MONTH_MILLIS + " months ago";
+        }
     }
 }

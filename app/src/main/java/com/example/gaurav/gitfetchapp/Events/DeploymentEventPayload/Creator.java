@@ -1,5 +1,7 @@
 package com.example.gaurav.gitfetchapp.Events.DeploymentEventPayload;
 
+import android.os.Parcelable;
+
 import com.example.gaurav.gitfetchapp.Events.IssueCommentPayload.User;
 
 /**

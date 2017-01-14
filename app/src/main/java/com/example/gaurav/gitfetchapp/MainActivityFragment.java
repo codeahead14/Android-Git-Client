@@ -65,8 +65,6 @@ public class MainActivityFragment extends Fragment {
 
     @OnClick(R.id.loginbutton)
     void submit() {
-        //userNameField = ""; // userEmail.getText().toString();
-        //passwordField = ""; // userPassword.getText().toString();
         userNameField = userEmail.getText().toString();
         passwordField = userPassword.getText().toString();
 
@@ -93,6 +91,7 @@ public class MainActivityFragment extends Fragment {
                     public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
                         if(response.isSuccessful()) {
                             LoginJson item = response.body();
+                            Log.v(TAG,"received response ");
                             if (item.getToken() != null) {
                                 AccessToken.getInstance().setAccessToken(item.getToken());
                                 prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -115,7 +114,7 @@ public class MainActivityFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<LoginJson> call, Throwable t) {
-
+                        Log.v(TAG,"Failure "+t.getMessage());
                     }
                 });
             } else
@@ -159,65 +158,3 @@ public class MainActivityFragment extends Fragment {
         }
     }
 }
-
-
-    /*Button loginButton = (Button) rootView.findViewById(R.id.loginbutton);
-loginButton.setOnClickListener(new View.OnClickListener() {
-@Override
-public void onClick(View v) {
-        String userNameField = userName.getText().toString();
-        String passwordField = password.getText().toString();
-        if(userNameField.matches("") || passwordField.matches("")){
-        Toast.makeText(getActivity(), "Cannot Leave UserName/Password Blank",
-        Toast.LENGTH_SHORT).show();
-        } else {
-        //Retrofit retrofit = new Retrofit.Builder()
-        //      .baseUrl("https://api.github.com")
-        //    .addConverterFactory(GsonConverterFactory.create())
-        //  .build();
-        GitHubEndpointInterface gitInterface = ServiceGenerator.createService(
-        GitHubEndpointInterface.class, userNameField, passwordField);
-                    /*Call<AccessToken> call = gitInterface.getLoginCode(userNameField,
-                            passwordField, clientId);
-        //Call<String> call = gitInterface.getLoginCode("note");//,clientId,clientSecret);
-        LoginPost loginPost = new LoginPost();
-        loginPost.setScopes(null);
-        loginPost.setNote("myapp");
-        loginPost.setNote_url(null);
-        loginPost.setClient_id(clientId);
-        loginPost.setClient_secret(clientSecret);
-        Call<LoginJson> call = gitInterface.getLoginCode(loginPost);
-        Log.v(TAG, call.toString());
-
-        call.enqueue(new Callback<LoginJson>() {
-@Override
-public void onResponse(Call<LoginJson> call, Response<LoginJson> response) {
-        LoginJson item=response.body();
-        responseBody.setText(item.getToken());
-        }
-
-@Override
-public void onFailure(Call<LoginJson> call, Throwable t) {
-        //Handle failure
-        }
-        });*/
-
-                    /*GitHubClient client = new GitHubClient();
-                    client.setCredentials(userNameField, passwordField);
-
-                    String description = "GitFork - " + Build.MANUFACTURER + " " + Build.MODEL;
-                    String fingerprint = Settings.Secure.ANDROID_ID;
-                    if (fingerprint == null) {
-                        fingerprint = Build.FINGERPRINT;
-                    }
-                    int index = 1;
-                    OAuthService authService = new OAuthService(client);*/
-
-
-                /*Intent intent = new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(ServiceGenerator.WEB_BASE_URL + "/login/oauth/authorize" + "?client_id=" + clientId
-                                + "&redirect_uri=" + redirectUri));
-                Log.v(TAG,Uri.parse(ServiceGenerator.WEB_BASE_URL + "/login/oauth/authorize" + "?client_id=" + clientId
-                        + "&redirect_uri=" + redirectUri).toString());
-                startActivity(intent);*/
