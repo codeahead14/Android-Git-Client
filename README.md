@@ -15,10 +15,9 @@ The following features are available:
 * Search interface to fetch details about other users.
 * Provides Private feeds to keep a track of activities of the `Following` users.
 * Following/Unfollowing a user.
-
+* Allowing Users to star/watch/fork a repository.
 
 The following features are yet to be implemented/integrated:
-* Allowing Users to star/watch/fork a repository.
 * Allowing Users to edit files in the application.
 * Allowing Users to create/close issues.
 * Allowing users to create comments on issues.
@@ -41,4 +40,3 @@ For more screeenshots visit [here](https://github.com/codeahead14/Android-Git-Cl
 ## CONTRIBUTIONS
 
 Contributions are welcome and highly appreciated. 
-The CLIENT_ID and CLIENT_SECRET obtained from Github have to be entered in the [MainActivityFragment.java file](https://github.com/codeahead14/Android-Git-Client/blob/master/app/src/main/java/com/example/gaurav/gitfetchapp/MainActivityFragment.java);
