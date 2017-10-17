@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.gaurav.gitfetchapp.GooglePlayServices.TrackerApplication;
@@ -32,6 +33,8 @@ public class PreLoginDeciderActivity extends AppCompatActivity {
 
     @Nullable @BindView(R.id.app_name_text) TextView appNameText;
     private Tracker mTracker;
+    @BindView(R.id.title_text_img)
+    ImageView appTitle_img;
 
     public static String getLoginName() {
         return loginName;
@@ -54,7 +57,7 @@ public class PreLoginDeciderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pre_login);
         ButterKnife.bind(this);
 
-        Typeface tf_1 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Light.ttf");
+        Typeface tf_1 = Typeface.createFromAsset(getResources().getAssets(),"font/Roboto-Bold.ttf");
         appNameText.setTypeface(tf_1);
         TrackerApplication application = (TrackerApplication) getApplication();
         mTracker = application.getDefaultTracker();

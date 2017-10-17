@@ -57,7 +57,6 @@ public class FilesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         listAdapter.setItemListener(new HorizontalListRecyclerAdapter.OnItemClick() {
             @Override
             public void OnItemClickListener(String path) {
-                Log.v(TAG,"path "+path);
                 fetchContents("dir",0,path.substring(0,path.length()-1), false);
             }
         });

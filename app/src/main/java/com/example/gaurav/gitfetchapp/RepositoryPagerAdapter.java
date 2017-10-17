@@ -15,8 +15,12 @@ import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
 
 /**
  * Created by GAURAV on 06-08-2016.
+
+ Changed Base class from FragmentStatePagerAdapter to FragmentPagerAdapter
+ on 04-06-2017
  */
-public class RepositoryPagerAdapter extends FragmentStatePagerAdapter {
+
+public class RepositoryPagerAdapter extends FragmentPagerAdapter {
     private static final String TAG = RepositoryPagerAdapter.class.getName();
     private final int PAGE_COUNT = 4;
     private String tabTitles[] = new String[] { "INFO", "FILES", "COMMITS", "ISSUES" };
@@ -42,7 +46,6 @@ public class RepositoryPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Log.v(TAG, "getting item: "+position);
         switch (position) {
             case 0: return RepositoryBranchPagerFragment.newInstance(position + 1, userRepoJson,
                     selectedBranch);
@@ -60,7 +63,6 @@ public class RepositoryPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getItemPosition(Object object) {
         // refresh all fragments when data set changed
-        Log.v(TAG,"changing data set");
         return PagerAdapter.POSITION_NONE;
     }
 

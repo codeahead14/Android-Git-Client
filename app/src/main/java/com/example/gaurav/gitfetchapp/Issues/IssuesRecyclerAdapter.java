@@ -33,11 +33,28 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{
     private Context mContext;
     private String callFragment;
     private int loadingIndicator;
+    private int loading_state;
 
     public IssuesRecyclerAdapter(Context context, List<IssueItem> items, String callFragment){
         this.mContext = context;
         this.issuesList = items;
         this.callFragment = callFragment;
+    }
+
+    public IssuesRecyclerAdapter(Context context, List<IssueItem> items, String callFragment,
+                                 int loading_state){
+        this.mContext = context;
+        this.issuesList = items;
+        this.callFragment = callFragment;
+        this.loading_state = loading_state;
+    }
+
+    public void updateState(int state){
+        this.loading_state = state;
+    }
+
+    public int getState(){
+        return this.loading_state;
     }
 
     @Override
@@ -58,9 +75,9 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{
 
     @Override
     public int getItemViewType(int position) {
-        if (callFragment.equals(IssuesFragment.TAG))
-            loadingIndicator = IssuesFragment.loadingIndicator;
-        else if(callFragment.equals(RepositoryPagerFragment.TAG))
+        if (callFragment.equals(IssuesPagerFragment.TAG)) {
+            loadingIndicator = getState();
+        }else if(callFragment.equals(RepositoryPagerFragment.TAG))
             loadingIndicator = RepositoryPagerFragment.loadingIndicator;
         if(position == issuesList.size()-1 && loadingIndicator != 1) {
             return VIEW_PROG;
@@ -77,6 +94,7 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{
         if(viewHolder instanceof IssuesViewHolder) {
             IssuesViewHolder holder = (IssuesViewHolder) viewHolder;
             holder.issues_title.setText(issuesList.get(position).getTitle());
+            holder.issues_title.setTypeface(tf_1);
             String action = "open";
 
             if (issuesList.get(position).getState().compareTo("open") == 0 ||
@@ -89,9 +107,10 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{
                 holder.issues_image_icon.setImageResource(R.drawable.issue_closed_16x16);
             }
             Spanned str = Html.fromHtml("<b>#" + issuesList.get(position).getNumber() + "</b> " +
-                    action + " by <b>" + issuesList.get(position).getUser().getLogin() +
+                    action + " by <b>" + issuesList.get(position).getUser().getLogin() + " " +
                     Utility.formatDateString(issuesList.get(position).getCreatedAt()) + "</b>");
             holder.issues_updated_desc.setText(str);
+            holder.issues_updated_desc.setTypeface(tf_2);
         }else if(viewHolder instanceof ProgressBarViewHolder){
             ((ProgressBarViewHolder) viewHolder).materialProgressBar.setIndeterminate(true);
         }
@@ -99,13 +118,15 @@ public class IssuesRecyclerAdapter extends RecyclerViewParentAdapter{
 
     @Override
     public int getItemCount() {
-        if (issuesList.size() != 0)
+        if (issuesList.size() != 0) {
             return issuesList.size();
+        }
         return 0;
     }
 
     public void addItem(IssueItem item){
         issuesList.add(item);
+        Log.v(TAG,"Adding item");
         notifyItemInserted(issuesList.size()-1);
     }
 

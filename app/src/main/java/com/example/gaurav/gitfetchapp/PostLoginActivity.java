@@ -1,16 +1,20 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -23,6 +27,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +48,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,6 +66,16 @@ public class PostLoginActivity extends AppCompatActivity
     private boolean tabletSize;
     private Runnable mRunnable;
     private Handler mHandler;
+    private View headerView;
+    private ImageView header_icon;
+    private TextView header_userName_textView;
+    private TextView header_userEmail_textView;
+    private GitHubEndpointInterface gitHubEndpointInterface;
+    private String owner;
+    private SharedPreferences prefs;
+    private BroadcastReceiver broadcastReceiver;
+    private boolean headerViewLoaded;
+    private Snackbar connectionSnackbar;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
@@ -83,6 +100,7 @@ public class PostLoginActivity extends AppCompatActivity
         screenType = getScreenSize();
         tabletSize = getResources().getBoolean(R.bool.isTablet);
         setSupportActionBar(toolbar);
+        headerViewLoaded = false;
         final Context context = this;
         mHandler = new Handler();
 
@@ -110,20 +128,42 @@ public class PostLoginActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
 
-        Intent intent = getIntent();
-        //String[] intentData = intent.getExtras().getStringArray(Intent.EXTRA_TEXT);
-        View headerView = navigationView.getHeaderView(0);
-        TextView header_userName_textView = (TextView) headerView.findViewById(R.id.header_user_name_text);
-        header_userName_textView.setText(owner);//PreLoginDeciderActivity.getLoginName());//intentData[0]);
-        final TextView header_userEmail_textView = (TextView) headerView.findViewById(R.id.header_user_email_text);
-        final ImageView header_icon = (ImageView) headerView.findViewById(R.id.header_icon);
-        final GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
+        connectionSnackbar = Snackbar.make(findViewById(R.id.default_layout_container),
+                R.string.notOnline,Snackbar.LENGTH_INDEFINITE);
+        if(!Utility.hasConnection(this)){
+            connectionSnackbar.setAction(R.string.network_settings, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                }
+            });
+            connectionSnackbar.setActionTextColor(getResources().getColor(R.color.teal300));
+            connectionSnackbar.show();
+        }
+
+        headerView = navigationView.getHeaderView(0);
+        header_userName_textView = (TextView) headerView.findViewById(R.id.header_user_name_text);
+        header_userEmail_textView = (TextView) headerView.findViewById(R.id.header_user_email_text);
+        header_icon = (ImageView) headerView.findViewById(R.id.header_icon);
+        gitHubEndpointInterface = ServiceGenerator.createService(
                                     GitHubEndpointInterface.class);
-        if(Utility.hasConnection(context)) {
-            Call<User> call = gitHubEndpointInterface.getUserDetails(owner);//"hemanth");//PreLoginDeciderActivity.getLoginName());//intentData[0]);
+
+        /* Load header icon and user details */
+        loadHeaderView();
+
+        Fragment fragment = new RepositoriesFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container_repo,fragment,null);
+        fragmentTransaction.commit();
+    }
+
+    private void loadHeaderView(){
+        if(Utility.hasConnection(this)) {
+            header_userName_textView.setText(owner);
+            Call<User> call = gitHubEndpointInterface.getUserDetails(owner);
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
@@ -132,11 +172,10 @@ public class PostLoginActivity extends AppCompatActivity
                         userDetails = item;
                         if (item.getEmail() == null) {
                             header_userEmail_textView.setText(item.getHtmlUrl());
-                            Log.v(TAG, "html url: " + item.getHtmlUrl());
                         } else
                             header_userEmail_textView.setText((String) item.getEmail());
 
-                        Picasso.with(context)
+                        Picasso.with(PostLoginActivity.this)
                                 .load(item.getAvatarUrl())
                                 .transform(new CircleTransform())
                                 .into(header_icon);
@@ -149,52 +188,41 @@ public class PostLoginActivity extends AppCompatActivity
                                 @Override
                                 public void onResponse(Call<List<Owner>> call, Response<List<Owner>> response) {
                                     if(response.isSuccessful()){
-                                        Log.v(TAG,"response successful");
                                         Set<String> set = new HashSet<String>();
                                         for(Owner elem : response.body())
                                             set.add(elem.getLogin());
                                         editor.putStringSet(USER_FOLLOWING,set);
                                         editor.apply();
-                                        //editor.
                                     }
                                 }
-
                                 @Override
                                 public void onFailure(Call<List<Owner>> call, Throwable t) {
-
                                 }
                             });
                         }
-
+                        headerViewLoaded = true;
                     }
                 }
-
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
 
                 }
             });
-        } else {
-            Toast.makeText(context,R.string.notOnline,Toast.LENGTH_SHORT).show();
+            headerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent userIntent = new Intent(PostLoginActivity.this,UserInfoActivity.class);
+                    userIntent.putExtra(USER_DETAILS,userDetails);
+                    //Log.v(TAG,"onCLICK userDetails: "+userDetails.getAvatarUrl());
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(PostLoginActivity.this, (ImageView)header_icon, "user_avatar_transition");
+                    PostLoginActivity.this.startActivity(userIntent, options.toBundle());
+                    overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
+                }
+            });
+        }else {
+            header_userName_textView.setText("Failed to Load");
         }
-
-        headerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent userIntent = new Intent(context,UserInfoActivity.class);
-                userIntent.putExtra(USER_DETAILS,userDetails);
-                //Log.v(TAG,"onCLICK userDetails: "+userDetails.getAvatarUrl());
-                ActivityOptionsCompat options = ActivityOptionsCompat.
-                        makeSceneTransitionAnimation(PostLoginActivity.this, (ImageView)header_icon, "user_avatar_transition");
-                context.startActivity(userIntent, options.toBundle());
-                overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
-            }
-        });
-
-        Fragment fragment = new RepositoriesFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container_repo,fragment,null);
-        fragmentTransaction.commit();
     }
 
     public int getScreenSize(){
@@ -221,10 +249,35 @@ public class PostLoginActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        mTracker.setScreenName("Screen"+TAG);
+        mTracker.setScreenName("Image~" + TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(!Utility.hasConnection(context)){
+                    if(connectionSnackbar != null){
+                        connectionSnackbar.show();
+                    }
+                }else if(Utility.hasConnection(context)){
+                    if(connectionSnackbar != null)
+                        connectionSnackbar.dismiss();
+                    ViewGroup vg = (ViewGroup)findViewById(R.id.header_linear_layout);
+                    if(vg != null)
+                        vg.invalidate();
+                    loadHeaderView();
+                }
+            }
+        };
+        registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -288,8 +341,8 @@ public class PostLoginActivity extends AppCompatActivity
                 fragmentClass = PrivateFeedsFragment.class;
                 //fragmentClass = FeedsFragment.class;
                 break;
-            case R.id.nav_share:
-                fragmentClass = RepositoriesFragment.class;
+            case R.id.nav_credits:
+                fragmentClass = CreditsFragment.class;
                 break;
             case R.id.nav_logout:
                 fragmentClass = LogoutFragment.class;

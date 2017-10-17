@@ -25,8 +25,8 @@
             android:id="@+id/issues_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="@color/teal400"/>
+            android:textSize="20sp"
+            android:textColor="@color/teal500"/>
 
         <TextView
             android:id="@+id/issues_updated_desc"

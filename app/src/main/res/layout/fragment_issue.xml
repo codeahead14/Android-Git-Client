@@ -5,22 +5,22 @@
     android:id="@+id/issue_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/issue_appbar"
         android:layout_width="match_parent"
         android:layout_height="128dp"
-        android:background="@color/deepPurple600"
         android:fitsSystemWindows="true"
+        android:background="@color/deepPurple600"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/issue_collapsing_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/deepPurple600"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/deepPurple600"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <LinearLayout
@@ -48,45 +48,6 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/grey300"
                     android:textSize="14sp"/>
-                <!--<LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_below="@id/issue_number_text">-->
-                <!--<LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/issue_number_text"
-                    android:orientation="horizontal"
-                    android:baselineAligned="true"
-                    android:paddingTop="@dimen/item_horizontal_margin_small"
-                    android:paddingEnd="@dimen/item_horizontal_margin_normal"
-                    android:paddingLeft="@dimen/item_horizontal_margin_normal"
-                    android:paddingRight="@dimen/item_horizontal_margin_normal"
-                    android:paddingStart="@dimen/item_horizontal_margin_normal">
-
-                    <ImageView
-                        android:id="@+id/issue_avatar"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:visibility="gone"
-                        android:contentDescription="@string/userIcon_desc" />
-
-                    <TextView
-                        android:id="@+id/issue_author_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/grey300"
-                        android:textSize="14sp"
-                        android:paddingLeft="@dimen/item_horizontal_margin_small"
-                        android:paddingStart="@dimen/item_horizontal_margin_small"
-                        android:paddingEnd="@dimen/item_horizontal_margin_small"
-                        android:paddingRight="@dimen/item_horizontal_margin_small" />
-
-                </LinearLayout>-->
-
-                <!--</LinearLayout>-->
             </LinearLayout>
 
             <android.support.v7.widget.Toolbar
@@ -102,21 +63,25 @@
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize"
                 android:layout_gravity="bottom"
+                android:paddingBottom="@dimen/item_horizontal_margin_small"
                 app:layout_collapseMode="pin"
                 android:baselineAligned="true"
+                android:visibility="visible"
                 android:orientation="horizontal">
 
-                <TextView
+                <me.grantland.widget.AutofitTextView
                     android:background="@android:color/transparent"
                     android:id="@+id/issue_title_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:lines="2"
+                    android:maxLines="2"
                     android:gravity="center_vertical"
+                    android:textSize="20sp"
                     android:paddingLeft="@dimen/item_margin_36dp"
                     android:paddingStart="@dimen/item_margin_36dp"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"/>
+                    android:paddingRight="@dimen/item_horizontal_margin_small"
+                    android:paddingEnd="@dimen/item_horizontal_margin_small"
+                    android:textColor="@color/white"/>
 
             </LinearLayout>
 
@@ -132,8 +97,17 @@
         app:layout_anchor="@id/issue_appbar"
         app:layout_anchorGravity="bottom|right|end"
         app:backgroundTint="@color/teal300"
-        android:layout_margin="@dimen/item_horizontal_margin_normal"/>
+        app:useCompatPadding="true"
+        android:visibility="gone"/>
 
     <include layout="@layout/fragment_issue_contents"/>
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/issue_contents_progress"
+        android:indeterminate="true"
+        app:mpb_progressStyle="circular"
+        android:layout_gravity="center" />
 
 </android.support.design.widget.CoordinatorLayout>

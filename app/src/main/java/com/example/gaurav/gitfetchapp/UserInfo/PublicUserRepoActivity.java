@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 
@@ -34,6 +35,7 @@ public class PublicUserRepoActivity extends AppCompatActivity {
     @BindView(R.id.repo_progress_bar)
     MaterialProgressBar materialProgressBar;
 
+    private static final String TAG = PublicUserRepoActivity.class.getName();
     private RepositoryAdapter repositoryAdapter;
     private GitHubEndpointInterface githubEndpointInterface;
 
@@ -70,11 +72,14 @@ public class PublicUserRepoActivity extends AppCompatActivity {
                     materialProgressBar.setVisibility(View.GONE);
                     repositoryAdapter.notifyDataSetChanged();
                 }
+                else{
+                    Log.v(TAG,response.message());
+                }
             }
 
             @Override
             public void onFailure(Call<ArrayList<UserRepoJson>> call, Throwable t) {
-
+                Log.v(TAG,"Call Failure "+ t.getMessage());
             }
         });
     }

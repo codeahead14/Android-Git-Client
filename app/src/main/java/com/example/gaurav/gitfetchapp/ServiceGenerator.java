@@ -13,6 +13,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -64,12 +65,15 @@ public class ServiceGenerator {
                     return chain.proceed(request);
                 }
             });
-            httpClient.readTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+            //httpClient.readTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         }
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = httpClient.addInterceptor(interceptor).build();
-        Retrofit retrofit = builder.client(client).build();
+        Retrofit retrofit = builder
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client).build();
         return retrofit.create(serviceClass);
     }
 
@@ -98,7 +102,10 @@ public class ServiceGenerator {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = httpClient.addInterceptor(interceptor).build();
-        Retrofit retrofit = builder.client(client).build();
+        Retrofit retrofit = builder
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client).build();
         return retrofit.create(serviceClass);
     }
 

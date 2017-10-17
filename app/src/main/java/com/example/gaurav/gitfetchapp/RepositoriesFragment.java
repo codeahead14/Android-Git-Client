@@ -1,13 +1,17 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -80,6 +84,8 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     private String[] intentData;
     private Parcelable state;
     private Tracker mTracker;
+    private BroadcastReceiver broadcastReceiver;
+    private Snackbar connectionSnackbar;
     Vector<ContentValues> cVVector;
 
     @BindView(R.id.repository_recycler)
@@ -232,7 +238,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onStart() {
         super.onStart();
-        Log.v(TAG, "on start");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         String sort = prefs.getString(mContext.getString(R.string.pref_repositories_sort),
                 mContext.getString(R.string.pref_repositories_sort_default));
@@ -248,9 +253,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         else {
             mRepoListAdapter.updateValues(userRepoList);
         }
-
-
-        Log.v(TAG,"prefs ");
     }
 
     @Override
@@ -258,6 +260,28 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         super.onResume();
         mTracker.setScreenName("Image~" + TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        /*broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(!Utility.hasConnection(context)){
+                    if(connectionSnackbar != null){
+                        connectionSnackbar.show();
+                    }
+                }else if(Utility.hasConnection(context)){
+                    if(connectionSnackbar != null)
+                        connectionSnackbar.dismiss();
+                }
+            }
+        };
+        getActivity().registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));*/
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        state = repoRecyclerView.onSaveInstanceState();
+        //getActivity().unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -284,16 +308,7 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_repositories, containter, false);
         ButterKnife.bind(this, rootView);
-
-        if (!Utility.hasConnection(getContext()))
-            Toast.makeText(getActivity(), R.string.notOnline, Toast.LENGTH_SHORT).show();
         return rootView;
-    }
-
-    @Override
-    public void onPause() {
-        state = repoRecyclerView.onSaveInstanceState();
-        super.onPause();
     }
 
     @Override
@@ -345,6 +360,19 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(REPOSITORIES_LOADER, null, this);
 
+        /*(connectionSnackbar = Snackbar.make(rootView, getResources().getString(R.string.notOnline),
+                Snackbar.LENGTH_INDEFINITE);
+        if(!Utility.hasConnection(getActivity())) {
+            connectionSnackbar.setAction(R.string.network_settings, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                }
+            });
+            connectionSnackbar.setActionTextColor(getResources().getColor(R.color.teal300));
+            connectionSnackbar.show();
+        }*/
+
         ((AppCompatActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(
                 getResources().getDrawable(R.drawable.app_bar_gradient));
         //new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
@@ -365,7 +393,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
         String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY, null);
         // PreLoginDeciderActivity.getLoginName();// intentData[0];
         Uri repoWithOwnerUri = RepositoryContract.RepositoryEntry.buildRepositoryUriWithOwner(owner);
-        Log.v(TAG, "repo with owner uri: " + repoWithOwnerUri);
         return new CursorLoader(getActivity(),
                 repoWithOwnerUri,
                 REPOSITORY_COLUMNS,
@@ -389,7 +416,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                     new String[]{Integer.toString(ownerId)},
                     null);
             if (repoCursor != null && repoCursor.moveToFirst()) {
-                Log.v(TAG, "owner");
                 owner.setId(repoCursor.getInt(repoCursor.getColumnIndex(RepositoryContract.OwnerEntry.COLUMN_ID)));
                 owner.setLogin(repoCursor.getString(repoCursor.getColumnIndex(RepositoryContract.OwnerEntry.COLUMN_LOGIN)));
                 owner.setAvatarUrl(repoCursor.getString(repoCursor.getColumnIndex(RepositoryContract.OwnerEntry.COLUMN_AVATAR_URL)));
@@ -551,8 +577,6 @@ public class RepositoriesFragment extends Fragment implements LoaderManager.Load
                     Log.v(TAG, "Stack trace" + t.getMessage());
                 }
             });
-        } else {
-            Toast.makeText(getActivity(), R.string.notOnline, Toast.LENGTH_SHORT).show();
         }
     }
 }

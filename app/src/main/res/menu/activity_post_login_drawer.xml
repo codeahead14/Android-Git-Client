@@ -43,9 +43,9 @@
     <item android:title="@string/sub_category_misc">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/share" />
+                android:id="@+id/nav_credits"
+                android:icon="@drawable/ic_group_black_24dp"
+                android:title="@string/credits" />
             <item
                 android:id="@+id/nav_logout"
                 android:title="@string/Logout" />

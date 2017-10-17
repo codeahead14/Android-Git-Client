@@ -212,8 +212,6 @@ public class EventsAsyncTask extends AsyncTask<String, Void, ArrayList<EventsJso
     @Override
     protected void onPostExecute(ArrayList<EventsJson> eventsJsons) {
         super.onPostExecute(eventsJsons);
-        //avLoadingIndicatorView.hide();
-        Log.v(TAG,"items added" + eventsJsons.size());
         onDataFetchFinished.onDataFetchFinishedCallback();
         if(eventsJsons.size() == 0)
             adapter.notifyDataSetChanged();

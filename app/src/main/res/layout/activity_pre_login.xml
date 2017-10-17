@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimary">
+    android:background="@drawable/splash_github_4">
 
     <TextView
         android:id="@+id/app_name_text"
@@ -13,6 +13,15 @@
         android:gravity="center"
         android:text="@string/app_display_name"
         android:textColor="@color/white"
-        android:textSize="48sp" />
+        android:textSize="48sp"
+        android:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/title_text_img"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/title_text_svg"
+        android:visibility="gone"
+        android:foregroundGravity="center"/>
 
 </RelativeLayout>

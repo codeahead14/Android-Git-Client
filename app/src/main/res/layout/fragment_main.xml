@@ -7,15 +7,24 @@
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="2dp"
+        app:cardCornerRadius="0dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
         card_view:cardBackgroundColor="#F5F5F5"
-        card_view:cardElevation="2dp"
+        card_view:cardElevation="4dp"
         android:layout_gravity="center_horizontal|center_vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/login_card_logo"
+                android:src="@mipmap/ic_app_launcher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                android:padding="@dimen/activity_horizontal_margin"/>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/emailParent"
@@ -23,11 +32,12 @@
                 android:layout_height="wrap_content"
                 android:visibility="visible"
                 android:textSize="14sp"
-                android:paddingLeft="@dimen/item_horizontal_margin_normal"
-                android:paddingStart="@dimen/item_horizontal_margin_normal"
-                android:paddingRight="@dimen/item_horizontal_margin_normal"
-                android:paddingEnd="@dimen/item_horizontal_margin_normal"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/item_horizontal_margin_small"
+                android:paddingStart="@dimen/item_horizontal_margin_small"
+                android:paddingRight="@dimen/item_horizontal_margin_small"
+                android:paddingEnd="@dimen/item_horizontal_margin_small"
+                android:paddingTop="24dp"
+                android:layout_below="@id/login_card_logo"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                 <AutoCompleteTextView
@@ -38,7 +48,7 @@
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColor="@color/teal500"
+                    android:textColor="@color/teal300"
                     android:textColorHint="@color/grey400" />
             </android.support.design.widget.TextInputLayout>
 
@@ -66,7 +76,7 @@
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textColor="@color/teal500"
+                    android:textColor="@color/teal300"
                     android:textColorHint="@color/grey400"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -75,7 +85,7 @@
             android:id="@+id/loginbutton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/red300"
+            android:background="@color/teal300"
             android:layout_below="@+id/passwordParent"
             android:gravity="center_horizontal|center_vertical"
             android:text="Login"

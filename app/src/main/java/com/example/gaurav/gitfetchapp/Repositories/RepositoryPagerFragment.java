@@ -30,6 +30,7 @@ import com.example.gaurav.gitfetchapp.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +38,13 @@ import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Observable;
+import rx.Observer;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by GAURAV on 06-08-2016.
@@ -45,6 +53,7 @@ public class RepositoryPagerFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final String USER_REPO = "USER_REPO";
     public static final String SELECTED_BRANCH = "SELECTED_BRANCH";
+    public static Observable<Integer> loading;
 
     private static final String REPOSITORY_PAGER_STATE = "repo_pager_state";
     public static final String TAG = RepositoryPagerFragment.class.getName();
@@ -63,6 +72,7 @@ public class RepositoryPagerFragment extends Fragment {
     private static MaterialProgressBar materialProgressBar;
     private GitHubEndpointInterface gitHubEndpointInterface;
     private static int PAGE_COUNT = 0;
+    private Subscription pagerSubscription;
     public static int loadingIndicator = 0;
 
     @BindView(R.id.branches_recyclerview)
@@ -89,9 +99,7 @@ public class RepositoryPagerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
         userRepoJson = getArguments().getParcelable(USER_REPO);
-        //repo_branch = RepositoryDetailActivityFragment.repoBranch;
         repo_branch = getArguments().getString(SELECTED_BRANCH);
-        Log.v(TAG,"Repo Branch " + repo_branch);
 
         gitHubEndpointInterface = ServiceGenerator.createService(
                 GitHubEndpointInterface.class);
@@ -109,12 +117,41 @@ public class RepositoryPagerFragment extends Fragment {
                     TAG);
             issuesRecyclerAdapter.clear();
         }
-        fetchPagerData();
+        //fetchPagerData();
+        createObservable();
     }
 
-    private void fetchPagerData() {
+    private void createObservable(){
+        Observable<Integer> callObservable = Observable.fromCallable(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                return fetchPagerData();
+            }
+        });
+
+        pagerSubscription = callObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Integer>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        materialProgressBar.setVisibility(View.GONE);
+                    }
+                });
+    }
+
+    private int fetchPagerData() {
         repo_branch = RepositoryDetailActivityFragment.repoBranch;
-        Log.v(TAG, "repo branch in Pager: " + repo_branch);
         if (mPage == 2) {
             if (Utility.hasConnection(getContext())) {
                 //materialProgressBar.setVisibility(View.VISIBLE);
@@ -195,32 +232,15 @@ public class RepositoryPagerFragment extends Fragment {
 
                     }
                 });
-
-                /*call.enqueue(new Callback<IssuesJson>() {
-                    @Override
-                    public void onResponse(Call<IssuesJson> call, Response<IssuesJson> response) {
-                        if (response.isSuccessful()) {
-                            loadingIndicator = 1;
-                            List<IssueItem> list = response.body().getItems();
-                            for (IssueItem elem : list)
-                                issuesRecyclerAdapter.addItem(elem);
-                            issuesRecyclerAdapter.notifyDataSetChanged();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<IssuesJson> call, Throwable t) {
-                    }
-                });
-            } else
-                Toast.makeText(getContext(), R.string.notOnline, Toast.LENGTH_SHORT).show();*/
             }
         }
+        return 1;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.v(TAG,"onCreateView");
         View view = inflater.inflate(R.layout.fragment_repository_content, container, false);
         ButterKnife.bind(this, view);
         materialProgressBar = (MaterialProgressBar) view.findViewById(R.id.repository_progress_bar);
@@ -235,8 +255,9 @@ public class RepositoryPagerFragment extends Fragment {
             public void onLoadMore(int page, int totalItemsCount, boolean loading) {
                 //materialProgressBar.setVisibility(View.VISIBLE);
                 loadingIndicator = 0;
-                if (mPage != 2)
+                if (mPage != 2){
                     fetchPagerData();
+                }
             }
         });
 

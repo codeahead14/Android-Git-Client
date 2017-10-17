@@ -1,0 +1,48 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/credits_scrollview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@mipmap/ic_app_launcher"
+            android:contentDescription="@string/app_name"
+            android:alpha="0.75"/>
+        <TextView
+            android:id="@+id/credits_app_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="36sp"
+            android:textColor="@color/grey600"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/libraries_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Libraries"
+            android:textSize="16sp"
+            android:textColor="@color/grey700"
+            android:paddingTop="@dimen/item_horizontal_margin_normal"/>
+
+        <TextView
+            android:id="@+id/libraries_credits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/libraries_list"
+            android:textColor="@color/deepPurple600"
+            android:textIsSelectable="true"/>
+    </LinearLayout>
+
+</ScrollView>

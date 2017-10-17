@@ -43,15 +43,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PublicEventsFragment.OnPublicEventsFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PublicEventsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class PublicEventsFragment extends Fragment implements OnDataFetchFinished {
     private static final String TAG = PublicEventsFragment.class.getName();
     private static final String ARG_PARAM1 = "param1";
@@ -64,18 +55,18 @@ public class PublicEventsFragment extends Fragment implements OnDataFetchFinishe
     Tracker mTracker;
     BroadcastReceiver broadcastReceiver;
     private boolean connectionLostFlag;
+    private boolean viewLoaded;
+    private View rootView;
 
     private PublicEventsRecyclerAdapter publicEventsRecyclerAdapter;
-    @BindView(R.id.networkLayout)
+    @BindView(R.id.public_feeds_networkLayout)
     RelativeLayout networkLayout;
-    @BindView(R.id.networkButton)
+    @BindView(R.id.public_feeds_networkButton)
     Button networkSettings;
     @BindView(R.id.public_events_recyclerview)
     RecyclerView public_events_recyclerview;
     @BindView(R.id.events_progress_bar)
     MaterialProgressBar materialProgressBar;
-
-    private OnPublicEventsFragmentInteractionListener mListener;
 
     public PublicEventsFragment() {
         // Required empty public constructor
@@ -102,19 +93,31 @@ public class PublicEventsFragment extends Fragment implements OnDataFetchFinishe
     @Override
     public void onResume() {
         super.onResume();
-        mTracker.setScreenName("Image~" + TAG);
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent){
-                if(!Utility.hasConnection(context)){
+                if(!Utility.hasConnection(context) && !viewLoaded){
                     connectionLostFlag = true;
-                    networkLayout.setVisibility(View.VISIBLE);
+                    materialProgressBar.setVisibility(View.GONE);
+                    networkLayout.setVisibility(View.GONE);
                 } else if(Utility.hasConnection(context)) {
                     if( connectionLostFlag) {
                         connectionLostFlag = false;
                         networkLayout.setVisibility(View.GONE);
+                        if(rootView != null) {
+                            ViewGroup vg = (ViewGroup) rootView.findViewById(R.id.public_feeds_framelayout);
+                            //if (vg != null)
+                                vg.invalidate();
+                        }
+                        if (materialProgressBar != null) {
+                            materialProgressBar.setVisibility(View.VISIBLE);
+                        }
+                        String url = "https://api.github.com/events?page="+PAGE_NUM;
+                        EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter,
+                                    PublicEventsFragment.this);
+                        eventsAsyncTask.execute(url);
+                        PAGE_NUM += 1;
                     }
                 }
             }
@@ -149,6 +152,7 @@ public class PublicEventsFragment extends Fragment implements OnDataFetchFinishe
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         PAGE_NUM = 1;
+        viewLoaded = false;
         publicEventsRecyclerAdapter = new PublicEventsRecyclerAdapter(getContext(),new ArrayList<EventsJson>());
         TrackerApplication application = (TrackerApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
@@ -160,19 +164,15 @@ public class PublicEventsFragment extends Fragment implements OnDataFetchFinishe
             EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(publicEventsRecyclerAdapter,this);
             eventsAsyncTask.execute(url);
             PAGE_NUM += 1;
-        } else
-            Toast.makeText(getContext(),R.string.notOnline,Toast.LENGTH_LONG).show();
-
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_public_events,container,false);
+        rootView = inflater.inflate(R.layout.fragment_public_events,container,false);
         ButterKnife.bind(this,rootView);
-        Log.v(TAG,"on Create View");
-
         materialProgressBar.setVisibility(View.VISIBLE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -192,13 +192,6 @@ public class PublicEventsFragment extends Fragment implements OnDataFetchFinishe
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            //mListener.OnPublicEventsFragmentListener(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -213,26 +206,11 @@ public class PublicEventsFragment extends Fragment implements OnDataFetchFinishe
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     @Override
     public void onDataFetchFinishedCallback() {
+        viewLoaded = true;
         materialProgressBar.setVisibility(View.GONE);
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnPublicEventsFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void OnPublicEventsFragmentListener(ProgressBar progressBar);
     }
 }

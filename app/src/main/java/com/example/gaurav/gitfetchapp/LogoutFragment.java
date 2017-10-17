@@ -23,6 +23,9 @@ public class LogoutFragment extends Fragment {
         editor.remove(PreLoginDeciderActivity.ACCESS_TOKEN_KEY);
         editor.apply();
         Intent intent = new Intent(getContext(),MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         getContext().startActivity(intent);
     }
 

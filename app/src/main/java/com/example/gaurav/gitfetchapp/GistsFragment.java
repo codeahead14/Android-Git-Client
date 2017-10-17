@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -70,9 +71,14 @@ public class GistsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private View rootView;
     private boolean connectionLostFlag;
+    private Snackbar connectionSnackBar;
     private OnFragmentInteractionListener mListener;
     private GistsRecyclerAdapter gistsRecyclerAdapter;
+    private String owner;
+    private boolean viewLoaded;
 
     public GistsFragment() {
         // Required empty public constructor
@@ -107,13 +113,23 @@ public class GistsFragment extends Fragment {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent){
-                if(!Utility.hasConnection(context)){
+                if(!Utility.hasConnection(context) && !viewLoaded){
                     connectionLostFlag = true;
-                    networkLayout.setVisibility(View.VISIBLE);
+                    materialProgressBar.setVisibility(View.GONE);
+                    networkLayout.setVisibility(View.GONE);
                 } else if(Utility.hasConnection(context)) {
                     if( connectionLostFlag) {
                         connectionLostFlag = false;
                         networkLayout.setVisibility(View.GONE);
+                        if(rootView != null) {
+                            ViewGroup vg = (ViewGroup) rootView.findViewById(R.id.gists_fragment_framelayout);
+//                            if (vg != null) {
+                                vg.invalidate();
+                        }
+                        if(materialProgressBar!=null){
+                            materialProgressBar.setVisibility(View.VISIBLE);
+                        }
+                        getGists();
                     }
                 }
             }
@@ -123,16 +139,27 @@ public class GistsFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        viewLoaded = false;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
+        owner = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
         gistsRecyclerAdapter = new GistsRecyclerAdapter(getContext(), new ArrayList<GistsJson>());
+        getGists();
 
+    }
+
+    private void getGists(){
         if(Utility.hasConnection(getContext())) {
             GitHubEndpointInterface gitHubEndpointInterface = ServiceGenerator.createService(
                     GitHubEndpointInterface.class);
@@ -145,7 +172,9 @@ public class GistsFragment extends Fragment {
                     gistsRecyclerAdapter.clear();
                     for (GistsJson elem : gists)
                         gistsRecyclerAdapter.addItem(elem);
+                    Log.v(TAG,"item added");
                     gistsRecyclerAdapter.notifyDataSetChanged();
+                    viewLoaded = true;
                     materialProgressBar.setVisibility(View.GONE);
                 }
 
@@ -154,8 +183,7 @@ public class GistsFragment extends Fragment {
                     Log.v(TAG, "Failed Miserably in Gists" + t.getMessage());
                 }
             });
-        }else
-            Toast.makeText(getContext(),R.string.notOnline,Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -179,7 +207,7 @@ public class GistsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_gists, container, false);
+        rootView = inflater.inflate(R.layout.fragment_gists, container, false);
         ButterKnife.bind(this,rootView);
         networkSettings.setOnClickListener(new View.OnClickListener() {
             @Override

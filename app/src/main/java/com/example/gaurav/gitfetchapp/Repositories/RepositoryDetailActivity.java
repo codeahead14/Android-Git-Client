@@ -48,6 +48,5 @@ public class RepositoryDetailActivity extends AppCompatActivity implements Repos
 
     @Override
     public void serviceCallbackListener() {
-        Toast.makeText(RepositoryDetailActivity.this, "Hello", Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,7 +1,13 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.net.Credentials;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +34,7 @@ import com.example.gaurav.gitfetchapp.Feeds.FeedsJson;
 import com.example.gaurav.gitfetchapp.Feeds.TimelineJson.Feed;
 import com.example.gaurav.gitfetchapp.Repositories.EventsRecyclerAdapter;
 import com.example.gaurav.gitfetchapp.Repositories.UserRepoJson;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
@@ -58,22 +67,29 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
     private static int PAGE_NUM = 1;
     private String userName;
     public static int loadingEvents = 0;
+    private BroadcastReceiver broadcastReceiver;
+    private boolean viewLoaded = false;;
+    private boolean connectionLostFlag;
 
     @BindView(R.id.privatefeeds_recyclerview)
     RecyclerView recyclerView;
     @BindView(R.id.privatefeeds_progress_bar)
     MaterialProgressBar materialProgressBar;
+    @BindView(R.id.pvt_feeds_networkButton)
+    Button networkButton;
+    @BindView(R.id.pvt_feeds_networkLayout)
+    RelativeLayout networkLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(TAG,"On create");
         mAccessToken = AccessToken.getInstance();
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         userName = prefs.getString(PreLoginDeciderActivity.USERNAME_KEY,null);
         //loadingEvents = false;
         eventsRecyclerAdapter = new PublicEventsRecyclerAdapter(getContext(),new ArrayList<EventsJson>());
         PAGE_NUM = 1;
+        viewLoaded = false;
         /*
             Using HTTP Async Task
          */
@@ -83,8 +99,7 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
             eventsAsyncTask.execute(url);
             //loadingEvents = 1;
             PAGE_NUM += 1;
-        } else
-            Toast.makeText(getContext(),R.string.notOnline,Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -104,6 +119,47 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
         //window.setStatusBarColor(getResources().getColor(R.color.deepPurple800));
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent){
+                if(!Utility.hasConnection(context) && !viewLoaded){
+                    connectionLostFlag = true;
+                    materialProgressBar.setVisibility(View.GONE);
+                    networkLayout.setVisibility(View.GONE);
+                } else if(Utility.hasConnection(context)) {
+                    if( connectionLostFlag) {
+                        connectionLostFlag = false;
+                        networkLayout.setVisibility(View.GONE);
+                        if(rootView != null) {
+                            ViewGroup vg = (ViewGroup) rootView.findViewById(R.id.pvt_feeds_framelayout);
+                            //if (vg != null)
+                                vg.invalidate();
+                        }
+                        if (materialProgressBar != null) {
+                            materialProgressBar.setVisibility(View.VISIBLE);
+                        }
+
+                        /*
+                        Using HTTP Async Task
+                        */
+                        String url = "https://api.github.com/users/" + userName + "/received_events?page=" + PAGE_NUM;
+                        EventsAsyncTask eventsAsyncTask = new EventsAsyncTask(eventsRecyclerAdapter,
+                                PrivateFeedsFragment.this);
+                        eventsAsyncTask.execute(url);
+                        //loadingEvents = 1;
+                        PAGE_NUM += 1;
+                    }
+                }
+            }
+        };
+
+        getActivity().registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -111,6 +167,13 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
         ButterKnife.bind(this,rootView);
 
         materialProgressBar.setVisibility(View.VISIBLE);
+        networkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+            }
+        });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -133,6 +196,7 @@ public class PrivateFeedsFragment extends Fragment implements OnDataFetchFinishe
     @Override
     public void onDataFetchFinishedCallback() {
         loadingEvents = 1;
+        viewLoaded = true;
         materialProgressBar.setVisibility(View.GONE);
     }
 }

@@ -46,7 +46,8 @@ public class PublicGistsFragment extends Fragment {
     public static final String TAG = PublicGistsFragment.class.getName();
 
     @BindView(R.id.gists_progress_bar)
-    MaterialProgressBar materialProgressBar;Tracker mTracker;
+    MaterialProgressBar materialProgressBar;
+    Tracker mTracker;
     BroadcastReceiver broadcastReceiver;
     @BindView(R.id.gists_recycler_view)
     RecyclerView recyclerView;
@@ -109,8 +110,7 @@ public class PublicGistsFragment extends Fragment {
                     Log.v(TAG, "Failed Miserably in Gists" + t.getMessage());
                 }
             });
-        }else
-            Toast.makeText(getContext(),R.string.notOnline,Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -127,6 +127,10 @@ public class PublicGistsFragment extends Fragment {
         ButterKnife.bind(this,rootView);
         TrackerApplication application = (TrackerApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
+        if(Utility.hasConnection(getContext())){
+            materialProgressBar.setVisibility(View.VISIBLE);
+        }else
+            materialProgressBar.setVisibility(View.GONE);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

@@ -9,8 +9,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.gaurav.gitfetchapp.PostLoginActivity">
 
-
-    <android.support.design.widget.FloatingActionButton
+   <android.support.design.widget.FloatingActionButton
         android:id="@+id/search_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

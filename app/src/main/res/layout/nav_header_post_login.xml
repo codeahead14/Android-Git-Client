@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
+    android:id="@+id/header_linear_layout"
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
@@ -18,6 +19,7 @@
         android:layout_gravity="start"
         android:transitionName="@string/userAvatarTransition"
         android:contentDescription="@string/userIcon_desc"
+        android:src="@drawable/ic_person_black_24dp"
         android:background="@drawable/border_image_view" />
 
     <TextView

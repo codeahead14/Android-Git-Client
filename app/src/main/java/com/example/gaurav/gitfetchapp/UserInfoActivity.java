@@ -62,6 +62,7 @@ public class UserInfoActivity extends AppCompatActivity implements PopupMenu.OnM
     private InterstitialAd mInterstitialAd;
     private Set<String> following;
     private String userName;
+    private Snackbar connectionSnackbar;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.user_login_name) TextView user_login_textView;
@@ -77,13 +78,18 @@ public class UserInfoActivity extends AppCompatActivity implements PopupMenu.OnM
     @BindView(R.id.user_following) TextView user_following_textView;
     //@BindView(R.menu.user_info_menu) Menu menu;
 
-    @OnClick(R.id.fab) void onClick(View view){
+    @OnClick(R.id.user_activity_fab) void onClick(View view){
         if(mInterstitialAd.isLoaded()){
             Log.v(TAG,"Interstitial Ready");
         }
-        Intent intent = new Intent(this, PublicUserRepoActivity.class);
-        intent.putExtra(REPO_URL,userItem.getReposUrl());
-        startActivity(intent);
+
+        if(Utility.hasConnection(UserInfoActivity.this)) {
+            Intent intent = new Intent(this, PublicUserRepoActivity.class);
+            intent.putExtra(REPO_URL, userItem.getReposUrl());
+            startActivity(intent);
+        }else{
+            Toast.makeText(this, getResources().getString(R.string.notOnline), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.more_vert_button) void showPopUp(View v){
@@ -163,9 +169,9 @@ public class UserInfoActivity extends AppCompatActivity implements PopupMenu.OnM
         mTracker = application.getDefaultTracker();
         //toolbar.setBackgroundColor(getResources().getColor(R.color.white));
         ButterKnife.bind(this);
+
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-
         mInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {

@@ -1,15 +1,21 @@
 package com.example.gaurav.gitfetchapp.Repositories;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -34,6 +40,7 @@ import android.widget.Toast;
 
 import com.example.gaurav.gitfetchapp.R;
 import com.example.gaurav.gitfetchapp.RepositoryPagerAdapter;
+import com.example.gaurav.gitfetchapp.Utility;
 
 import java.util.HashMap;
 
@@ -41,6 +48,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
+import okhttp3.internal.Util;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -51,7 +59,7 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
     @BindView(R.id.starCountText) TextView star_count_textview;
     @BindView(R.id.forkCountText) TextView fork_count_textview;
     @BindView(R.id.repoWatchText) TextView repo_watch_textview;
-    @BindView(R.id.repolanguageText) TextView repo_language_textview;
+    //@BindView(R.id.repolanguageText) TextView repo_language_textview;
     @BindView(R.id.watch_Img) ImageView watch_count_imageview;
     @BindView(R.id.filter_menu_button) ImageButton filter_menu_button;
     @BindView(R.id.repository_details_progress_bar)
@@ -67,6 +75,8 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
     private String repoName;
     private ViewPager viewPager;
     private RepositoryPagerAdapter repositoryPagerAdapter;
+    private Snackbar connectionSnackbar;
+    private BroadcastReceiver broadcastReceiver;
 
     // Public to allow pager fragments to access the updated value;
     public static String repoBranch;
@@ -105,10 +115,13 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
         }
     }
 
-    @Override
-    public void onPause(){
-        super.onPause();
-        Log.v(TAG,"on pause called");
+    @OnClick(R.id.branch_menu_button) public void showBranches(){
+        FragmentManager fm = getFragmentManager();
+        BranchDialogFragment branchDialogFragment = BranchDialogFragment.newInstance(
+                new String[] { repoLogin,repoName,repoBranch});
+        branchDialogFragment.setTargetFragment(RepositoryDetailActivityFragment.this,
+                1);
+        branchDialogFragment.show(fm,TAG);
     }
 
     @OnClick(R.id.filter_menu_button) public void showMenu(View v) {
@@ -120,10 +133,8 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Log.v(TAG,"inside menu "+item.getItemId());
                 switch (item.getItemId()){
                     case R.id.action_branch:
-
                         /*
                         20th November, 2016
                         Replacing BranchDialog Actiivty Call by BranchDialogFragment Transaction
@@ -149,17 +160,44 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
         popup.show();
     }
 
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            repoBranch = data.getExtras().getString(Intent.EXTRA_TEXT);
-        }
-    }*/
+    @Override
+    public void onResume() {
+        super.onResume();
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(Utility.hasConnection(context)){
+                    if (connectionSnackbar != null)
+                        connectionSnackbar.dismiss();
+                }else if(!Utility.hasConnection(context))
+                    if(connectionSnackbar != null)
+                        connectionSnackbar.show();
+            }
+        };
+        getActivity().registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
+        connectionSnackbar = Snackbar.make(rootView,R.string.notOnline,Snackbar.LENGTH_INDEFINITE);
+        if(!Utility.hasConnection(getActivity())) {
+            connectionSnackbar.setAction(R.string.network_settings, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                }
+            });
+            connectionSnackbar.setActionTextColor(getResources().getColor(R.color.teal300));
+            connectionSnackbar.show();
+        }
+
         viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         repositoryPagerAdapter = new RepositoryPagerAdapter(getChildFragmentManager(),
                 getActivity(),item,repoBranch);
@@ -178,13 +216,13 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
         rootView = inflater.inflate(R.layout.fragment_repository_detail, container, false);
         ButterKnife.bind(this,rootView);
 
-        materialProgressBar.setVisibility(View.GONE);
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.repo_fragment_toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
         //toolbar.setBackgroundColor(getResources().getColor(R.color.teal500));
-        toolbar.setBackgroundColor(getResources().getColor(R.color.deepPurple500));
+        //toolbar.setBackgroundColor(getResources().getColor(R.color.deepPurple500));
 
         //toolbar.setTitleTextColor(getResources().getColor(R.color.indigo700));
 
@@ -224,7 +262,6 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_filter) {
             showMenu(rootView);
-            Log.v(TAG,"in filter menu");
             return true;
         }
 
@@ -239,8 +276,8 @@ public class RepositoryDetailActivityFragment extends Fragment implements Branch
         repo_name_textview.setText(item.getName());
         repo_name_textview.setTypeface(tf_1);
         repo_url_textview.setText(item.getHtmlUrl());
-        repo_language_textview.setText(item.getLanguage());
-        repo_language_textview.setTypeface(tf_2);
+        //repo_language_textview.setText(item.getLanguage());
+        //repo_language_textview.setTypeface(tf_2);
         repo_watch_textview.setText(item.getWatchersCount().toString());
         repo_watch_textview.setTypeface(tf_2);
         star_count_textview.setText(item.getStargazersCount().toString());

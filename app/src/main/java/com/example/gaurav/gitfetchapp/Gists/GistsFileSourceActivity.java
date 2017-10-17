@@ -56,7 +56,6 @@ public class GistsFileSourceActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "server contacted and has file");
                     BufferedReader reader = null;
                     StringBuilder sb = new StringBuilder();
                     try{

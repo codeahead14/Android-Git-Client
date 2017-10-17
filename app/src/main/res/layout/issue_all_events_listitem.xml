@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/issue_labels_events"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/grey50"
+    android:baselineAligned="true"
+    android:layout_marginLeft="@dimen/item_horizontal_margin_normal"
+    android:layout_marginStart="@dimen/item_horizontal_margin_normal"
+    android:layout_marginEnd="@dimen/item_horizontal_margin_normal"
+    android:layout_marginRight="@dimen/item_horizontal_margin_normal"
+    android:layout_marginTop="@dimen/item_horizontal_margin_small"
+    android:layout_marginBottom="@dimen/item_horizontal_margin_small"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/issue_allevent_tag"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="@dimen/item_horizontal_margin_normal"
+        android:src="@drawable/ic_tag_outline"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center"
+        android:contentDescription="@string/placeholder_desc"/>
+
+    <TextView
+        android:id="@+id/issue_allevent_details"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/bluegrey800"
+        android:textSize="14sp"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/ic_account_circle_black_36dp"
+        android:drawableStart="@drawable/ic_account_circle_black_36dp"
+        android:drawablePadding="@dimen/item_horizontal_margin_small"/>
+
+</LinearLayout>

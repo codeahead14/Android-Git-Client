@@ -1,15 +1,21 @@
 package com.example.gaurav.gitfetchapp.Repositories;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.text.Html;
@@ -46,6 +52,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,6 +73,9 @@ public class RepositoryBranchPagerFragment extends Fragment {
     private String repo_branch;
     private Parcelable state;
     private GitHubEndpointInterface gitHubEndpointInterface;
+    private Snackbar connectionSnackbar;
+    private BroadcastReceiver broadcastReceiver;
+    private View view;
 
     // Variables to save state
     private static final String BRANCH_DETAILS_KEY = "BRANCH_DETAILS";
@@ -116,6 +126,31 @@ public class RepositoryBranchPagerFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(!Utility.hasConnection(context)){
+                    materialProgressBar.setVisibility(View.GONE);
+                }else if(Utility.hasConnection(context)){
+                    materialProgressBar.setVisibility(View.VISIBLE);
+                    fetchBranchDetails();
+                    fetchRepoCollaborators();
+                    fetchReadme();
+                }
+            }
+        };
+        getActivity().registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(BRANCH_DETAILS_KEY, branchDetails);
@@ -124,10 +159,45 @@ public class RepositoryBranchPagerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        fetchBranchDetails();
-        fetchRepoCollaborators();
-        fetchReadme();
+
+        /*connectionSnackbar = Snackbar.make(view, getResources().getString(R.string.notOnline),
+                Snackbar.LENGTH_INDEFINITE);
+        if(!Utility.hasConnection(getActivity())) {
+            connectionSnackbar.setAction(R.string.network_settings, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                }
+            });
+            connectionSnackbar.setActionTextColor(getResources().getColor(R.color.teal300));
+            connectionSnackbar.show();
+        }else{
+            materialProgressBar.setVisibility(View.VISIBLE);
+        }*/
+
+        if(Utility.hasConnection(getContext())) {
+            materialProgressBar.setVisibility(View.VISIBLE);
+        /* The reason for placing these calls in onActivityCreated
+        * is due viewpagerfragment clearing out this view for other views.*/
+            fetchBranchDetails();
+            fetchRepoCollaborators();
+            fetchReadme();
+        }
     }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.repository_branch_details_layout, container, false);
+        ButterKnife.bind(this, view);
+        Typeface tf_1 = Typeface.createFromAsset(getContext().getResources().getAssets(), "font/RobotoCondensed-Regular.ttf");
+        Typeface tf_2 = Typeface.createFromAsset(getContext().getResources().getAssets(), "font/Roboto-Light.ttf");
+        branch_commit_textView.setTypeface(tf_1);
+        branch_detail_name_textView.setTypeface(tf_2);
+        branch_committer_textView.setTypeface(tf_2);
+        return view;
+    }
+
 
     public void fetchReadme() {
         Call<ReadMeJson> call = gitHubEndpointInterface.getReadMe(
@@ -149,7 +219,6 @@ public class RepositoryBranchPagerFragment extends Fragment {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
-                                Log.v(TAG,"in Successful Response");
                                 BufferedReader reader = null;
                                 StringBuilder sb = new StringBuilder();
                                 try {
@@ -184,22 +253,12 @@ public class RepositoryBranchPagerFragment extends Fragment {
         });
     }
 
-    //private void setUpReadme(ReadMeJson item){
-    //  markdownView.loadMarkdownFile(item.getDownloadUrl(),"file://assets/foghorn.css");
     private void setUpReadme(String text) {
-        //readme_textView.setText(text);
-        //Log.v(TAG,text);
-        //markdownView.setMarkDownText("# Hello World\nThis is a simple markdown");
-        //markdownView.loadMarkdownFromAssets("github-markdown-css.css");
-        //markdownView.setMarkDownText(text);
         if(text != null) {
             readme_Title_Text.setVisibility(View.VISIBLE);
             readme_Card.setVisibility(View.VISIBLE);
-            // Markdown View
             markdownView.loadMarkdown(text);
         }
-        // Markdown View from https://github.com/fiskurgit/MarkdownView
-        //markdownView.showMarkdown(text);
     }
 
     public void fetchBranchDetails() {
@@ -246,20 +305,6 @@ public class RepositoryBranchPagerFragment extends Fragment {
 
             }
         });
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.repository_branch_details_layout, container, false);
-        ButterKnife.bind(this, view);
-        materialProgressBar.setVisibility(View.VISIBLE);
-        Typeface tf_1 = Typeface.createFromAsset(getContext().getResources().getAssets(), "font/RobotoCondensed-Regular.ttf");
-        Typeface tf_2 = Typeface.createFromAsset(getContext().getResources().getAssets(), "font/Roboto-Light.ttf");
-        branch_commit_textView.setTypeface(tf_1);
-        branch_detail_name_textView.setTypeface(tf_2);
-        branch_committer_textView.setTypeface(tf_2);
-        return view;
     }
 
     public void setUpView(BranchDetailJson item) {

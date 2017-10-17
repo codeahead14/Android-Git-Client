@@ -16,12 +16,22 @@
         android:padding="@dimen/item_horizontal_margin_normal"
         android:contentDescription="@string/files_img"/>
 
-    <TextView
+    <me.grantland.widget.AutofitTextView
         android:id="@+id/file_name_text"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:textSize="18sp"
-        android:padding="@dimen/item_horizontal_margin_normal"/>
+        android:maxLines="1"
+        android:padding="@dimen/item_horizontal_margin_normal"
+        />
+
+    <!--<TextView
+        android:id="@+id/file_name_text"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:padding="@dimen/item_horizontal_margin_normal"/>-->
 
 </LinearLayout>

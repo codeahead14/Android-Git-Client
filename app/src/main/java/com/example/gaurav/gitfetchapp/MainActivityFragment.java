@@ -1,10 +1,16 @@
 package com.example.gaurav.gitfetchapp;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,14 +40,14 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static CatLoadingView catView;
     private Unbinder unbinder;
-    private final String clientId = "";
-    private final String clientSecret = "";
+    private final String clientId = "158a0d1c5f2352735a22";
+    private final String clientSecret = "5ef363d916ea7fff6b4706382c1bfdb95b7d27bb";
     private final String redirectUri = "welcome://com.project.github";
     private String userNameField = null;
     private String passwordField = null;
     private SharedPreferences prefs;
-
-    public static String loginName = null;
+    private Snackbar connectionSnackbar;
+    private BroadcastReceiver broadcastReceiver;
 
     @BindView(R.id.email)
     EditText userEmail;
@@ -54,6 +61,7 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         catView = new CatLoadingView();
+        Log.v(TAG,"oncreate");
     }
 
     @Override
@@ -107,6 +115,7 @@ public class MainActivityFragment extends Fragment {
                             startActivity(intent);
                             getActivity().finish();
                         } else{
+                            Log.v(TAG,"response "+response.message());
                             Toast.makeText(getActivity(), "Bad Credentials", Toast.LENGTH_LONG).show();
                             catView.dismiss();
                         }
@@ -115,6 +124,7 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onFailure(Call<LoginJson> call, Throwable t) {
                         Log.v(TAG,"Failure "+t.getMessage());
+                        catView.dismiss();
                     }
                 });
             } else
@@ -128,12 +138,39 @@ public class MainActivityFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, rootView);
 
+        connectionSnackbar = Snackbar.make(rootView, getResources().getString(R.string.notOnline),
+                Snackbar.LENGTH_INDEFINITE);
+        if(!Utility.hasConnection(getContext())) {
+            connectionSnackbar.setAction(R.string.network_settings, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+                }
+            });
+            connectionSnackbar.setActionTextColor(getResources().getColor(R.color.teal300));
+            connectionSnackbar.show();
+        }
         return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(Utility.hasConnection(context)){
+                    if(connectionSnackbar != null){
+                        connectionSnackbar.dismiss();
+                    }
+                }else if(!Utility.hasConnection(context)){
+                    if(connectionSnackbar != null){
+                        connectionSnackbar.show();
+                    }
+                }
+            }
+        };
+        getActivity().registerReceiver(broadcastReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         // the intent filter defined in AndroidManifest will handle the return from ACTION_VIEW intent
         Uri uri = getActivity().getIntent().getData();
@@ -156,5 +193,11 @@ public class MainActivityFragment extends Fragment {
                 // show an error message here
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
     }
 }

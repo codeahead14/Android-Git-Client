@@ -88,16 +88,13 @@ public class GistsRecyclerAdapter extends
         gistsFileAdapter = new GistsFileRecyclerAdapter(mContext,new ArrayList<Filename>());
         holder.gist_file_recyclerview.setAdapter(gistsFileAdapter);
         while(it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            fileNames[count] = (String)pair.getKey();
+            Map.Entry pair = (Map.Entry) it.next();
+            fileNames[count] = (String) pair.getKey();
             //gistsFileAdapter.addItem((String)pair.getKey());
-            objects[count] = (Filename)pair.getValue();
+            objects[count] = (Filename) pair.getValue();
             gistsFileAdapter.addItem(objects[count]);
-            Log.v(TAG,"filename: = "+ objects[count].getFilename());
             count++;
         }
-//        firstFileUrl = objects[0].getRawUrl();
-//        firstFileName = objects[0].getFilename();
 
         if(gistsJsons.get(position).getOwner() != null) {
 
@@ -111,6 +108,7 @@ public class GistsRecyclerAdapter extends
                     fileNames[0]));
         }
         holder.login_filename_button.setTypeface(tf_1);
+
         Spanned text = Html.fromHtml("created on "+"<b>"+ Utility.formatDateString(
                 gistsJsons.get(position).getCreatedAt())+"</b>");
         holder.gist_created_textView.setText(text);
@@ -127,7 +125,7 @@ public class GistsRecyclerAdapter extends
 
     @Override
     public int getItemCount() {
-
+        Log.v(TAG,"gists size "+gistsJsons.size());
         if (gistsJsons != null)
             return gistsJsons.size();
         return 0;
@@ -198,13 +196,6 @@ public class GistsRecyclerAdapter extends
 
             login_filename_button = (TextView) view.findViewById(R.id.login_filename_button);
             //login_filename_button.setTypeface(tf_1);
-            login_filename_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.v(TAG,"filename "+ firstFileName + firstFileUrl);
-                    fetchFileContents(firstFileUrl,firstFileName);
-                }
-            });
             gist_created_textView =  (TextView) view.findViewById(R.id.gist_created_text);
             gist_created_textView.setTypeface(tf_2);
             gist_file_textView =  (TextView) view.findViewById(R.id.gist_files_text);
@@ -221,6 +212,7 @@ public class GistsRecyclerAdapter extends
             gist_file_recyclerview.setLayoutManager(layoutManager);
             gist_file_recyclerview.setOnClickListener(this);
             gist_file_textView.setOnClickListener(this);
+            login_filename_button.setOnClickListener(this);
         }
 
         @Override
