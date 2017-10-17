@@ -40,8 +40,8 @@ public class MainActivityFragment extends Fragment {
     private View rootView;
     private static CatLoadingView catView;
     private Unbinder unbinder;
-    private final String clientId = "158a0d1c5f2352735a22";
-    private final String clientSecret = "5ef363d916ea7fff6b4706382c1bfdb95b7d27bb";
+    private final String clientId = "ENTER YOUR CLIENT ID HERE";
+    private final String clientSecret = "ENTER YOUR CLIENT SECRET HERE";
     private final String redirectUri = "welcome://com.project.github";
     private String userNameField = null;
     private String passwordField = null;
